@@ -1,6 +1,8 @@
 package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "church")
@@ -31,4 +33,10 @@ public class Church extends CreatedUpdated {
 
   @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
   private boolean isValid = false;
+
+  @OneToMany(mappedBy = "church")
+  private List<Body> bodyList = new ArrayList<>();
+
+  @OneToMany(mappedBy = "church")
+  private List<ChurchMemberMap> churchMemberList = new ArrayList<>();
 }

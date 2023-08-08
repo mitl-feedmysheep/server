@@ -1,6 +1,8 @@
 package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "body")
@@ -10,6 +12,10 @@ public class Body extends CreatedUpdated {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "body_id", nullable = false, columnDefinition = "bigint COMMENT '바디 아이디'")
   private Long bodyId;
+
+  @ManyToOne
+  @JoinColumn(name = "church_id", nullable = false)
+  private Church church;
 
   @Column(name = "body_name", nullable = false, length = 50, columnDefinition = "varchar(50) COMMENT '바디 이름 (ex. 새청)'")
   private String bodyName;
@@ -34,4 +40,7 @@ public class Body extends CreatedUpdated {
 
   @Column(name = "facebook_url", length = 100, columnDefinition = "varchar(100) COMMENT '페이스북 주소'")
   private String facebookUrl;
+
+  @OneToMany(mappedBy = "body")
+  private List<Organ> organList = new ArrayList<>();
 }
