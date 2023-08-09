@@ -1,6 +1,6 @@
 package feedmysheep.feedmysheepapi.models;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 public class CreatedUpdated {

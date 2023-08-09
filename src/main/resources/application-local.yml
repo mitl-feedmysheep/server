@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://127.0.0.1:3306/feed_my_sheep?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul"
+    username: "root"
+    password: "feedmysheep"
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+    hibernate:
+#      db 변경 사항 적용 -> 향후 none
+      ddl-auto: update
