@@ -1,8 +1,11 @@
 package feedmysheep.feedmysheepapi.domain.word.app.controller;
 
+import feedmysheep.feedmysheepapi.domain.word.app.dto.WordDto;
 import feedmysheep.feedmysheepapi.domain.word.app.service.WordService;
 import feedmysheep.feedmysheepapi.models.Word;
 import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,17 +23,10 @@ public class WordController {
   }
 
   @GetMapping
-  public List<Word> getWordList() {
-    return wordService.getWordList();
+  public Word getWordByMainAndSubScreen(
+      @RequestParam(name = "mainScreen") String mainScreen,
+      @RequestParam(name = "subScreen", required = false) String subScreen
+  ) {
+    return wordService.getWordByMainAndSubScreen(mainScreen, subScreen);
   }
-
-//  @GetMapping
-//  public Word getWordByMainAndSubScreen(
-//      @RequestParam(name = "mainScreen") String mainScreen,
-//      @RequestParam(name = "subScreen") String subScreen
-//  ) {
-//    return wordService.getWordByMainAndSubScreen(mainScreen, subScreen);
-//  }
-
-
 }

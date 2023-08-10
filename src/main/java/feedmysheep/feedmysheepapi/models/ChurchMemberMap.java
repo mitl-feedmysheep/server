@@ -2,9 +2,13 @@ package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "church_member_map")
+@Getter
+@Setter
 public class ChurchMemberMap extends CreatedUpdated {
 
   @Id

@@ -2,7 +2,11 @@ package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class CreatedUpdated {
   @Column(name = "created_at", nullable = false, columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시'")
   private LocalDateTime createdAt = LocalDateTime.now();

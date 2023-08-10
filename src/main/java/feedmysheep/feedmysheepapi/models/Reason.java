@@ -1,9 +1,13 @@
 package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "reason")
+@Getter
+@Setter
 public class Reason extends CreatedUpdated {
 
   @Id

@@ -2,9 +2,13 @@ package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "authorization")
+@Getter
+@Setter
 public class Authorization {
 
   @Id

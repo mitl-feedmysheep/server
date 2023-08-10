@@ -3,9 +3,13 @@ package feedmysheep.feedmysheepapi.models;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "church")
+@Getter
+@Setter
 public class Church extends CreatedUpdated {
 
   @Id
