@@ -16,7 +16,13 @@ public class WordService {
   }
 
   public Word getWordByMainAndSubScreen(String mainScreen, String subScreen) {
-    return wordRepository.findBy();
+    System.out.println(mainScreen);
+    System.out.println(subScreen);
+    return wordRepository.findByMainScreenAndSubScreen(mainScreen, subScreen);
+  }
+
+  public List<Word> getWordList() {
+    return wordRepository.findAll();
   }
 
 }

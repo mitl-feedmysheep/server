@@ -1,8 +1,10 @@
 package feedmysheep.feedmysheepapi.domain.word.app.controller;
 
-import feedmysheep.feedmysheepapi.domain.word.app.dto.WordDto;
 import feedmysheep.feedmysheepapi.domain.word.app.service.WordService;
+import feedmysheep.feedmysheepapi.models.Word;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +19,18 @@ public class WordController {
     this.wordService = wordService;
   }
 
-  public WordDto.getWord getWordByMainAndSubScreen(@RequestParam() String mainScreen, @RequestParam() String subScreen) {
-    wordService.getWordByMainAndSubScreen()
+  @GetMapping
+  public List<Word> getWordList() {
+    return wordService.getWordList();
   }
+
+//  @GetMapping
+//  public Word getWordByMainAndSubScreen(
+//      @RequestParam(name = "mainScreen") String mainScreen,
+//      @RequestParam(name = "subScreen") String subScreen
+//  ) {
+//    return wordService.getWordByMainAndSubScreen(mainScreen, subScreen);
+//  }
+
+
 }
