@@ -1,22 +1,18 @@
 package feedmysheep.feedmysheepapi.domain.word.app.dto;
 
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 
+@Data
 public class WordDto {
 
-//  @AllArgsConstructor
-//  public static class getWord {
-//
-//  }
-
-  private String mainScreen;
-  private String subScreen;
-  private boolean isValid;
-  private LocalDate displayStartDate;
-  private LocalDate displayEndDate;
-  private String words;
-  private String book;
-  private int chapter;
-  private int verse;
+  @Getter
+  @AllArgsConstructor
+  public static class getWordByMainAndSubScreen {
+    private String words;
+    private String book;
+    private int chapter;
+    private int verse;
+  }
 }

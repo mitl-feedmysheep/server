@@ -23,7 +23,7 @@ public class WordController {
   }
 
   @GetMapping
-  public Word getWordByMainAndSubScreen(
+  public WordDto.getWordByMainAndSubScreen getWordByMainAndSubScreen(
       @RequestParam(name = "mainScreen") String mainScreen,
       @RequestParam(name = "subScreen", required = false) String subScreen
   ) {

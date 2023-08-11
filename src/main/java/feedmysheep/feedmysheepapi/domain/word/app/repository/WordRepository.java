@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.word.app.repository;
 
+import feedmysheep.feedmysheepapi.domain.word.app.dto.WordDto;
 import feedmysheep.feedmysheepapi.models.Word;
 import java.util.List;
 import java.util.Optional;
@@ -9,5 +10,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WordRepository extends JpaRepository<Word, Long> {
-  Word findByMainScreenAndSubScreen(String mainScreen, String subScreen);
+  WordDto.getWordByMainAndSubScreen findByMainScreenAndSubScreen(String mainScreen, String subScreen);
 }
