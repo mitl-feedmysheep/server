@@ -1,16 +1,18 @@
 package feedmysheep.feedmysheepapi.global.utils;
 
-import feedmysheep.feedmysheepapi.global.dto.response.Common;
-import feedmysheep.feedmysheepapi.global.dto.response.CommonResponse;
+import feedmysheep.feedmysheepapi.global.dto.response.common.CommonEntity;
+import feedmysheep.feedmysheepapi.global.dto.response.common.CommonResponse;
+import feedmysheep.feedmysheepapi.global.dto.response.error.ErrorEntity;
+import feedmysheep.feedmysheepapi.global.dto.response.error.ErrorResponse;
 
 public class ResponseUtil {
   public static <T> CommonResponse<T> success(T response) {
-    Common common = new Common("success", null);
+    CommonEntity common = new CommonEntity("success", "정상적인 응답입니다.");
     return new CommonResponse<> (common, response);
   }
 
-  public static CommonResponse<?> error(String errorMessage) {
-    Common common = new Common("fail", errorMessage);
-    return new CommonResponse<> (common, null);
+  public static ErrorResponse error(String errorMessage) {
+    ErrorEntity error = new ErrorEntity("fail", errorMessage);
+    return new ErrorResponse(error);
   }
 }

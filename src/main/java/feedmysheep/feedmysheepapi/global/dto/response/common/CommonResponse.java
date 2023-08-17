@@ -1,4 +1,4 @@
-package feedmysheep.feedmysheepapi.global.dto.response;
+package feedmysheep.feedmysheepapi.global.dto.response.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,8 +8,8 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Common {
-  private String status;
+public class CommonResponse<T> {
+  private CommonEntity common;
   @Nullable
-  private String message;
+  private T data;
 }
