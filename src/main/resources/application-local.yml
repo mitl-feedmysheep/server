@@ -18,3 +18,8 @@ spring:
     hibernate:
 #      db 변경 사항 적용 -> 향후 none
       ddl-auto: update
+
+jwt:
+  secretKey: "Rejoice always, pray continually, give thanks in all circumstances; for this is God’s will for you in Christ Jesus. (1 Thessalonians 5:16-18)"
+  refreshExpiry: 31536000000
+  accessExpiry: 604800000
