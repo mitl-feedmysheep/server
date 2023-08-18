@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 
 @Data
-public class WordDto {
+public class WordResDto {
 
   @Getter
   @AllArgsConstructor
