@@ -1,9 +1,9 @@
 package feedmysheep.feedmysheepapi.global.utils;
 
-import feedmysheep.feedmysheepapi.global.dto.response.common.CommonEntity;
-import feedmysheep.feedmysheepapi.global.dto.response.common.CommonResponse;
-import feedmysheep.feedmysheepapi.global.dto.response.error.ErrorEntity;
-import feedmysheep.feedmysheepapi.global.dto.response.error.ErrorResponse;
+import feedmysheep.feedmysheepapi.global.response.common.CommonEntity;
+import feedmysheep.feedmysheepapi.global.response.common.CommonResponse;
+import feedmysheep.feedmysheepapi.global.response.error.ErrorEntity;
+import feedmysheep.feedmysheepapi.global.response.error.ErrorResponse;
 
 public class ResponseUtil {
   public static <T> CommonResponse<T> success(T response) {

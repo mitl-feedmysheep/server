@@ -1,6 +1,6 @@
 package feedmysheep.feedmysheepapi.global.aop;
 
-import feedmysheep.feedmysheepapi.global.dto.response.error.ErrorEntity;
+import feedmysheep.feedmysheepapi.global.response.error.ErrorEntity;
 import feedmysheep.feedmysheepapi.global.utils.ResponseUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -24,7 +24,7 @@ public class CommonResponseAdvice implements ResponseBodyAdvice<Object> {
       MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType,
       ServerHttpRequest request, ServerHttpResponse response) {
     if (body instanceof ErrorEntity) {
-      return ResponseUtil.error(String.valueOf((ErrorEntity) body));
+      return ResponseUtil.error(((ErrorEntity) body).getMessage());
     }
     return ResponseUtil.success(body);
   }

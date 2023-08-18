@@ -1,4 +1,4 @@
-package feedmysheep.feedmysheepapi.global.dto.response.error;
+package feedmysheep.feedmysheepapi.global.response.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

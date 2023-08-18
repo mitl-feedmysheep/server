@@ -1,4 +1,4 @@
-package feedmysheep.feedmysheepapi.global.dto.response.common;
+package feedmysheep.feedmysheepapi.global.response.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
