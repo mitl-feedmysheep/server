@@ -1,8 +1,12 @@
 package feedmysheep.feedmysheepapi.global.utils;
 
 import java.util.Date;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
+@AllArgsConstructor
 public class JwtUtil {
   @Value("${jwt.secretKey}")
   private String JWT_SECRET;
