@@ -12,7 +12,7 @@ import lombok.Setter;
 @Table(name = "member")
 @Getter
 @Setter
-public class Member {
+public class Member extends CreatedUpdated{
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,15 +47,9 @@ public class Member {
   @Column(name = "member_description", length = 100, columnDefinition = "varchar(100) COMMENT '멤버 특이사항'")
   private String memberDescription;
 
-  @Column(name = "millitary_service", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 COMMENT '멤버 복무중 여부'")
-  private boolean militaryService;
-
-  @Column(name = "studying_abroad", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 COMMENT '멤버 유학중 여부'")
-  private boolean studyingAbroad;
-
   @Column(name = "email", length = 100, columnDefinition = "varchar(100) COMMENT '멤버 로그인 이메일'")
   private String email;
 
-  @Column(name = "registered_at", columnDefinition = "datetime COMMENT '멤버 가입일시'")
+  @Column(name = "registered_at", nullable = false, columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP COMMENT '멤버 가입일시'")
   private LocalDateTime registeredAt;
 }

@@ -9,7 +9,7 @@ import lombok.Setter;
 @Table(name = "authorization")
 @Getter
 @Setter
-public class Authorization {
+public class Authorization extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
