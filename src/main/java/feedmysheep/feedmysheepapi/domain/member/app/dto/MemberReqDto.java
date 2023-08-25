@@ -10,7 +10,7 @@ public class MemberReqDto {
 
   @AllArgsConstructor
   @Getter
-  public static class checkPhoneDuplication {
+  public static class sendVerificationCode {
     @NotEmpty(message = "휴대폰 번호가 존재하지 않아요.")
     private String phone;
   }

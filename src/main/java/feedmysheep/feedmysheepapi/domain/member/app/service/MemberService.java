@@ -1,24 +1,71 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
-import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
-import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto.checkPhoneDuplication;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
+import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
+import feedmysheep.feedmysheepapi.global.response.error.CustomException;
+import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
+import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
+import feedmysheep.feedmysheepapi.models.Verification;
+import java.time.LocalDate;
+import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MemberService {
   private final MemberRepository memberRepository;
+  private final VerificationRepository verificationRepository;
+  private final TwilioService twilioService;
+  @Value("verification.maxCodeGenNum")
+  private int maxCodeGenNum;
+  @Value("verification.maxCodeTryNum")
+  private Number maxCodeTryNum;
 
   @Autowired
-  public MemberService(MemberRepository memberRepository) { this.memberRepository = memberRepository; };
+  public MemberService(MemberRepository memberRepository, VerificationRepository verificationRepository, TwilioService twilioService) {
+    this.memberRepository = memberRepository;
+    this.verificationRepository = verificationRepository;
+    this.twilioService = twilioService;
+  };
 
-  public MemberResDto.checkPhoneDuplication checkPhoneDuplication(MemberReqDto.checkPhoneDuplication body) {
-    String phone = body.getPhone();
+  public void checkPhoneDuplication(MemberReqDto.sendVerificationCode query) {
+    String phone = query.getPhone();
+    LocalDate todayDate = LocalDate.now();
 
-    boolean isDuplicated = memberRepository.existsMemberByPhone(phone);
+    // 1. 휴대폰 사용 여부 체크
+    boolean isDuplicated = this.memberRepository.existsMemberByPhone(phone);
+    if (isDuplicated) throw new CustomException(ErrorMessage.PHONE_IN_USE);
 
-    return new MemberResDto.checkPhoneDuplication(isDuplicated);
+    // 2. 인증코드 발급 5회 미만 여부
+    int usedCount = this.verificationRepository.countByPhoneAndValidDate(phone, todayDate);
+    if (usedCount >= maxCodeGenNum) throw new CustomException(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
+
+    // 3. 인증코드 generate
+    Random random = new Random();
+    int min = 1000;
+    int max = 9999;
+    String verificationCode = Integer.toString(random.nextInt(max - min + 1) + min);
+
+    // 4. 인증코드 DB 저장
+    Verification verification = new Verification();
+    verification.setPhone(phone);
+    verification.setVerificationCode(verificationCode);
+    verification.setValidDate(todayDate);
+    this.verificationRepository.save(verification);
+
+    // 5. 인증코드 전송
+    String phoneWithCountry = "+" + "82" + phone;
+    String messageBody = "[피마쉽(FeedMySheep)] 인증번호는 " + verificationCode + "입니다.";
+    try {
+      twilioService.sendSMS(phoneWithCountry, messageBody);
+    } catch (Exception e) {
+      // TODO 슬랙 메시지
+
+      // 문자 메시지 전송 에러
+      throw new CustomException(e.getMessage());
+    }
+
   }
 }

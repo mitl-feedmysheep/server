@@ -9,8 +9,6 @@ import feedmysheep.feedmysheepapi.domain.word.app.service.WordService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,9 +21,9 @@ public class MemberController {
   @Autowired
   public MemberController(MemberService memberService) { this.memberService = memberService; };
 
-  @GetMapping("/phone-duplication")
-  public MemberResDto.checkPhoneDuplication checkPhoneDuplication(@Valid MemberReqDto.checkPhoneDuplication body) {
-    return memberService.checkPhoneDuplication(body);
+  @GetMapping("/phone/send-verification-code")
+  public void checkPhoneDuplication(@Valid MemberReqDto.sendVerificationCode query) {
+    memberService.checkPhoneDuplication(query);
   }
 }
 

@@ -23,3 +23,12 @@ jwt:
   secretKey: "Rejoice always, pray continually, give thanks in all circumstances; for this is God’s will for you in Christ Jesus. (1 Thessalonians 5:16-18)"
   refreshExpiry: 31536000000
   accessExpiry: 86400000
+
+twilio:
+  accountSid: "AC8edd3e64ee51444b1a3ea11d5268edee"
+  authToken: "3120df0191d3bee89b113fb1d0da6aea"
+  fromPhoneNumber: "+17067703741"
+
+verification:
+  maxCodeGenNum: 5
+  maxCodeTryNum: 5
