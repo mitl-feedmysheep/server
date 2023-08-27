@@ -2,13 +2,16 @@ package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "verification")
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Verification extends CreatedUpdated {
 
   @Id
@@ -19,7 +22,7 @@ public class Verification extends CreatedUpdated {
   @Column(name = "phone", nullable = false, length = 20)
   private String phone;
 
-  @Column(name = "verification_code", nullable = false, length = 4)
+  @Column(name = "verification_code", nullable = false, length = 6)
   private String verificationCode;
 
   @Column(name = "is_valid", nullable = false)
@@ -27,4 +30,11 @@ public class Verification extends CreatedUpdated {
 
   @Column(name = "valid_date", nullable = false)
   private LocalDate validDate;
+
+  @Builder
+  public Verification(String phone, String verificationCode, LocalDate validDate) {
+    this.phone = phone;
+    this.verificationCode = verificationCode;
+    this.validDate = validDate;
+  }
 }

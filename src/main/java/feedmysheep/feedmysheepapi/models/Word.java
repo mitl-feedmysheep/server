@@ -2,13 +2,16 @@ package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "word")
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Word extends CreatedUpdated {
 
   @Id
@@ -42,4 +45,16 @@ public class Word extends CreatedUpdated {
 
   @Column(name = "verse", nullable = false, columnDefinition = "int COMMENT '절'")
   private int verse;
+
+  @Builder
+  public Word(String mainScreen, String subScreen, LocalDate displayStartDate, LocalDate displayEndDate, String book, int chapter, int verse, String words) {
+    this.mainScreen = mainScreen;
+    this.subScreen = subScreen;
+    this.displayStartDate = displayStartDate;
+    this.displayEndDate = displayEndDate;
+    this.book = book;
+    this.chapter = chapter;
+    this.verse = verse;
+    this.words = words;
+  }
 }

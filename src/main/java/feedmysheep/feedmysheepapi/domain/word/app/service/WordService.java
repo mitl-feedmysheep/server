@@ -16,7 +16,6 @@ public class WordService {
   }
 
   public WordResDto.getWordByMainAndSubScreen getWordByMainAndSubScreen(WordReqDto.mainAndSubScreen queries) {
-//    if (true) throw new CustomException("이게 되네?");
     String mainScreen = queries.getMainScreen();
     String subScreen = queries.getSubScreen();
 

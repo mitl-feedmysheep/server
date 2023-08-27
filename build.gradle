@@ -36,8 +36,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 	// DB
 	implementation 'mysql:mysql-connector-java:8.0.32'
+	testImplementation 'junit:junit:4.13.1'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
 	// SMS
 	implementation "com.twilio.sdk:twilio:9.10.0"
 	// TEST

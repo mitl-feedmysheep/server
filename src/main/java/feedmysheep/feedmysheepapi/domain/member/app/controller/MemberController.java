@@ -22,8 +22,8 @@ public class MemberController {
   public MemberController(MemberService memberService) { this.memberService = memberService; };
 
   @GetMapping("/phone/send-verification-code")
-  public void checkPhoneDuplication(@Valid MemberReqDto.sendVerificationCode query) {
-    memberService.checkPhoneDuplication(query);
+  public void sendVerificationCode(@Valid MemberReqDto.sendVerificationCode query) {
+    memberService.sendVerificationCode(query);
   }
 }
 

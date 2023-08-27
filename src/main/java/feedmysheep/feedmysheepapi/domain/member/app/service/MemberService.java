@@ -18,10 +18,10 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final VerificationRepository verificationRepository;
   private final TwilioService twilioService;
-  @Value("verification.maxCodeGenNum")
+  @Value("${verification.maxCodeGenNum}")
   private int maxCodeGenNum;
-  @Value("verification.maxCodeTryNum")
-  private Number maxCodeTryNum;
+  @Value("${verification.maxCodeTryNum}")
+  private int maxCodeTryNum;
 
   @Autowired
   public MemberService(MemberRepository memberRepository, VerificationRepository verificationRepository, TwilioService twilioService) {
@@ -30,7 +30,7 @@ public class MemberService {
     this.twilioService = twilioService;
   };
 
-  public void checkPhoneDuplication(MemberReqDto.sendVerificationCode query) {
+  public void sendVerificationCode(MemberReqDto.sendVerificationCode query) {
     String phone = query.getPhone();
     LocalDate todayDate = LocalDate.now();
 
@@ -40,20 +40,20 @@ public class MemberService {
 
     // 2. 인증코드 발급 5회 미만 여부
     int usedCount = this.verificationRepository.countByPhoneAndValidDate(phone, todayDate);
-    if (usedCount >= maxCodeGenNum) throw new CustomException(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
+    if (usedCount >= this.maxCodeGenNum) throw new CustomException(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
 
     // 3. 인증코드 generate
     Random random = new Random();
-    int min = 1000;
-    int max = 9999;
+    int min = 100000;
+    int max = 999999;
     String verificationCode = Integer.toString(random.nextInt(max - min + 1) + min);
 
     // 4. 인증코드 DB 저장
-    Verification verification = new Verification();
-    verification.setPhone(phone);
-    verification.setVerificationCode(verificationCode);
-    verification.setValidDate(todayDate);
-    this.verificationRepository.save(verification);
+//    Verification verification = new Verification();
+//    verification.setPhone(phone);
+//    verification.setVerificationCode(verificationCode);
+//    verification.setValidDate(todayDate);
+//    this.verificationRepository.save(verification);
 
     // 5. 인증코드 전송
     String phoneWithCountry = "+" + "82" + phone;
