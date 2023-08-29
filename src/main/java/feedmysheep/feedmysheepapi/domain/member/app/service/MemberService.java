@@ -32,14 +32,14 @@ public class MemberService {
 
   public void sendVerificationCode(MemberReqDto.sendVerificationCode query) {
     String phone = query.getPhone();
-    LocalDate todayDate = LocalDate.now();
+    LocalDate today = LocalDate.now();
 
     // 1. 휴대폰 사용 여부 체크
     boolean isDuplicated = this.memberRepository.existsMemberByPhone(phone);
     if (isDuplicated) throw new CustomException(ErrorMessage.PHONE_IN_USE);
 
     // 2. 인증코드 발급 5회 미만 여부
-    int usedCount = this.verificationRepository.countByPhoneAndValidDate(phone, todayDate);
+    int usedCount = this.verificationRepository.countByPhoneAndValidDate(phone, today);
     if (usedCount >= this.maxCodeGenNum) throw new CustomException(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
 
     // 3. 인증코드 generate
@@ -48,14 +48,7 @@ public class MemberService {
     int max = 999999;
     String verificationCode = Integer.toString(random.nextInt(max - min + 1) + min);
 
-    // 4. 인증코드 DB 저장
-//    Verification verification = new Verification();
-//    verification.setPhone(phone);
-//    verification.setVerificationCode(verificationCode);
-//    verification.setValidDate(todayDate);
-//    this.verificationRepository.save(verification);
-
-    // 5. 인증코드 전송
+    // 4. 인증코드 전송
     String phoneWithCountry = "+" + "82" + phone;
     String messageBody = "[피마쉽(FeedMySheep)] 인증번호는 " + verificationCode + "입니다.";
     try {
@@ -67,5 +60,12 @@ public class MemberService {
       throw new CustomException(e.getMessage());
     }
 
+    // 5. 인증코드 DB 저장
+    Verification.builder()
+      .phone(phone)
+      .verificationCode(verificationCode)
+      .validDate(today)
+      .build()
+      ;
   }
 }
