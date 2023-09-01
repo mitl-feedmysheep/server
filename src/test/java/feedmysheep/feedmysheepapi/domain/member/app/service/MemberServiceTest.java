@@ -1,13 +1,17 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
+import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
+import feedmysheep.feedmysheepapi.models.Verification;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -20,7 +24,10 @@ class MemberServiceTest {
   private VerificationRepository verificationRepository;
 
   @Autowired
-  private MemberService memberService;
+  private MemberRepository memberRepository;
+
+//  @Autowired
+//  private MemberService memberService;
 
   @BeforeEach
   public void setup() {}
@@ -30,14 +37,18 @@ class MemberServiceTest {
   public void sendVerificationCode() {
     // given
     String phone = "01088831954";
-    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode;
+    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(phone);
     query.setPhone(phone);
+    //// mock 생성
+    TwilioService twilioServiceMock = Mockito.mock(TwilioService.class);
+    MemberService memberService = new MemberService(memberRepository, verificationRepository, twilioServiceMock);
 
     // when
     memberService.sendVerificationCode(query);
 
     //then
-    verificationRepository.findBy(String phone);
-
+    List<Verification> verificationList = verificationRepository.findAll();
+    Boolean isMatchedPhone = verificationList.stream().anyMatch(verification -> verification.getPhone().equals(phone));
+    assertThat(isMatchedPhone).isEqualTo(true);
   }
 }
