@@ -18,16 +18,19 @@ public class MemberService {
   private final MemberRepository memberRepository;
   private final VerificationRepository verificationRepository;
   private final TwilioService twilioService;
-  @Value("${verification.maxCodeGenNum}")
-  private int maxCodeGenNum;
-  @Value("${verification.maxCodeTryNum}")
-  private int maxCodeTryNum;
+  private final int maxCodeGenNum;
 
   @Autowired
-  public MemberService(MemberRepository memberRepository, VerificationRepository verificationRepository, TwilioService twilioService) {
+  public MemberService(
+      MemberRepository memberRepository,
+      VerificationRepository verificationRepository,
+      TwilioService twilioService,
+      @Value("${verification.maxCodeGenNum}") int maxCodeGenNum
+  ) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
     this.twilioService = twilioService;
+    this.maxCodeGenNum = maxCodeGenNum;
   };
 
   public void sendVerificationCode(MemberReqDto.sendVerificationCode query) {
@@ -54,6 +57,7 @@ public class MemberService {
     try {
       twilioService.sendSMS(phoneWithCountry, messageBody);
     } catch (Exception e) {
+      System.out.println(e);
       // TODO 슬랙 메시지
 
       // 문자 메시지 전송 에러
@@ -61,11 +65,13 @@ public class MemberService {
     }
 
     // 5. 인증코드 DB 저장
-    Verification.builder()
+    Verification verification = Verification.builder()
       .phone(phone)
       .verificationCode(verificationCode)
       .validDate(today)
       .build()
       ;
+
+    this.verificationRepository.save(verification);
   }
 }

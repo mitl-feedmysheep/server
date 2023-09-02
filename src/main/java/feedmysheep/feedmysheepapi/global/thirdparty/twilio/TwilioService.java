@@ -12,6 +12,7 @@ public class TwilioService {
   private String fromPhoneNumber;
 
   public void sendSMS(String toPhoneNumber, String messageBody) {
+    System.out.println("fromPhoneNumber --> " + fromPhoneNumber);
     Message.creator(
         new PhoneNumber(toPhoneNumber),
         new PhoneNumber(fromPhoneNumber),

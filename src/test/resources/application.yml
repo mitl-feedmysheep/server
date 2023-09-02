@@ -6,7 +6,7 @@ spring:
       add-mappings: false
   datasource:
     driver-class-name: "com.mysql.cj.jdbc.Driver"
-    url: "jdbc:mysql://127.0.0.1:3310/feed_my_sheep?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul"
+    url: "jdbc:mysql://127.0.0.1:3310/feed_my_sheep?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true"
     username: "root"
     password: "feedmysheep"
   jpa:
@@ -17,7 +17,7 @@ spring:
 #        use_sql_comments: true
     hibernate:
       #      db 변경 사항 적용 -> 향후 none
-      ddl-auto: update
+#      ddl-auto: update
 
 jwt:
   secretKey: "Rejoice always, pray continually, give thanks in all circumstances; for this is God’s will for you in Christ Jesus. (1 Thessalonians 5:16-18)"
@@ -26,7 +26,7 @@ jwt:
 
 twilio:
   accountSid: "AC8edd3e64ee51444b1a3ea11d5268edee"
-  authToken: "3120df0191d3bee89b113fb1d0da6aea"
+  authToken: "c63a826d7c5e799748ce4a9e78900a5a"
   fromPhoneNumber: "+17067703741"
 
 verification:

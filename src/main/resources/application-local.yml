@@ -26,7 +26,7 @@ jwt:
 
 twilio:
   accountSid: "AC8edd3e64ee51444b1a3ea11d5268edee"
-  authToken: "3120df0191d3bee89b113fb1d0da6aea"
+  authToken: "c63a826d7c5e799748ce4a9e78900a5a"
   fromPhoneNumber: "+17067703741"
 
 verification:
