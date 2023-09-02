@@ -16,4 +16,15 @@ public class MemberReqDto {
     @NotEmpty(message = "휴대폰 번호가 존재하지 않아요.")
     private String phone;
   }
+
+  @AllArgsConstructor
+  @Getter
+  @Setter
+  public static class checkVerificationCode {
+    @NotEmpty(message = "휴대폰 번호가 존재하지 않아요.")
+    private String phone;
+
+    @NotEmpty(message = "인증번호가 존재하지 않아요.")
+    private String code;
+  }
 }

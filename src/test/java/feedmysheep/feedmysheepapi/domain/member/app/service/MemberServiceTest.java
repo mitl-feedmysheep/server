@@ -3,13 +3,17 @@ package feedmysheep.feedmysheepapi.domain.member.app.service;
 import static org.assertj.core.api.Assertions.*;
 
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
+import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.sendVerificationCode;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
+import feedmysheep.feedmysheepapi.global.response.error.CustomException;
+import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.models.Member;
 import feedmysheep.feedmysheepapi.models.Member.Sex;
 import feedmysheep.feedmysheepapi.models.Verification;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,26 +42,24 @@ class MemberServiceTest {
   private int maxCodeGenNum;
 
   private final String phone;
-  private final MemberReqDto.sendVerificationCode query;
 
   MemberServiceTest () {
     this.phone = "01088831954";
-    this.query = new MemberReqDto.sendVerificationCode(phone);
   }
 
 
   @BeforeEach
   public void setup() {
-    this.query.setPhone(this.phone);
     TwilioService twilioServiceMock = Mockito.mock(TwilioService.class);
     this.memberService = new MemberService(this.memberRepository, this.verificationRepository,
         twilioServiceMock, maxCodeGenNum);
   }
 
   @Test
-  @DisplayName("이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
+  @DisplayName("[sendVerificationCode] 이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
   public void 이미사용중인휴대폰번호() {
     // given
+    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(this.phone);
     Member testMember1 = Member.builder()
         .memberName("테스트멤버1")
         .sex(Sex.M)
@@ -67,17 +69,19 @@ class MemberServiceTest {
         .email("test@test.com")
         .build();
     this.memberRepository.save(testMember1);
+
     // when
-    this.memberService.sendVerificationCode(this.query);
-
     // then
-
+    assertThatThrownBy(() -> this.memberService.sendVerificationCode(query))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(ErrorMessage.PHONE_IN_USE);
   }
 
   @Test
-  @DisplayName("인증코드가 정상적으로 발송되고, 인증코드가 저장되었는지 확인")
+  @DisplayName("[sendVerificationCode] 인증코드가 정상적으로 발송되고, 인증코드가 저장되었는지 확인")
   public void 인증코드정상발송() {
     // given
+    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(this.phone);
 
     // when
     memberService.sendVerificationCode(query);
@@ -89,13 +93,60 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("해당 번호로 인증코드가 5회 이상 생성된 경우, 에러를 뱉는다.")
+  @DisplayName("[sendVerificationCode] 해당 번호로 인증코드가 5회 이상 생성된 경우, 에러를 뱉는다.")
   public void 인증코드5회이상실패() {
     // given
-
-
+    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(this.phone);
+    LocalDate today = LocalDate.now();
+    Verification verificationTest1 = Verification.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .validDate(today)
+        .build();
+    Verification verificationTest2 = Verification.builder()
+        .phone(this.phone)
+        .verificationCode("222222")
+        .validDate(today)
+        .build();
+    Verification verificationTest3 = Verification.builder()
+        .phone(this.phone)
+        .verificationCode("333333")
+        .validDate(today)
+        .build();
+    Verification verificationTest4 = Verification.builder()
+        .phone(this.phone)
+        .verificationCode("444444")
+        .validDate(today)
+        .build();
+    Verification verificationTest5 = Verification.builder()
+        .phone(this.phone)
+        .verificationCode("555555")
+        .validDate(today)
+        .build();
+    List<Verification> verificationList = new ArrayList<>();
+    verificationList.add(verificationTest1);
+    verificationList.add(verificationTest2);
+    verificationList.add(verificationTest3);
+    verificationList.add(verificationTest4);
+    verificationList.add(verificationTest5);
+    this.verificationRepository.saveAll(verificationList);
 
     // when
     // then
+    assertThatThrownBy(() -> this.memberService.sendVerificationCode(query))
+        .isInstanceOf(CustomException.class)
+        .hasMessageContaining(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
   }
+
+  @Test
+  @DisplayName("[checkVerificationCode] 휴대폰번호와 인증번호가 3분이내 존재할 경우")
+  public void ㅇ1() {}
+
+  @Test
+  @DisplayName("[checkVerificationCode] 인증번호가 전송된 휴대폰 번호가 존재하지 않을 경우 / 휴대폰번호와 인증번호가 3분이내 존재하지 않을 경우")
+  public void ㅇ2() {}
+
+  @Test
+  @DisplayName("[checkVerificationCode] 오늘 해당 번호로 실패여부가 5번 이상일 경우 에러")
+  public void ㅇ3() {}
 }

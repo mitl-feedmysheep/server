@@ -74,4 +74,10 @@ public class MemberService {
 
     this.verificationRepository.save(verification);
   }
+
+  public void checkVerificationCode(MemberReqDto.checkVerificationCode query) {
+    String phone = query.getPhone();
+    String code = query.getCode();
+    LocalDate today = LocalDate.now();
+  }
 }

@@ -25,6 +25,11 @@ public class MemberController {
   public void sendVerificationCode(@Valid MemberReqDto.sendVerificationCode query) {
     memberService.sendVerificationCode(query);
   }
+
+  @GetMapping("/phone/check-verification-code")
+  public void checkVerificationCode(@Valid MemberReqDto.checkVerificationCode query) {
+    memberService.checkVerificationCode(query);
+  }
 }
 
 
