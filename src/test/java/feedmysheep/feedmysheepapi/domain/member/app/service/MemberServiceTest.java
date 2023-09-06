@@ -140,13 +140,38 @@ class MemberServiceTest {
 
   @Test
   @DisplayName("[checkVerificationCode] 휴대폰번호와 인증번호가 3분이내 존재할 경우")
-  public void ㅇ1() {}
+  public void 인증번호3분이내성공() {
+    // given
+    LocalDate today = LocalDate.now();
+    Verification verificationTest1 = Verification.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .validDate(today)
+        .build();
+    this.verificationRepository.save(verificationTest1);
+    // when
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone, "111111");
+
+    // then
+    this.memberService.checkVerificationCode(query);
+    this.memberRepository.
+
+
+  }
 
   @Test
   @DisplayName("[checkVerificationCode] 인증번호가 전송된 휴대폰 번호가 존재하지 않을 경우 / 휴대폰번호와 인증번호가 3분이내 존재하지 않을 경우")
-  public void ㅇ2() {}
+  public void ㅇ2() {
+    // when
+    // given
+    // then
+  }
 
   @Test
   @DisplayName("[checkVerificationCode] 오늘 해당 번호로 실패여부가 5번 이상일 경우 에러")
-  public void ㅇ3() {}
+  public void ㅇ3() {
+    // when
+    // given
+    // then
+  }
 }
