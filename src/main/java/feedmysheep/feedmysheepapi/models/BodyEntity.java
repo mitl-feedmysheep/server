@@ -10,7 +10,7 @@ import lombok.Setter;
 @Table(name = "body")
 @Getter
 @Setter
-public class Body extends CreatedUpdated {
+public class BodyEntity extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class Body extends CreatedUpdated {
 
   @ManyToOne
   @JoinColumn(name = "church_id", nullable = false)
-  private Church church;
+  private ChurchEntity church;
 
   @Column(name = "body_name", nullable = false, length = 50, columnDefinition = "varchar(50) COMMENT '바디 이름 (ex. 새청)'")
   private String bodyName;
@@ -46,5 +46,5 @@ public class Body extends CreatedUpdated {
   private String facebookUrl;
 
   @OneToMany(mappedBy = "body")
-  private List<Organ> organList = new ArrayList<>();
+  private List<OrganEntity> organList = new ArrayList<>();
 }

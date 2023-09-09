@@ -6,13 +6,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "word")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Word extends CreatedUpdated {
+public class WordEntity extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +46,7 @@ public class Word extends CreatedUpdated {
   private int verse;
 
   @Builder
-  public Word(String mainScreen, String subScreen, LocalDate displayStartDate, LocalDate displayEndDate, String book, int chapter, int verse, String words) {
+  public WordEntity(String mainScreen, String subScreen, LocalDate displayStartDate, LocalDate displayEndDate, String book, int chapter, int verse, String words) {
     this.mainScreen = mainScreen;
     this.subScreen = subScreen;
     this.displayStartDate = displayStartDate;

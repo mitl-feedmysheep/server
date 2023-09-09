@@ -9,7 +9,7 @@ import lombok.Setter;
 @Table(name = "organ")
 @Getter
 @Setter
-public class Organ extends CreatedUpdated {
+public class OrganEntity extends CreatedUpdated {
 
   @Id
   @Column(name = "organ_id")
@@ -17,11 +17,11 @@ public class Organ extends CreatedUpdated {
 
   @ManyToOne
   @JoinColumn(name = "member_id")
-  private Member member;
+  private MemberEntity member;
 
   @ManyToOne
   @JoinColumn(name = "body_id")
-  private Body body;
+  private BodyEntity body;
 
   @Column(name = "organ_name", length = 50, nullable = false)
   private String organName;

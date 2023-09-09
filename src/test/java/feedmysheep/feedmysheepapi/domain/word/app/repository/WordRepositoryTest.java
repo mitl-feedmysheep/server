@@ -4,7 +4,7 @@ package feedmysheep.feedmysheepapi.domain.word.app.repository;
 import static org.assertj.core.api.Assertions.*;
 
 import feedmysheep.feedmysheepapi.domain.word.app.dto.WordResDto;
-import feedmysheep.feedmysheepapi.models.Word;
+import feedmysheep.feedmysheepapi.models.WordEntity;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +22,7 @@ class WordRepositoryTest {
 
   @BeforeEach
   public void setup() {
-    Word testWord1 = Word.builder()
+    WordEntity testWord1 = WordEntity.builder()
         .mainScreen("testMain1")
         .subScreen("testSub1")
         .displayStartDate(LocalDate.parse("2000-01-01"))
@@ -34,7 +34,7 @@ class WordRepositoryTest {
         .build();
     wordRepository.save(testWord1);
 
-    Word testWord2 = Word.builder()
+    WordEntity testWord2 = WordEntity.builder()
         .mainScreen("testMain2")
         .displayStartDate(LocalDate.parse("2000-01-01"))
         .displayEndDate(LocalDate.parse("2000-01-02"))

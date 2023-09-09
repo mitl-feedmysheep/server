@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends CreatedUpdated {
+public class MemberEntity extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +23,10 @@ public class Member extends CreatedUpdated {
 
   @OneToOne
   @JoinColumn(name = "authorization_id")
-  private Authorization authorization;
+  private AuthorizationEntity authorization;
 
   @OneToMany(mappedBy = "member")
-  private List<ChurchMemberMap> churchMemberList = new ArrayList<>();
+  private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
 
   @Column(name = "member_name", nullable = false, length = 10, columnDefinition = "varchar(10) COMMENT '멤버 이름'")
   private String memberName;
@@ -63,7 +62,7 @@ public class Member extends CreatedUpdated {
   }
 
   @Builder
-  public Member(String memberName, Sex sex, LocalDate birthday, String phone, String address, String email) {
+  public MemberEntity(String memberName, Sex sex, LocalDate birthday, String phone, String address, String email) {
     this.memberName = memberName;
     this.sex = sex;
     this.birthday = birthday;

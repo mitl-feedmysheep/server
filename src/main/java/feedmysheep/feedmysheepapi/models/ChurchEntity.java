@@ -10,7 +10,7 @@ import lombok.Setter;
 @Table(name = "church")
 @Getter
 @Setter
-public class Church extends CreatedUpdated {
+public class ChurchEntity extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +39,8 @@ public class Church extends CreatedUpdated {
   private boolean isValid = false;
 
   @OneToMany(mappedBy = "church")
-  private List<Body> bodyList = new ArrayList<>();
+  private List<BodyEntity> bodyList = new ArrayList<>();
 
   @OneToMany(mappedBy = "church")
-  private List<ChurchMemberMap> churchMemberList = new ArrayList<>();
+  private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
 }

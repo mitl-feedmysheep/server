@@ -9,7 +9,7 @@ import lombok.Setter;
 @Table(name = "church_member_map")
 @Getter
 @Setter
-public class ChurchMemberMap extends CreatedUpdated {
+public class ChurchMemberMapEntity extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,11 +18,11 @@ public class ChurchMemberMap extends CreatedUpdated {
 
   @ManyToOne
   @JoinColumn(name = "church_id", referencedColumnName = "church_id")
-  private Church church;
+  private ChurchEntity church;
 
   @ManyToOne
   @JoinColumn(name = "member_id", referencedColumnName = "member_id")
-  private Member member;
+  private MemberEntity member;
 
   @Column(name = "is_valid")
   private boolean isValid = true;

@@ -1,7 +1,6 @@
 package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Table(name = "verification_fail_log")
 @Getter
 @Setter
-public class VerificationFailLog extends CreatedUpdated {
+public class VerificationFailLogEntity extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

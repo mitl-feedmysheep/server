@@ -2,9 +2,8 @@ package feedmysheep.feedmysheepapi.domain.member.app.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
-import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
-import feedmysheep.feedmysheepapi.models.Member;
-import feedmysheep.feedmysheepapi.models.Member.Sex;
+import feedmysheep.feedmysheepapi.models.MemberEntity;
+import feedmysheep.feedmysheepapi.models.MemberEntity.Sex;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +21,7 @@ class MemberRepositoryTest {
 
   @BeforeEach
   public void setup() {
-    Member testMember1 =  Member.builder()
+    MemberEntity testMember1 =  MemberEntity.builder()
         .memberName("testMember")
         .sex(Sex.M)
         .birthday(LocalDate.parse("2000-01-01"))

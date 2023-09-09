@@ -6,7 +6,7 @@ import feedmysheep.feedmysheepapi.domain.verification.app.repository.Verificatio
 import feedmysheep.feedmysheepapi.global.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
-import feedmysheep.feedmysheepapi.models.Verification;
+import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import java.time.LocalDate;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ public class MemberService {
     }
 
     // 5. 인증코드 DB 저장
-    Verification verification = Verification.builder()
+    VerificationEntity verification = VerificationEntity.builder()
       .phone(phone)
       .verificationCode(verificationCode)
       .validDate(today)

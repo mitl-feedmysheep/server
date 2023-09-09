@@ -2,11 +2,10 @@ package feedmysheep.feedmysheepapi.domain.verification.app.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
-import feedmysheep.feedmysheepapi.models.Verification;
+import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +27,17 @@ class VerificationRepositoryTest {
   @DisplayName("휴대폰번호와 인증번호 유효날짜를 통해 횟수 조회")
   public void countByPhoneAndValidDate() {
     // given
-    Verification test1 = Verification.builder()
+    VerificationEntity test1 = VerificationEntity.builder()
         .phone("01011112222")
         .verificationCode("111111")
         .validDate(yesterday)
         .build();
-    Verification test2 = Verification.builder()
+    VerificationEntity test2 = VerificationEntity.builder()
         .phone("01011112222")
         .verificationCode("222222")
         .validDate(yesterday)
         .build();
-    Verification test3 = Verification.builder()
+    VerificationEntity test3 = VerificationEntity.builder()
         .phone("01011112222")
         .verificationCode("333333")
         .validDate(today)
@@ -61,13 +60,13 @@ class VerificationRepositoryTest {
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime fourMinAgo = now.minusMinutes(4);
     LocalDateTime threeMinAgo = now.minusMinutes(3);
-    Verification test1 = Verification.builder()
+    VerificationEntity test1 = VerificationEntity.builder()
         .phone("01011112222")
         .verificationCode("111111")
         .validDate(yesterday)
         .build();
     test1.setCreatedAt(fourMinAgo);
-    Verification test2 = Verification.builder()
+    VerificationEntity test2 = VerificationEntity.builder()
         .phone("01011112222")
         .verificationCode("111111")
         .validDate(today)
@@ -76,8 +75,8 @@ class VerificationRepositoryTest {
     verificationRepository.save(test1);
     verificationRepository.save(test2);
     // when
-    Verification validVerification = this.verificationRepository.findByPhoneAndVerificationCodeAndCreatedAtBetween("01011112222", "111111", threeMinAgo, now);
-    List<Verification> verificationList = this.verificationRepository.findAll();
+    VerificationEntity validVerification = this.verificationRepository.findByPhoneAndVerificationCodeAndCreatedAtBetween("01011112222", "111111", threeMinAgo, now);
+    List<VerificationEntity> verificationList = this.verificationRepository.findAll();
     // then
     assertThat(validVerification.getVerificationCode()).isEqualTo("111111");
     assertThat(validVerification.getValidDate()).isEqualTo(today);

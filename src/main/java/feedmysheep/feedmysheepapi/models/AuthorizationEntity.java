@@ -1,7 +1,6 @@
 package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
-import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,7 @@ import lombok.Setter;
 @Table(name = "authorization")
 @Getter
 @Setter
-public class Authorization extends CreatedUpdated {
+public class AuthorizationEntity extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,5 +22,5 @@ public class Authorization extends CreatedUpdated {
   private String levelName;
 
   @OneToOne(mappedBy = "authorization")
-  private Member member;
+  private MemberEntity member;
 }
