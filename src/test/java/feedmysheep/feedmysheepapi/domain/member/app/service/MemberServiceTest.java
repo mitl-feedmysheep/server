@@ -143,18 +143,19 @@ class MemberServiceTest {
   public void 인증번호3분이내성공() {
     // given
     LocalDate today = LocalDate.now();
+    String verificationCode = "111111";
     Verification verificationTest1 = Verification.builder()
         .phone(this.phone)
-        .verificationCode("111111")
+        .verificationCode(verificationCode)
         .validDate(today)
         .build();
     this.verificationRepository.save(verificationTest1);
     // when
-    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone, "111111");
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone, verificationCode);
 
     // then
     this.memberService.checkVerificationCode(query);
-    this.memberRepository.
+
 
 
   }

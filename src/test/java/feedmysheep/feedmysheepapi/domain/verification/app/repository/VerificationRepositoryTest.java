@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 
 import feedmysheep.feedmysheepapi.models.Verification;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,8 +24,10 @@ class VerificationRepositoryTest {
   public final LocalDate today = LocalDate.now();
   public final LocalDate yesterday = today.minusDays(1);
 
-  @BeforeEach
-  public void setup() {
+  @Test
+  @DisplayName("휴대폰번호와 인증번호 유효날짜를 통해 횟수 조회")
+  public void countByPhoneAndValidDate() {
+    // given
     Verification test1 = Verification.builder()
         .phone("01011112222")
         .verificationCode("111111")
@@ -42,14 +46,41 @@ class VerificationRepositoryTest {
     verificationRepository.save(test1);
     verificationRepository.save(test2);
     verificationRepository.save(test3);
+    // when
+    int yesterdayCount = verificationRepository.countByPhoneAndValidDate("01011112222", yesterday);
+    int todayCount = verificationRepository.countByPhoneAndValidDate("01011112222", today);
+    // then
+    assertThat(yesterdayCount).isEqualTo(2);
+    assertThat(todayCount).isEqualTo(1);
   }
 
   @Test
-  @DisplayName("휴대폰번호와 인증번호 유효날짜를 통해 횟수 조회")
-  public void countByPhoneAndValidDate() {
-    int yesterdayCount = verificationRepository.countByPhoneAndValidDate("01011112222", yesterday);
-    int todayCount = verificationRepository.countByPhoneAndValidDate("01011112222", today);
-    assertThat(yesterdayCount).isEqualTo(2);
-    assertThat(todayCount).isEqualTo(1);
+  @DisplayName("휴대폰번호와 인증번호가 3분이내에 존재하는지 조회")
+  public void findByPhoneAndVerificationCodeAndCreatedAtBetween() {
+    // given
+    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime fourMinAgo = now.minusMinutes(4);
+    LocalDateTime threeMinAgo = now.minusMinutes(3);
+    Verification test1 = Verification.builder()
+        .phone("01011112222")
+        .verificationCode("111111")
+        .validDate(yesterday)
+        .build();
+    test1.setCreatedAt(fourMinAgo);
+    Verification test2 = Verification.builder()
+        .phone("01011112222")
+        .verificationCode("111111")
+        .validDate(today)
+        .build();
+    test2.setCreatedAt(now);
+    verificationRepository.save(test1);
+    verificationRepository.save(test2);
+    // when
+    Verification validVerification = this.verificationRepository.findByPhoneAndVerificationCodeAndCreatedAtBetween("01011112222", "111111", threeMinAgo, now);
+    List<Verification> verificationList = this.verificationRepository.findAll();
+    // then
+    assertThat(validVerification.getVerificationCode()).isEqualTo("111111");
+    assertThat(validVerification.getValidDate()).isEqualTo(today);
+    assertThat(verificationList.size()).isEqualTo(2);
   }
 }
