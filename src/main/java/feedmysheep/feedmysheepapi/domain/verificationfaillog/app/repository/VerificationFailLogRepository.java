@@ -7,13 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VerificationFailLogRepository extends JpaRepository<VerificationFailLogEntity, Long> {
-  int countByPhoneAndCreatedAtBetween(String phone, LocalDateTime todayStart, LocalDateTime todayEnd);
+  int countByPhoneAndIsFailedAndCreatedAtBetween(String phone, boolean isFailed, LocalDateTime todayStart, LocalDateTime todayEnd);
 }
-
-
-
-//@Repository
-//public interface VerificationRepository extends JpaRepository<Verification, Long> {
-//  int countByPhoneAndValidDate(String phone, LocalDate validDate);
-//  Verification findByPhoneAndVerificationCodeAndCreatedAtBetween(String phone, String verificationCode, LocalDateTime threeMinBefore, LocalDateTime now);
-//}

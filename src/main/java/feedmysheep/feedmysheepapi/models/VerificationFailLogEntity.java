@@ -1,13 +1,16 @@
 package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "verification_fail_log")
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class VerificationFailLogEntity extends CreatedUpdated {
 
   @Id
@@ -18,9 +21,17 @@ public class VerificationFailLogEntity extends CreatedUpdated {
   @Column(name = "phone", nullable = false, length = 20)
   private String phone;
 
-  @Column(name = "verification_code", nullable = false, length = 4)
+  // 유저입력 로그용
+  @Column(name = "verification_code", nullable = false, length = 6)
   private String verificationCode;
 
+  @Setter
   @Column(name = "is_failed", nullable = false)
   private boolean isFailed = true;
+
+  @Builder
+  public VerificationFailLogEntity(String phone, String verificationCode) {
+    this.phone = phone;
+    this.verificationCode = verificationCode;
+  }
 }

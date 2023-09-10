@@ -2,13 +2,15 @@ package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "church_member_map")
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChurchMemberMapEntity extends CreatedUpdated {
 
   @Id

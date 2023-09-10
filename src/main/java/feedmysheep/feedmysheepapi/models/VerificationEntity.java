@@ -36,9 +36,4 @@ public class VerificationEntity extends CreatedUpdated {
     this.verificationCode = verificationCode;
     this.validDate = validDate;
   }
-
-//  @Override
-//  public void setCreatedAt(LocalDateTime createdAt) {
-//    super.setCreatedAt(createdAt);
-//  }
 }

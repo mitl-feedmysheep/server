@@ -1,13 +1,15 @@
 package feedmysheep.feedmysheepapi.models;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "reason")
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ReasonEntity extends CreatedUpdated {
 
   @Id
