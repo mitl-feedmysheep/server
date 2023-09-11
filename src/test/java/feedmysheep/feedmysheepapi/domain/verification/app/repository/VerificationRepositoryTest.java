@@ -75,7 +75,7 @@ class VerificationRepositoryTest {
     verificationRepository.save(test1);
     verificationRepository.save(test2);
     // when
-    VerificationEntity validVerification = this.verificationRepository.findByPhoneAndVerificationCodeAndCreatedAtBetween("01011112222", "111111", threeMinAgo, now);
+    VerificationEntity validVerification = this.verificationRepository.findByPhoneAndVerificationCode("01011112222", "111111");
     List<VerificationEntity> verificationList = this.verificationRepository.findAll();
     // then
     assertThat(validVerification.getVerificationCode()).isEqualTo("111111");

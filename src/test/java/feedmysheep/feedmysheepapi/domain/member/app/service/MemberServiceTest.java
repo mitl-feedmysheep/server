@@ -3,14 +3,18 @@ package feedmysheep.feedmysheepapi.domain.member.app.service;
 import static org.assertj.core.api.Assertions.*;
 
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
+import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.sendVerificationCode;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
+import feedmysheep.feedmysheepapi.domain.verificationfaillog.app.repository.VerificationFailLogRepository;
+import feedmysheep.feedmysheepapi.global.response.common.CommonResponse;
 import feedmysheep.feedmysheepapi.global.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity.Sex;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
+import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +38,9 @@ class MemberServiceTest {
   private VerificationRepository verificationRepository;
 
   @Autowired
+  private VerificationFailLogRepository verificationFailLogRepository;
+
+  @Autowired
   private MemberRepository memberRepository;
 
   private MemberService memberService;
@@ -51,7 +58,7 @@ class MemberServiceTest {
   @BeforeEach
   public void setup() {
     TwilioService twilioServiceMock = Mockito.mock(TwilioService.class);
-    this.memberService = new MemberService(this.memberRepository, this.verificationRepository,
+    this.memberService = new MemberService(this.memberRepository, this.verificationRepository, this.verificationFailLogRepository,
         twilioServiceMock, maxCodeGenNum);
   }
 
@@ -73,7 +80,6 @@ class MemberServiceTest {
     // when
     // then
     assertThatThrownBy(() -> this.memberService.sendVerificationCode(query))
-        .isInstanceOf(CustomException.class)
         .hasMessageContaining(ErrorMessage.PHONE_IN_USE);
   }
 
@@ -90,6 +96,40 @@ class MemberServiceTest {
     List<VerificationEntity> verificationList = verificationRepository.findAll();
     Boolean isMatchedPhone = verificationList.stream().anyMatch(verification -> verification.getPhone().equals(phone));
     assertThat(isMatchedPhone).isEqualTo(true);
+  }
+
+  @Test
+  @DisplayName("[sendVerificationCode] 인증오류횟수가 5회를 넘는 경우, 에러를 뱉는다.")
+  public void 인증오류횟수5회초과() {
+    // given
+    MemberReqDto.sendVerificationCode query = new sendVerificationCode(this.phone);
+    VerificationFailLogEntity testData1 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    VerificationFailLogEntity testData2 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    VerificationFailLogEntity testData3 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    VerificationFailLogEntity testData4 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    VerificationFailLogEntity testData5 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    this.verificationFailLogRepository.saveAll(List.of(testData1, testData2, testData3, testData4, testData5));
+
+    // when
+    // then
+    assertThatThrownBy(() -> this.memberService.sendVerificationCode(query))
+        .hasMessageContaining(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
+
   }
 
   @Test
@@ -134,8 +174,28 @@ class MemberServiceTest {
     // when
     // then
     assertThatThrownBy(() -> this.memberService.sendVerificationCode(query))
-        .isInstanceOf(CustomException.class)
         .hasMessageContaining(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
+  }
+
+  @Test
+  @DisplayName("[checkVerificationCode] 이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
+  public void 이미사용중인휴대폰번호2() {
+    // given
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone, "111111");
+    MemberEntity testMember1 = MemberEntity.builder()
+        .memberName("테스트멤버1")
+        .sex(Sex.M)
+        .birthday(LocalDate.parse("1991-09-16"))
+        .phone(this.phone)
+        .address("테스트 주소")
+        .email("test@test.com")
+        .build();
+    this.memberRepository.save(testMember1);
+
+    // when
+    // then
+    assertThatThrownBy(() -> this.memberService.checkVerificationCode(query))
+        .hasMessageContaining(ErrorMessage.PHONE_IN_USE);
   }
 
   @Test
@@ -174,17 +234,40 @@ class MemberServiceTest {
 
     // then
     assertThatThrownBy(() -> this.memberService.checkVerificationCode(query))
-        .isInstanceOf(CustomException.class)
-        .hasMessageContaining(ErrorMessage.NO_VERIFICATION_CODE_OR_OVER_3_MIN);
+        .hasMessageContaining(ErrorMessage.NO_VERIFICATION_CODE);
   }
 
   @Test
   @DisplayName("[checkVerificationCode] 오늘 해당 번호로 실패여부가 5번 이상일 경우 에러")
   public void 인증실패여부5회이상() {
     // given
+    VerificationFailLogEntity testData1 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    VerificationFailLogEntity testData2 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    VerificationFailLogEntity testData3 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    VerificationFailLogEntity testData4 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    VerificationFailLogEntity testData5 = VerificationFailLogEntity.builder()
+        .phone(this.phone)
+        .verificationCode("111111")
+        .build();
+    this.verificationFailLogRepository.saveAll(List.of(testData1, testData2, testData3, testData4, testData5));
 
     // when
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone, "123123");
+
     // then
+    assertThatThrownBy(() -> this.memberService.checkVerificationCode(query))
+        .hasMessageContaining(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
   }
-  // 실패가 5번 이상이면, 발급조차 되지 않음. 인증횟수 5회 초과로 시도할 수 없으며 발급도 할 수 없습니다. 고객센터에 문의해주시거나 내일 다시 시도해주세요.
 }

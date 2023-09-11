@@ -24,9 +24,6 @@ public class VerificationEntity extends CreatedUpdated {
   @Column(name = "verification_code", nullable = false, length = 6)
   private String verificationCode;
 
-  @Column(name = "is_valid", nullable = false)
-  private boolean isValid = true;
-
   @Column(name = "valid_date", nullable = false)
   private LocalDate validDate;
 
