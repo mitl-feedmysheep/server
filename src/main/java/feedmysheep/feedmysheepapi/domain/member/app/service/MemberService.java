@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
+import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.domain.verificationfaillog.app.repository.VerificationFailLogRepository;
@@ -26,6 +27,7 @@ public class MemberService {
   private final VerificationFailLogRepository verificationFailLogRepository;
   private final TwilioService twilioService;
   private final int maxCodeGenNum;
+  private final int maxCodeTryNum;
 
   @Autowired
   public MemberService(
@@ -33,13 +35,15 @@ public class MemberService {
       VerificationRepository verificationRepository,
       VerificationFailLogRepository verificationFailLogRepository,
       TwilioService twilioService,
-      @Value("${verification.maxCodeGenNum}") int maxCodeGenNum
+      @Value("${verification.maxCodeGenNum}") int maxCodeGenNum,
+      @Value("${verification.maxCodeTryNum}") int maxCodeTryNum
   ) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
     this.verificationFailLogRepository = verificationFailLogRepository;
     this.twilioService = twilioService;
     this.maxCodeGenNum = maxCodeGenNum;
+    this.maxCodeTryNum = maxCodeTryNum;
   };
 
   public void sendVerificationCode(MemberReqDto.sendVerificationCode query) {
@@ -71,7 +75,7 @@ public class MemberService {
     String phoneWithCountry = "+" + "82" + phone;
     String messageBody = "[피마쉽(FeedMySheep)] 인증번호는 " + verificationCode + "입니다.";
     try {
-      twilioService.sendSMS(phoneWithCountry, messageBody);
+      this.twilioService.sendSMS(phoneWithCountry, messageBody);
     } catch (Exception e) {
       System.out.println(e);
       // TODO 슬랙 메시지
@@ -85,8 +89,7 @@ public class MemberService {
       .phone(phone)
       .verificationCode(verificationCode)
       .validDate(today)
-      .build()
-      ;
+      .build();
 
     this.verificationRepository.save(verification);
   }
@@ -103,7 +106,7 @@ public class MemberService {
 
     // 2. 금일 인증실패 5회 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone, startOfToday, endOfToday);
-    if (failCount >= 5) throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
+    if (failCount >= maxCodeTryNum) throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
 
     // 3. 휴대폰 번호와 인증코드 여부 체크
     Optional<VerificationEntity> optionalVerificationEntity = this.verificationRepository.findByPhoneAndVerificationCode(phone, code);
@@ -119,5 +122,19 @@ public class MemberService {
       this.verificationFailLogRepository.save(failLog);
       throw new CustomException(ErrorMessage.OVER_3_MIN_THEN_EXPIRED);
     }
+  }
+
+  public void checkEmailDuplication(MemberReqDto.checkEmailDuplication query) {
+    String email = query.getEmail();
+
+    boolean isDuplicated = this.memberRepository.existsMemberByEmail(email);
+    if (isDuplicated) throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+  }
+
+  public MemberResDto.signUp signUp(MemberReqDto.signUp body) {
+    // 1. 비밀번호 암호화
+    // 2. 멤버 저장
+    // 3. access / refresh 토큰 만들기
+    // 4. refresh 토큰 저장
   }
 }

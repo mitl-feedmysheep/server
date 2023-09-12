@@ -7,8 +7,6 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.sendVerific
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.domain.verificationfaillog.app.repository.VerificationFailLogRepository;
-import feedmysheep.feedmysheepapi.global.response.common.CommonResponse;
-import feedmysheep.feedmysheepapi.global.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
@@ -34,6 +32,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 @EnableConfigurationProperties
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class MemberServiceTest {
+
   @Autowired
   private VerificationRepository verificationRepository;
 
@@ -48,9 +47,12 @@ class MemberServiceTest {
   @Value("${verification.maxCodeGenNum}")
   private int maxCodeGenNum;
 
+  @Value("${verification.maxCodeTryNum}")
+  private int maxCodeTryNum;
+
   private final String phone;
 
-  MemberServiceTest () {
+  MemberServiceTest() {
     this.phone = "01088831954";
   }
 
@@ -58,8 +60,14 @@ class MemberServiceTest {
   @BeforeEach
   public void setup() {
     TwilioService twilioServiceMock = Mockito.mock(TwilioService.class);
-    this.memberService = new MemberService(this.memberRepository, this.verificationRepository, this.verificationFailLogRepository,
-        twilioServiceMock, maxCodeGenNum);
+    this.memberService = new MemberService(
+        this.memberRepository,
+        this.verificationRepository,
+        this.verificationFailLogRepository,
+        twilioServiceMock,
+        maxCodeGenNum,
+        maxCodeTryNum
+    );
   }
 
   @Test
@@ -94,7 +102,8 @@ class MemberServiceTest {
 
     //then
     List<VerificationEntity> verificationList = verificationRepository.findAll();
-    Boolean isMatchedPhone = verificationList.stream().anyMatch(verification -> verification.getPhone().equals(phone));
+    Boolean isMatchedPhone = verificationList.stream()
+        .anyMatch(verification -> verification.getPhone().equals(phone));
     assertThat(isMatchedPhone).isEqualTo(true);
   }
 
@@ -123,7 +132,8 @@ class MemberServiceTest {
         .phone(this.phone)
         .verificationCode("111111")
         .build();
-    this.verificationFailLogRepository.saveAll(List.of(testData1, testData2, testData3, testData4, testData5));
+    this.verificationFailLogRepository.saveAll(
+        List.of(testData1, testData2, testData3, testData4, testData5));
 
     // when
     // then
@@ -181,7 +191,8 @@ class MemberServiceTest {
   @DisplayName("[checkVerificationCode] 이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
   public void 이미사용중인휴대폰번호2() {
     // given
-    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone, "111111");
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone,
+        "111111");
     MemberEntity testMember1 = MemberEntity.builder()
         .memberName("테스트멤버1")
         .sex(Sex.M)
@@ -216,7 +227,8 @@ class MemberServiceTest {
     this.verificationRepository.save(verificationTest1);
 
     // when
-    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone, verificationCode);
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone,
+        verificationCode);
     this.memberService.checkVerificationCode(query);
 
     // then
@@ -230,7 +242,8 @@ class MemberServiceTest {
     String verificationCode = "111111";
 
     // when
-    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone, verificationCode);
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone,
+        verificationCode);
 
     // then
     assertThatThrownBy(() -> this.memberService.checkVerificationCode(query))
@@ -261,13 +274,68 @@ class MemberServiceTest {
         .phone(this.phone)
         .verificationCode("111111")
         .build();
-    this.verificationFailLogRepository.saveAll(List.of(testData1, testData2, testData3, testData4, testData5));
+    this.verificationFailLogRepository.saveAll(
+        List.of(testData1, testData2, testData3, testData4, testData5));
 
     // when
-    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone, "123123");
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone,
+        "123123");
 
     // then
     assertThatThrownBy(() -> this.memberService.checkVerificationCode(query))
         .hasMessageContaining(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
+  }
+
+  @Test
+  @DisplayName("[checkEmailDuplication] 이메일 중복 여부 확인 - 중복O")
+  public void 이메일중복O() {
+    // given
+    String testEmail = "test@test.com";
+    MemberReqDto.checkEmailDuplication query = new MemberReqDto.checkEmailDuplication(testEmail);
+    MemberEntity testMember1 = MemberEntity.builder()
+        .memberName("테스트멤버1")
+        .sex(Sex.M)
+        .birthday(LocalDate.parse("1991-09-16"))
+        .phone(this.phone)
+        .address("테스트 주소")
+        .email(testEmail)
+        .build();
+    this.memberRepository.save(testMember1);
+    // when
+    // then
+    assertThatThrownBy(() -> this.memberService.checkEmailDuplication(query)).hasMessageContaining(ErrorMessage.EMAIL_DUPLICATED);
+  }
+
+  @Test
+  @DisplayName("[checkEmailDuplication] 이메일 중복 여부 확인 - 중복X")
+  public void 이메일중복X() {
+    // given
+    MemberReqDto.checkEmailDuplication query = new MemberReqDto.checkEmailDuplication("test@test.com");
+    // when
+    this.memberService.checkEmailDuplication(query);
+    // then
+    // nothing happens
+  }
+
+  @Test
+  @DisplayName("[checkEmailDuplication] 이메일 중복 여부 확인 - 중복X (비활성화된 유저인 경우)")
+  public void 이메일중복X2() {
+    // given
+    String testEmail = "test@test.com";
+    MemberReqDto.checkEmailDuplication query = new MemberReqDto.checkEmailDuplication(testEmail);
+    MemberEntity testMember1 = MemberEntity.builder()
+        .memberName("테스트멤버1")
+        .sex(Sex.M)
+        .birthday(LocalDate.parse("1991-09-16"))
+        .phone(this.phone)
+        .address("테스트 주소")
+        .email(testEmail)
+        .build();
+    testMember1.setActive(false);
+    this.memberRepository.save(testMember1);
+    // when
+    this.memberService.checkEmailDuplication(query);
+    // then
+    // nothing happens
   }
 }

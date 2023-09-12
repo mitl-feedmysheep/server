@@ -29,21 +29,34 @@ class MemberRepositoryTest {
         .address("Test address does not need much")
         .email("random@random.com")
         .build();
-    memberRepository.save(testMember1);
+    this.memberRepository.save(testMember1);
   }
 
   @Test
   @DisplayName("휴대폰 중복 멤버 여부 확인 - 중복O")
   public void checkPhoneDuplication1() {
-    Boolean isExistingPhone = memberRepository.existsMemberByPhone("01011112222");
+    boolean isExistingPhone = this.memberRepository.existsMemberByPhone("01011112222");
     assertThat(isExistingPhone).isEqualTo(true);
   }
 
   @Test
   @DisplayName("휴대폰 중복 멤버 여부 확인 - 중복X")
   public void checkPhoneDuplication2() {
-    Boolean isExistingPhone = memberRepository.existsMemberByPhone("01022223333");
+    boolean isExistingPhone = this.memberRepository.existsMemberByPhone("01022223333");
     assertThat(isExistingPhone).isEqualTo(false);
   }
 
+  @Test
+  @DisplayName("이메일 중복 멤버 여부 확인 - 중복O")
+  public void existsMemberByEmail1() {
+    boolean isExistingEmail = this.memberRepository.existsMemberByEmail("random@random.com");
+    assertThat(isExistingEmail).isEqualTo(true);
+  }
+
+  @Test
+  @DisplayName("이메일 중복 멤버 여부 확인 - 중복X")
+  public void existsMemberByEmail2() {
+    boolean isExistingEmail = this.memberRepository.existsMemberByEmail("r@random.com");
+    assertThat(isExistingEmail).isEqualTo(false);
+  }
 }

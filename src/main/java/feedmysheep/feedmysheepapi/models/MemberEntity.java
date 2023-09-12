@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "member")
@@ -28,13 +29,16 @@ public class MemberEntity extends CreatedUpdated {
   @OneToMany(mappedBy = "member")
   private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
 
+  @Setter
+  @Column(name = "is_active", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효 계정 여부'")
+  private boolean isActive = true;
+
   @Column(name = "member_name", nullable = false, length = 10, columnDefinition = "varchar(10) COMMENT '멤버 이름'")
   private String memberName;
 
   @Column(name = "sex", nullable = false, length = 5, columnDefinition = "varchar(1) COMMENT '성별 (M / F)'")
   @Enumerated(EnumType.STRING)
   private Sex sex;
-//  private String sex;
 
   @Column(name = "birthday", nullable = false, columnDefinition = "date COMMENT '멤버 생년월일'")
   private LocalDate birthday;
@@ -54,6 +58,9 @@ public class MemberEntity extends CreatedUpdated {
   @Column(name = "email", nullable = false, length = 100, columnDefinition = "varchar(100) COMMENT '멤버 로그인 이메일'")
   private String email;
 
+  @Column(name = "password", nullable = false, length = 100, columnDefinition = "varchar(100) COMMENT '멤버 해싱된 비밀번호'")
+  private String password;
+
   @Column(name = "registered_at", columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP COMMENT '멤버 가입일시'")
   private LocalDateTime registeredAt;
 
@@ -62,12 +69,13 @@ public class MemberEntity extends CreatedUpdated {
   }
 
   @Builder
-  public MemberEntity(String memberName, Sex sex, LocalDate birthday, String phone, String address, String email) {
+  public MemberEntity(String memberName, Sex sex, LocalDate birthday, String phone, String address, String email, String password) {
     this.memberName = memberName;
     this.sex = sex;
     this.birthday = birthday;
     this.phone = phone;
     this.address = address;
     this.email = email;
+    this.password = password;
   }
 }
