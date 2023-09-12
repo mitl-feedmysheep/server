@@ -8,6 +8,7 @@ import feedmysheep.feedmysheepapi.global.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
+import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -93,7 +94,6 @@ public class MemberService {
   public void checkVerificationCode(MemberReqDto.checkVerificationCode query) {
     String phone = query.getPhone();
     String code = query.getCode();
-    LocalDate today = LocalDate.now();
     LocalDateTime startOfToday = LocalDate.now().atTime(LocalTime.MIN);
     LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
 
@@ -101,21 +101,23 @@ public class MemberService {
     boolean isDuplicated = this.memberRepository.existsMemberByPhone(phone);
     if (isDuplicated) throw new CustomException(ErrorMessage.PHONE_IN_USE);
 
-    // 2. FailLog 5회 여부 체크
+    // 2. 금일 인증실패 5회 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone, startOfToday, endOfToday);
     if (failCount >= 5) throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
 
-    // 3. 있나보고
-    Optional<VerificationEntity> verification = Optional.ofNullable(
-        this.verificationRepository.findByPhoneAndVerificationCode(phone, code));
-    if (verification.isEmpty()) throw new CustomException(ErrorMessage.NO_VERIFICATION_CODE);
-    LocalDateTime codeCreatedAt = verification.getCreatedAt(); // TODO 이거 어떻게 처리할지 생각해보기..
-    LocalDateTime threeMinLater = codeCreatedAt.plusMinutes(3);
+    // 3. 휴대폰 번호와 인증코드 여부 체크
+    Optional<VerificationEntity> optionalVerificationEntity = this.verificationRepository.findByPhoneAndVerificationCode(phone, code);
+    VerificationEntity verification = optionalVerificationEntity.orElseThrow(() -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE));
     LocalDateTime now = LocalDateTime.now();
-    if (now.isAfter(threeMinLater)) throw new CustomException(ErrorMessage.OVER_3_MIN_THEN_EXPIRED);
-
-    // 4. verification 없으면 faillog저장 후 다시 시도 요청
-    // 5. verification 있으면 isUsed = true 변경
-
+    LocalDateTime threeMinLater = verification.getCreatedAt().plusMinutes(3);
+    // - 존재하지 않는다면, 인증실패 저장 후 재시도 요청
+    if (now.isAfter(threeMinLater)) {
+      VerificationFailLogEntity failLog = VerificationFailLogEntity.builder()
+          .phone(phone)
+          .verificationCode(code)
+          .build();
+      this.verificationFailLogRepository.save(failLog);
+      throw new CustomException(ErrorMessage.OVER_3_MIN_THEN_EXPIRED);
+    }
   }
 }

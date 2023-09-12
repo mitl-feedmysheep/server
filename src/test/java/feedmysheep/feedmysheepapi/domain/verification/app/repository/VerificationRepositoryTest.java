@@ -2,10 +2,13 @@ package feedmysheep.feedmysheepapi.domain.verification.app.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
+import feedmysheep.feedmysheepapi.global.response.error.CustomException;
+import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +58,7 @@ class VerificationRepositoryTest {
 
   @Test
   @DisplayName("휴대폰번호와 인증번호가 3분이내에 존재하는지 조회")
-  public void findByPhoneAndVerificationCodeAndCreatedAtBetween() {
+  public void findByPhoneAndVerificationCode() {
     // given
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime fourMinAgo = now.minusMinutes(4);
@@ -68,18 +71,24 @@ class VerificationRepositoryTest {
     test1.setCreatedAt(fourMinAgo);
     VerificationEntity test2 = VerificationEntity.builder()
         .phone("01011112222")
-        .verificationCode("111111")
+        .verificationCode("111112")
         .validDate(today)
         .build();
     test2.setCreatedAt(now);
     verificationRepository.save(test1);
     verificationRepository.save(test2);
     // when
-    VerificationEntity validVerification = this.verificationRepository.findByPhoneAndVerificationCode("01011112222", "111111");
+    Optional<VerificationEntity> optionalVerificationEntity1 = this.verificationRepository.findByPhoneAndVerificationCode("01011112222", "111111");
+    Optional<VerificationEntity> optionalVerificationEntity2 = this.verificationRepository.findByPhoneAndVerificationCode("01011112222", "222222");
+    VerificationEntity validVerification = optionalVerificationEntity1.orElseThrow(() -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE));
+
     List<VerificationEntity> verificationList = this.verificationRepository.findAll();
     // then
     assertThat(validVerification.getVerificationCode()).isEqualTo("111111");
-    assertThat(validVerification.getValidDate()).isEqualTo(today);
+    assertThat(validVerification.getValidDate()).isEqualTo(yesterday);
+
+    assertThatThrownBy(() -> optionalVerificationEntity2.orElseThrow(() -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE))).hasMessageContaining(ErrorMessage.NO_VERIFICATION_CODE);
+
     assertThat(verificationList.size()).isEqualTo(2);
   }
 }
