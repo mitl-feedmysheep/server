@@ -2,8 +2,8 @@ package feedmysheep.feedmysheepapi.domain.verification.app.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
-import feedmysheep.feedmysheepapi.global.response.error.CustomException;
-import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
+import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
+import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package feedmysheep.feedmysheepapi.global.response.error;
+package feedmysheep.feedmysheepapi.global.utils.response.error;
 
 public class ErrorMessage {
   private static final String CS = " 고객센터에 문의해주세요.";
@@ -9,4 +9,5 @@ public class ErrorMessage {
   public static final String OVER_3_MIN_THEN_EXPIRED = "인증번호가 유효한 3분이 지났어요. 다시 발급해주세요.";
   public static final String EMAIL_DUPLICATED = "입력하신 이메일은 현재 사용중이에요. 다른 이메일을 사용해주세요.";
   public static final String INVALID_JWT = "문제가 발생했어요. 다시 로그인 해주세요.";
+  public static final String JWT_EXPIRED = "토큰이 만료되었어요.";
 }

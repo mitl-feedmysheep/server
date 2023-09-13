@@ -1,7 +1,8 @@
 package feedmysheep.feedmysheepapi.global.aop;
 
-import feedmysheep.feedmysheepapi.global.response.error.CustomException;
-import feedmysheep.feedmysheepapi.global.response.error.ErrorEntity;
+import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
+import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorEntity;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +17,11 @@ public class GlobalExceptionAdvice {
   @ResponseBody
   public ErrorEntity handleCustomException(CustomException ex) {
     return new ErrorEntity("fail", ex.getMessage());
+  }
+
+  @ExceptionHandler(ExpiredJwtException.class)
+  public ErrorEntity handleExpiredJwtException(ExpiredJwtException ex) {
+    return new ErrorEntity("invalidToken", "토큰이 만료되었어요.");
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

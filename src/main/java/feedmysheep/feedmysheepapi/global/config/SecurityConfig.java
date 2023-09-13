@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.global.config;
 
+import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,4 +16,7 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
+  @Bean
+  public JwtTokenProvider jwtTokenProvider() { return new JwtTokenProvider(); }
 }

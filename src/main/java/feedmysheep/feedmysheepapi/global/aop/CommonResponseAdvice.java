@@ -1,7 +1,7 @@
 package feedmysheep.feedmysheepapi.global.aop;
 
-import feedmysheep.feedmysheepapi.global.response.error.ErrorEntity;
-import feedmysheep.feedmysheepapi.global.utils.ResponseUtil;
+import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorEntity;
+import feedmysheep.feedmysheepapi.global.utils.response.ResponseUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;

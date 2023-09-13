@@ -5,9 +5,12 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
-import feedmysheep.feedmysheepapi.global.response.error.CustomException;
-import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
+import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
+import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
+import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
+import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
+import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
@@ -137,8 +140,23 @@ public class MemberService {
 
   public MemberResDto.signUp signUp(MemberReqDto.signUp body) {
     // 1. 비밀번호 암호화
+    body.setPassword(this.passwordEncoder.encode(body.getPassword()));
     // 2. 멤버 저장
+    MemberEntity memberToSave = MemberEntity.builder()
+        .memberName(body.getMemberName())
+        .sex(body.getSex())
+        .birthday(body.getBirthday())
+        .phone(body.getPhone())
+        .address(body.getAddress())
+        .email(body.getEmail())
+        .password(body.getPassword())
+        .build();
+    MemberEntity member = this.memberRepository.save(memberToSave);
     // 3. access / refresh 토큰 만들기
-    // 4. refresh 토큰 저장
+    JwtDto.memberInfo memberInfo = new memberInfo();
+    memberInfo.setMemberId(member.getMemberId());
+    memberInfo.setLevel(member.getAuthorization().getLevel());
+    memberInfo.setMemberName(member.getMemberName());
+    String refreshToken = this.
   }
 }

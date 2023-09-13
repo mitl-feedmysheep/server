@@ -7,7 +7,7 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.sendVerific
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
-import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
+import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity.Sex;
