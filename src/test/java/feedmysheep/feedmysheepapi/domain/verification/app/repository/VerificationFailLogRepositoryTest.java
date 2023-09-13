@@ -1,7 +1,8 @@
-package feedmysheep.feedmysheepapi.domain.verificationfaillog.app.repository;
+package feedmysheep.feedmysheepapi.domain.verification.app.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
+import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

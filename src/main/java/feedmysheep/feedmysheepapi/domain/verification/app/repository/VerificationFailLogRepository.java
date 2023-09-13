@@ -1,4 +1,4 @@
-package feedmysheep.feedmysheepapi.domain.verificationfaillog.app.repository;
+package feedmysheep.feedmysheepapi.domain.verification.app.repository;
 
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDateTime;

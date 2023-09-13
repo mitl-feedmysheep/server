@@ -6,7 +6,7 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.sendVerificationCode;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
-import feedmysheep.feedmysheepapi.domain.verificationfaillog.app.repository.VerificationFailLogRepository;
+import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
 import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
@@ -27,6 +27,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @DataJpaTest
 @EnableConfigurationProperties
@@ -52,6 +53,9 @@ class MemberServiceTest {
 
   private final String phone;
 
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
   MemberServiceTest() {
     this.phone = "01088831954";
   }
@@ -66,12 +70,13 @@ class MemberServiceTest {
         this.verificationFailLogRepository,
         twilioServiceMock,
         maxCodeGenNum,
-        maxCodeTryNum
+        maxCodeTryNum,
+        this.passwordEncoder
     );
   }
 
   @Test
-  @DisplayName("[sendVerificationCode] 이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
+  @DisplayName("[인증번호전송] 이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
   public void 이미사용중인휴대폰번호() {
     // given
     MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(this.phone);
@@ -92,7 +97,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[sendVerificationCode] 인증코드가 정상적으로 발송되고, 인증코드가 저장되었는지 확인")
+  @DisplayName("[인증번호전송] 인증코드가 정상적으로 발송되고, 인증코드가 저장되었는지 확인")
   public void 인증코드정상발송() {
     // given
     MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(this.phone);
@@ -108,7 +113,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[sendVerificationCode] 인증오류횟수가 5회를 넘는 경우, 에러를 뱉는다.")
+  @DisplayName("[인증번호전송] 인증오류횟수가 5회를 넘는 경우, 에러를 뱉는다.")
   public void 인증오류횟수5회초과() {
     // given
     MemberReqDto.sendVerificationCode query = new sendVerificationCode(this.phone);
@@ -143,7 +148,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[sendVerificationCode] 해당 번호로 인증코드가 5회 이상 생성된 경우, 에러를 뱉는다.")
+  @DisplayName("[인증번호전송] 해당 번호로 인증코드가 5회 이상 생성된 경우, 에러를 뱉는다.")
   public void 인증코드5회이상실패() {
     // given
     MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(this.phone);
@@ -188,7 +193,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[checkVerificationCode] 이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
+  @DisplayName("[인증번호검증] 이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
   public void 이미사용중인휴대폰번호2() {
     // given
     MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone,
@@ -210,7 +215,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[checkVerificationCode] 휴대폰번호와 인증번호가 3분이내 존재할 경우")
+  @DisplayName("[인증번호검증] 휴대폰번호와 인증번호가 3분이내 존재할 경우")
   public void 인증번호3분이내성공() {
     // given
     LocalDate today = LocalDate.now();
@@ -236,7 +241,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[checkVerificationCode] 인증번호가 전송된 휴대폰 번호가 존재하지 않을 경우 / 휴대폰번호와 인증번호가 3분이내 존재하지 않을 경우")
+  @DisplayName("[인증번호검증] 인증번호가 전송된 휴대폰 번호가 존재하지 않을 경우 / 휴대폰번호와 인증번호가 3분이내 존재하지 않을 경우")
   public void 휴대폰번호와인증번호가없는경우() {
     // given
     String verificationCode = "111111";
@@ -251,7 +256,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[checkVerificationCode] 오늘 해당 번호로 실패여부가 5번 이상일 경우 에러")
+  @DisplayName("[인증번호검증] 오늘 해당 번호로 실패여부가 5번 이상일 경우 에러")
   public void 인증실패여부5회이상() {
     // given
     VerificationFailLogEntity testData1 = VerificationFailLogEntity.builder()
@@ -287,7 +292,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[checkEmailDuplication] 이메일 중복 여부 확인 - 중복O")
+  @DisplayName("[이메일중복여부] 이메일 중복 여부 확인 - 중복O")
   public void 이메일중복O() {
     // given
     String testEmail = "test@test.com";
@@ -307,7 +312,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[checkEmailDuplication] 이메일 중복 여부 확인 - 중복X")
+  @DisplayName("[이메일중복여부] 이메일 중복 여부 확인 - 중복X")
   public void 이메일중복X() {
     // given
     MemberReqDto.checkEmailDuplication query = new MemberReqDto.checkEmailDuplication("test@test.com");
@@ -318,7 +323,7 @@ class MemberServiceTest {
   }
 
   @Test
-  @DisplayName("[checkEmailDuplication] 이메일 중복 여부 확인 - 중복X (비활성화된 유저인 경우)")
+  @DisplayName("[이메일중복여부] 이메일 중복 여부 확인 - 중복X (비활성화된 유저인 경우)")
   public void 이메일중복X2() {
     // given
     String testEmail = "test@test.com";
@@ -338,4 +343,7 @@ class MemberServiceTest {
     // then
     // nothing happens
   }
+  
+  @Test
+  @DisplayName("[회원가입]")
 }

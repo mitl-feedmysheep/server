@@ -4,7 +4,7 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
-import feedmysheep.feedmysheepapi.domain.verificationfaillog.app.repository.VerificationFailLogRepository;
+import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
 import feedmysheep.feedmysheepapi.global.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +29,7 @@ public class MemberService {
   private final TwilioService twilioService;
   private final int maxCodeGenNum;
   private final int maxCodeTryNum;
+  private final PasswordEncoder passwordEncoder;
 
   @Autowired
   public MemberService(
@@ -36,7 +38,8 @@ public class MemberService {
       VerificationFailLogRepository verificationFailLogRepository,
       TwilioService twilioService,
       @Value("${verification.maxCodeGenNum}") int maxCodeGenNum,
-      @Value("${verification.maxCodeTryNum}") int maxCodeTryNum
+      @Value("${verification.maxCodeTryNum}") int maxCodeTryNum,
+      PasswordEncoder passwordEncoder
   ) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
@@ -44,6 +47,7 @@ public class MemberService {
     this.twilioService = twilioService;
     this.maxCodeGenNum = maxCodeGenNum;
     this.maxCodeTryNum = maxCodeTryNum;
+    this.passwordEncoder = passwordEncoder;
   };
 
   public void sendVerificationCode(MemberReqDto.sendVerificationCode query) {
