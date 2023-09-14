@@ -14,5 +14,4 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 
   @Query("SELECT EXISTS (SELECT 1 FROM MemberEntity m WHERE m.isActive = true and m.email = :email)")
   boolean existsMemberByEmail(@Param("email") String email);
-
 }

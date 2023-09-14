@@ -54,7 +54,7 @@ public class JwtTokenProvider {
     // Private Claims
     Map<String, Object> privateClaims = new HashMap<>();
     privateClaims.put("memberId", memberInfo.getMemberId());
-    privateClaims.put("level", memberInfo.getAuthorization().getLevel());
+    privateClaims.put("level", memberInfo.getLevel());
     privateClaims.put("memberName", memberInfo.getMemberName());
 
     return Jwts.builder()
@@ -77,7 +77,7 @@ public class JwtTokenProvider {
 
       JwtDto.memberInfo memberInfo = new memberInfo();
       memberInfo.setMemberId(claims.get("memberId", Long.class));
-      memberInfo.setLevel(claims.get("level", String.class));
+      memberInfo.setLevel(claims.get("level", int.class));
       memberInfo.setMemberName(claims.get("memberName", String.class));
 
       return memberInfo;

@@ -2,21 +2,26 @@ package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import feedmysheep.feedmysheepapi.TestData;
+import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.sendVerificationCode;
+import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.signUp;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
+import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
+import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
-import feedmysheep.feedmysheepapi.models.MemberEntity.Sex;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,39 +32,29 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @DataJpaTest
 @EnableConfigurationProperties
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class MemberServiceTest {
-
   @Autowired
   private VerificationRepository verificationRepository;
-
   @Autowired
   private VerificationFailLogRepository verificationFailLogRepository;
-
   @Autowired
   private MemberRepository memberRepository;
-
+  @Autowired
+  private AuthorizationRepository authorizationRepository;
   private MemberService memberService;
-
   @Value("${verification.maxCodeGenNum}")
   private int maxCodeGenNum;
-
   @Value("${verification.maxCodeTryNum}")
   private int maxCodeTryNum;
+  private AuthorizationEntity authorization;
 
-  private final String phone;
-
-  @Autowired
-  private PasswordEncoder passwordEncoder;
-
-  MemberServiceTest() {
-    this.phone = "01088831954";
-  }
-
+  MemberServiceTest() {}
 
   @BeforeEach
   public void setup() {
@@ -68,25 +63,30 @@ class MemberServiceTest {
         this.memberRepository,
         this.verificationRepository,
         this.verificationFailLogRepository,
+        this.authorizationRepository,
         twilioServiceMock,
         maxCodeGenNum,
         maxCodeTryNum,
-        this.passwordEncoder
+        new BCryptPasswordEncoder(),
+        new JwtTokenProvider()
     );
+    this.authorization = this.authorizationRepository.findById(1L).orElseThrow();
   }
 
   @Test
   @DisplayName("[인증번호전송] 이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
   public void 이미사용중인휴대폰번호() {
     // given
-    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(this.phone);
+    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(TestData.phone);
     MemberEntity testMember1 = MemberEntity.builder()
-        .memberName("테스트멤버1")
-        .sex(Sex.M)
-        .birthday(LocalDate.parse("1991-09-16"))
-        .phone(this.phone)
-        .address("테스트 주소")
-        .email("test@test.com")
+        .memberName(TestData.memberName)
+        .sex(TestData.sex)
+        .birthday(TestData.birthday)
+        .phone(TestData.phone)
+        .address(TestData.address)
+        .email(TestData.email)
+        .password(TestData.password)
+        .authorization(this.authorization)
         .build();
     this.memberRepository.save(testMember1);
 
@@ -100,7 +100,7 @@ class MemberServiceTest {
   @DisplayName("[인증번호전송] 인증코드가 정상적으로 발송되고, 인증코드가 저장되었는지 확인")
   public void 인증코드정상발송() {
     // given
-    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(this.phone);
+    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(TestData.phone);
 
     // when
     memberService.sendVerificationCode(query);
@@ -108,7 +108,7 @@ class MemberServiceTest {
     //then
     List<VerificationEntity> verificationList = verificationRepository.findAll();
     Boolean isMatchedPhone = verificationList.stream()
-        .anyMatch(verification -> verification.getPhone().equals(phone));
+        .anyMatch(verification -> verification.getPhone().equals(TestData.phone));
     assertThat(isMatchedPhone).isEqualTo(true);
   }
 
@@ -116,25 +116,25 @@ class MemberServiceTest {
   @DisplayName("[인증번호전송] 인증오류횟수가 5회를 넘는 경우, 에러를 뱉는다.")
   public void 인증오류횟수5회초과() {
     // given
-    MemberReqDto.sendVerificationCode query = new sendVerificationCode(this.phone);
+    MemberReqDto.sendVerificationCode query = new sendVerificationCode(TestData.phone);
     VerificationFailLogEntity testData1 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     VerificationFailLogEntity testData2 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     VerificationFailLogEntity testData3 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     VerificationFailLogEntity testData4 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     VerificationFailLogEntity testData5 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     this.verificationFailLogRepository.saveAll(
@@ -151,30 +151,30 @@ class MemberServiceTest {
   @DisplayName("[인증번호전송] 해당 번호로 인증코드가 5회 이상 생성된 경우, 에러를 뱉는다.")
   public void 인증코드5회이상실패() {
     // given
-    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(this.phone);
+    MemberReqDto.sendVerificationCode query = new MemberReqDto.sendVerificationCode(TestData.phone);
     LocalDate today = LocalDate.now();
     VerificationEntity verificationTest1 = VerificationEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .validDate(today)
         .build();
     VerificationEntity verificationTest2 = VerificationEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("222222")
         .validDate(today)
         .build();
     VerificationEntity verificationTest3 = VerificationEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("333333")
         .validDate(today)
         .build();
     VerificationEntity verificationTest4 = VerificationEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("444444")
         .validDate(today)
         .build();
     VerificationEntity verificationTest5 = VerificationEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("555555")
         .validDate(today)
         .build();
@@ -196,15 +196,17 @@ class MemberServiceTest {
   @DisplayName("[인증번호검증] 이미 사용중인 휴대폰 번호일 때 에러를 뱉는다.")
   public void 이미사용중인휴대폰번호2() {
     // given
-    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone,
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(TestData.phone,
         "111111");
     MemberEntity testMember1 = MemberEntity.builder()
-        .memberName("테스트멤버1")
-        .sex(Sex.M)
-        .birthday(LocalDate.parse("1991-09-16"))
-        .phone(this.phone)
-        .address("테스트 주소")
-        .email("test@test.com")
+        .memberName(TestData.memberName)
+        .sex(TestData.sex)
+        .birthday(TestData.birthday)
+        .phone(TestData.phone)
+        .address(TestData.address)
+        .email(TestData.email)
+        .password(TestData.password)
+        .authorization(this.authorization)
         .build();
     this.memberRepository.save(testMember1);
 
@@ -221,10 +223,9 @@ class MemberServiceTest {
     LocalDate today = LocalDate.now();
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime twoMinAgo = now.minusMinutes(2);
-    LocalDateTime threeMinAgo = now.minusMinutes(3);
     String verificationCode = "111111";
     VerificationEntity verificationTest1 = VerificationEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode(verificationCode)
         .validDate(today)
         .build();
@@ -232,7 +233,7 @@ class MemberServiceTest {
     this.verificationRepository.save(verificationTest1);
 
     // when
-    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone,
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(TestData.phone,
         verificationCode);
     this.memberService.checkVerificationCode(query);
 
@@ -247,7 +248,7 @@ class MemberServiceTest {
     String verificationCode = "111111";
 
     // when
-    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone,
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(TestData.phone,
         verificationCode);
 
     // then
@@ -260,30 +261,30 @@ class MemberServiceTest {
   public void 인증실패여부5회이상() {
     // given
     VerificationFailLogEntity testData1 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     VerificationFailLogEntity testData2 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     VerificationFailLogEntity testData3 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     VerificationFailLogEntity testData4 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     VerificationFailLogEntity testData5 = VerificationFailLogEntity.builder()
-        .phone(this.phone)
+        .phone(TestData.phone)
         .verificationCode("111111")
         .build();
     this.verificationFailLogRepository.saveAll(
         List.of(testData1, testData2, testData3, testData4, testData5));
 
     // when
-    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(this.phone,
+    MemberReqDto.checkVerificationCode query = new MemberReqDto.checkVerificationCode(TestData.phone,
         "123123");
 
     // then
@@ -298,12 +299,14 @@ class MemberServiceTest {
     String testEmail = "test@test.com";
     MemberReqDto.checkEmailDuplication query = new MemberReqDto.checkEmailDuplication(testEmail);
     MemberEntity testMember1 = MemberEntity.builder()
-        .memberName("테스트멤버1")
-        .sex(Sex.M)
-        .birthday(LocalDate.parse("1991-09-16"))
-        .phone(this.phone)
-        .address("테스트 주소")
-        .email(testEmail)
+        .memberName(TestData.memberName)
+        .sex(TestData.sex)
+        .birthday(TestData.birthday)
+        .phone(TestData.phone)
+        .address(TestData.address)
+        .email(TestData.email)
+        .password(TestData.password)
+        .authorization(this.authorization)
         .build();
     this.memberRepository.save(testMember1);
     // when
@@ -330,11 +333,13 @@ class MemberServiceTest {
     MemberReqDto.checkEmailDuplication query = new MemberReqDto.checkEmailDuplication(testEmail);
     MemberEntity testMember1 = MemberEntity.builder()
         .memberName("테스트멤버1")
-        .sex(Sex.M)
+        .sex("M")
         .birthday(LocalDate.parse("1991-09-16"))
-        .phone(this.phone)
+        .phone(TestData.phone)
         .address("테스트 주소")
         .email(testEmail)
+        .password("testPassword")
+        .authorization(this.authorization)
         .build();
     testMember1.setActive(false);
     this.memberRepository.save(testMember1);
@@ -345,5 +350,30 @@ class MemberServiceTest {
   }
   
   @Test
-  @DisplayName("[회원가입]")
+  @DisplayName("[회원가입] 멤버 저장 확인")
+  public void 회원가입() {
+    // given
+    MemberReqDto.signUp body = new MemberReqDto.signUp(TestData.memberName, TestData.sex, TestData.birthday, TestData.phone, TestData.email, TestData.password, TestData.address);
+    // TODO 여기서부터 service 검증하면 됨!
+    String phone = "01088831954";
+    String email = "kcs19542001@gmail.com";
+    MemberEntity memberToSave = MemberEntity.builder()
+        .memberName(TestData.memberName)
+        .sex(TestData.sex)
+        .birthday(TestData.birthday)
+        .phone(TestData.phone)
+        .address(TestData.address)
+        .email(TestData.email)
+        .password(TestData.password)
+        .authorization(this.authorization)
+        .build();
+    MemberEntity testMember = this.memberRepository.save(memberToSave);
+    // when
+    Optional<MemberEntity> member = this.memberRepository.findById(testMember.getMemberId());
+
+    // then
+    MemberEntity validMember = member.orElseThrow();
+    assertThat(validMember.getPhone()).isEqualTo(phone);
+    assertThat(validMember.getEmail()).isEqualTo(email);
+  }
 }

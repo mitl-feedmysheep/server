@@ -40,7 +40,7 @@ public class MemberController {
 
   @PostMapping("/sign-up")
   public MemberResDto.signUp signUp (@Valid @RequestBody MemberReqDto.signUp body) {
-    this.memberService.signUp(body);
+    return this.memberService.signUp(body);
   }
 }
 

@@ -10,4 +10,5 @@ public class ErrorMessage {
   public static final String EMAIL_DUPLICATED = "입력하신 이메일은 현재 사용중이에요. 다른 이메일을 사용해주세요.";
   public static final String INVALID_JWT = "문제가 발생했어요. 다시 로그인 해주세요.";
   public static final String JWT_EXPIRED = "토큰이 만료되었어요.";
+  public static final String NO_AUTHORIZATION = "권한이 존재하지 않아요. 고객센터에 문의해주세요.";
 }

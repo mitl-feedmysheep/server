@@ -1,15 +1,19 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
+import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
+import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto.signUp;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
+import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
+import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
@@ -22,35 +26,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
   private final MemberRepository memberRepository;
   private final VerificationRepository verificationRepository;
-
   private final VerificationFailLogRepository verificationFailLogRepository;
+  private final AuthorizationRepository authorizationRepository;
   private final TwilioService twilioService;
   private final int maxCodeGenNum;
   private final int maxCodeTryNum;
   private final PasswordEncoder passwordEncoder;
+  private final JwtTokenProvider jwtTokenProvider;
 
   @Autowired
   public MemberService(
       MemberRepository memberRepository,
       VerificationRepository verificationRepository,
       VerificationFailLogRepository verificationFailLogRepository,
+      AuthorizationRepository authorizationRepository,
       TwilioService twilioService,
       @Value("${verification.maxCodeGenNum}") int maxCodeGenNum,
       @Value("${verification.maxCodeTryNum}") int maxCodeTryNum,
-      PasswordEncoder passwordEncoder
+      PasswordEncoder passwordEncoder,
+      JwtTokenProvider jwtTokenProvider
   ) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
     this.verificationFailLogRepository = verificationFailLogRepository;
+    this.authorizationRepository = authorizationRepository;
     this.twilioService = twilioService;
     this.maxCodeGenNum = maxCodeGenNum;
     this.maxCodeTryNum = maxCodeTryNum;
     this.passwordEncoder = passwordEncoder;
+    this.jwtTokenProvider = jwtTokenProvider;
   };
 
   public void sendVerificationCode(MemberReqDto.sendVerificationCode query) {
@@ -138,10 +148,22 @@ public class MemberService {
     if (isDuplicated) throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
   }
 
+  @Transactional
   public MemberResDto.signUp signUp(MemberReqDto.signUp body) {
     // 1. 비밀번호 암호화
     body.setPassword(this.passwordEncoder.encode(body.getPassword()));
-    // 2. 멤버 저장
+
+    // 2. Validation - 방어로직
+    boolean isPhoneDuplicated = this.memberRepository.existsMemberByPhone(body.getPhone());
+    if (isPhoneDuplicated) throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    boolean isEmailDuplicated = this.memberRepository.existsMemberByEmail(body.getEmail());
+    if (isEmailDuplicated) throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+
+    // 3. 기본 authroization 가져오기
+    Optional<AuthorizationEntity> optionalAuthorization = this.authorizationRepository.findById(1L);
+    AuthorizationEntity authorization = optionalAuthorization.orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
+
+    // 4. 멤버 저장
     MemberEntity memberToSave = MemberEntity.builder()
         .memberName(body.getMemberName())
         .sex(body.getSex())
@@ -150,13 +172,17 @@ public class MemberService {
         .address(body.getAddress())
         .email(body.getEmail())
         .password(body.getPassword())
+        .authorization(authorization)
         .build();
     MemberEntity member = this.memberRepository.save(memberToSave);
-    // 3. access / refresh 토큰 만들기
+
+    // 5. access / refresh 토큰 만들기
     JwtDto.memberInfo memberInfo = new memberInfo();
     memberInfo.setMemberId(member.getMemberId());
     memberInfo.setLevel(member.getAuthorization().getLevel());
     memberInfo.setMemberName(member.getMemberName());
-    String refreshToken = this.
+    String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
+
+    return new MemberResDto.signUp(accessToken);
   }
 }

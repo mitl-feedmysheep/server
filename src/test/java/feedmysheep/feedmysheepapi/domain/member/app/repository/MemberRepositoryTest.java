@@ -3,7 +3,6 @@ package feedmysheep.feedmysheepapi.domain.member.app.repository;
 import static org.assertj.core.api.Assertions.*;
 
 import feedmysheep.feedmysheepapi.models.MemberEntity;
-import feedmysheep.feedmysheepapi.models.MemberEntity.Sex;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,7 +22,7 @@ class MemberRepositoryTest {
   public void setup() {
     MemberEntity testMember1 =  MemberEntity.builder()
         .memberName("testMember")
-        .sex(Sex.M)
+        .sex("M")
         .birthday(LocalDate.parse("2000-01-01"))
         .phone("01011112222")
         .address("Test address does not need much")

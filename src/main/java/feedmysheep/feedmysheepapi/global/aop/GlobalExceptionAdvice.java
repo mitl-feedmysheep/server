@@ -26,6 +26,7 @@ public class GlobalExceptionAdvice {
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ErrorEntity handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    System.out.println(ex.getMessage());
     return new ErrorEntity("fail", "Request 정보가 잘못되었어요. Swagger 문서를 확인해주세요.");
   }
 

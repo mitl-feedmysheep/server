@@ -1,6 +1,5 @@
 package feedmysheep.feedmysheepapi.domain.member.app.dto;
 
-import feedmysheep.feedmysheepapi.models.MemberEntity.Sex;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -37,8 +37,7 @@ public class MemberEntity extends CreatedUpdated {
   private String memberName;
 
   @Column(name = "sex", nullable = false, length = 5, columnDefinition = "varchar(1) COMMENT '성별 (M / F)'")
-  @Enumerated(EnumType.STRING)
-  private Sex sex;
+  private String sex;
 
   @Column(name = "birthday", nullable = false, columnDefinition = "date COMMENT '멤버 생년월일'")
   private LocalDate birthday;
@@ -61,15 +60,11 @@ public class MemberEntity extends CreatedUpdated {
   @Column(name = "password", nullable = false, length = 100, columnDefinition = "varchar(100) COMMENT '멤버 해싱된 비밀번호'")
   private String password;
 
-  @Column(name = "registered_at", columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP COMMENT '멤버 가입일시'")
-  private LocalDateTime registeredAt;
-
-  public enum Sex {
-    M, F
-  }
+  @Column(name = "registered_at", nullable = false, columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP COMMENT '멤버 가입일시'")
+  private LocalDateTime registeredAt = LocalDateTime.now();
 
   @Builder
-  public MemberEntity(String memberName, Sex sex, LocalDate birthday, String phone, String address, String email, String password) {
+  public MemberEntity(String memberName, String sex, LocalDate birthday, String phone, String address, String email, String password, AuthorizationEntity authorization) {
     this.memberName = memberName;
     this.sex = sex;
     this.birthday = birthday;
@@ -77,5 +72,6 @@ public class MemberEntity extends CreatedUpdated {
     this.address = address;
     this.email = email;
     this.password = password;
+    this.authorization = authorization;
   }
 }
