@@ -1,21 +1,14 @@
 package feedmysheep.feedmysheepapi.global.config;
 
-import org.springframework.beans.factory.annotation.Value;
+import feedmysheep.feedmysheepapi.global.policy.CONSTANT.TWILIO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.twilio.Twilio;
 
 @Configuration
 public class TwilioConfig {
-
-  @Value("${twilio.accountSid}")
-  private String accountSid;
-
-  @Value("${twilio.authToken}")
-  private String authToken;
-
   @Bean
   public void twilioInit() {
-    Twilio.init(accountSid, authToken);
+    Twilio.init(TWILIO.ACCOUNT_SID, TWILIO.AUTH_TOKEN);
   }
 }

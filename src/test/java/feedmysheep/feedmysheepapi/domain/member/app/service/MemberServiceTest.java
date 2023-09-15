@@ -7,10 +7,12 @@ import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationReposi
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.sendVerificationCode;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.signUp;
+import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
+import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
@@ -34,10 +36,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
 
 @DataJpaTest
-@EnableConfigurationProperties
+//@EnableConfigurationProperties
 @AutoConfigureTestDatabase(replace = Replace.NONE)
+@TestPropertySource(locations = "classpath:application.yml")
+
 class MemberServiceTest {
   @Autowired
   private VerificationRepository verificationRepository;
@@ -48,10 +53,6 @@ class MemberServiceTest {
   @Autowired
   private AuthorizationRepository authorizationRepository;
   private MemberService memberService;
-  @Value("${verification.maxCodeGenNum}")
-  private int maxCodeGenNum;
-  @Value("${verification.maxCodeTryNum}")
-  private int maxCodeTryNum;
   private AuthorizationEntity authorization;
 
   MemberServiceTest() {}
@@ -65,12 +66,10 @@ class MemberServiceTest {
         this.verificationFailLogRepository,
         this.authorizationRepository,
         twilioServiceMock,
-        maxCodeGenNum,
-        maxCodeTryNum,
         new BCryptPasswordEncoder(),
         new JwtTokenProvider()
     );
-    this.authorization = this.authorizationRepository.findById(1L).orElseThrow();
+    this.authorization = this.authorizationRepository.findById(1L).orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
   }
 
   @Test
@@ -296,8 +295,7 @@ class MemberServiceTest {
   @DisplayName("[이메일중복여부] 이메일 중복 여부 확인 - 중복O")
   public void 이메일중복O() {
     // given
-    String testEmail = "test@test.com";
-    MemberReqDto.checkEmailDuplication query = new MemberReqDto.checkEmailDuplication(testEmail);
+    MemberReqDto.checkEmailDuplication query = new MemberReqDto.checkEmailDuplication(TestData.email);
     MemberEntity testMember1 = MemberEntity.builder()
         .memberName(TestData.memberName)
         .sex(TestData.sex)
@@ -343,8 +341,10 @@ class MemberServiceTest {
         .build();
     testMember1.setActive(false);
     this.memberRepository.save(testMember1);
+
     // when
     this.memberService.checkEmailDuplication(query);
+
     // then
     // nothing happens
   }
@@ -354,26 +354,44 @@ class MemberServiceTest {
   public void 회원가입() {
     // given
     MemberReqDto.signUp body = new MemberReqDto.signUp(TestData.memberName, TestData.sex, TestData.birthday, TestData.phone, TestData.email, TestData.password, TestData.address);
-    // TODO 여기서부터 service 검증하면 됨!
-    String phone = "01088831954";
-    String email = "kcs19542001@gmail.com";
-    MemberEntity memberToSave = MemberEntity.builder()
-        .memberName(TestData.memberName)
-        .sex(TestData.sex)
-        .birthday(TestData.birthday)
-        .phone(TestData.phone)
-        .address(TestData.address)
-        .email(TestData.email)
-        .password(TestData.password)
-        .authorization(this.authorization)
-        .build();
-    MemberEntity testMember = this.memberRepository.save(memberToSave);
+
     // when
-    Optional<MemberEntity> member = this.memberRepository.findById(testMember.getMemberId());
+    MemberResDto.signUp signUpRes = this.memberService.signUp(body);
+    String accessToken = signUpRes.getAccessToken();
 
     // then
-    MemberEntity validMember = member.orElseThrow();
-    assertThat(validMember.getPhone()).isEqualTo(phone);
-    assertThat(validMember.getEmail()).isEqualTo(email);
+    List<MemberEntity> memberList = this.memberRepository.findAll();
+    Optional<MemberEntity> validMember = memberList.stream()
+        .filter(member -> member.getPhone().equals(TestData.phone) && member.getEmail().equals(TestData.email))
+        .findFirst();
+
+    assertThat(validMember).isNotNull();
+  }
+
+  @Test
+  @DisplayName("[회원가입] 멤버 저장 실패 - 휴대폰 번호 중복")
+  public void 회원가입_휴대폰번호중복() {
+    // given
+    MemberReqDto.signUp body1 = new MemberReqDto.signUp(TestData.memberName, TestData.sex, TestData.birthday, TestData.phone, TestData.email, TestData.password, TestData.address);
+    MemberReqDto.signUp body2 = new MemberReqDto.signUp(TestData.memberName, TestData.sex, TestData.birthday, TestData.phone, TestData.email, TestData.password, TestData.address);
+
+    // when
+    this.memberService.signUp(body1);
+
+    // then
+    assertThatThrownBy(() -> this.memberService.signUp(body2)).hasMessageContaining(ErrorMessage.PHONE_IN_USE);
+  }
+
+  @Test
+  @DisplayName("[회원가입] 멤버 저장 실패 - 이메일 중복")
+  public void 회원가입_이메일중복() {
+    // given
+    MemberReqDto.signUp body1 = new MemberReqDto.signUp(TestData.memberName, TestData.sex, TestData.birthday, "01011112222", TestData.email, TestData.password, TestData.address);
+    MemberReqDto.signUp body2 = new MemberReqDto.signUp(TestData.memberName, TestData.sex, TestData.birthday, "01011113333", TestData.email, TestData.password, TestData.address);
+    // when
+    this.memberService.signUp(body1);
+
+    // then
+    assertThatThrownBy(() -> this.memberService.signUp(body2)).hasMessageContaining(ErrorMessage.EMAIL_DUPLICATED);
   }
 }

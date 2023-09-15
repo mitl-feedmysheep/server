@@ -1,9 +1,9 @@
 package feedmysheep.feedmysheepapi.global.utils.jwt;
 
+import feedmysheep.feedmysheepapi.global.policy.CONSTANT.JWT;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
-import feedmysheep.feedmysheepapi.models.MemberEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -14,23 +14,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 
 @RequiredArgsConstructor
 public class JwtTokenProvider {
-  @Value("${jwt.secretKey}")
-  private String secretKey;
-
-  @Value("${jwt.refreshExpiry}")
-  private Long refreshExpiry;
-
-  @Value("${jwt.accessExpiry}")
-  private Long accessExpiry;
+  private final String secretKey = JWT.SECRET_KEY;
 
   // ACCESS 토큰 생성
   public String createAccessToken(JwtDto.memberInfo memberInfo) {
     Date now = new Date();
-    Date expiryDate = new Date(now.getTime() + this.accessExpiry);
+    Long accessExpiry = JWT.ACCESS_EXPIRY;
+    Date expiryDate = new Date(now.getTime() + accessExpiry);
 
     // Private Claims
     Map<String, Object> privateClaims = new HashMap<>();
@@ -49,7 +42,8 @@ public class JwtTokenProvider {
   // REFRESH 토큰 생성
   public String createRefreshToken(JwtDto.memberInfo memberInfo) {
     Date now = new Date();
-    Date expiryDate = new Date(now.getTime() + this.refreshExpiry);
+    Long refreshExpiry = JWT.REFRESH_EXPIRY;
+    Date expiryDate = new Date(now.getTime() + refreshExpiry);
 
     // Private Claims
     Map<String, Object> privateClaims = new HashMap<>();

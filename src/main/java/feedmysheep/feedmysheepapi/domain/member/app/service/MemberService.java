@@ -7,6 +7,7 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto.signUp;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
+import feedmysheep.feedmysheepapi.global.policy.CONSTANT.VERIFICATION;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
@@ -35,8 +36,6 @@ public class MemberService {
   private final VerificationFailLogRepository verificationFailLogRepository;
   private final AuthorizationRepository authorizationRepository;
   private final TwilioService twilioService;
-  private final int maxCodeGenNum;
-  private final int maxCodeTryNum;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
 
@@ -47,8 +46,6 @@ public class MemberService {
       VerificationFailLogRepository verificationFailLogRepository,
       AuthorizationRepository authorizationRepository,
       TwilioService twilioService,
-      @Value("${verification.maxCodeGenNum}") int maxCodeGenNum,
-      @Value("${verification.maxCodeTryNum}") int maxCodeTryNum,
       PasswordEncoder passwordEncoder,
       JwtTokenProvider jwtTokenProvider
   ) {
@@ -57,8 +54,6 @@ public class MemberService {
     this.verificationFailLogRepository = verificationFailLogRepository;
     this.authorizationRepository = authorizationRepository;
     this.twilioService = twilioService;
-    this.maxCodeGenNum = maxCodeGenNum;
-    this.maxCodeTryNum = maxCodeTryNum;
     this.passwordEncoder = passwordEncoder;
     this.jwtTokenProvider = jwtTokenProvider;
   };
@@ -80,7 +75,7 @@ public class MemberService {
 
     // 3. 인증코드 발급 5회 미만 여부 체크
     int usedCount = this.verificationRepository.countByPhoneAndValidDate(phone, today);
-    if (usedCount >= this.maxCodeGenNum) throw new CustomException(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
+    if (usedCount >= VERIFICATION.MAX_CODE_GEN_NUM) throw new CustomException(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
 
     // 4. 인증코드 generate
     Random random = new Random();
@@ -123,7 +118,7 @@ public class MemberService {
 
     // 2. 금일 인증실패 5회 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone, startOfToday, endOfToday);
-    if (failCount >= maxCodeTryNum) throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
+    if (failCount >= VERIFICATION.MAX_CODE_TRY_NUM) throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
 
     // 3. 휴대폰 번호와 인증코드 여부 체크
     Optional<VerificationEntity> optionalVerificationEntity = this.verificationRepository.findByPhoneAndVerificationCode(phone, code);

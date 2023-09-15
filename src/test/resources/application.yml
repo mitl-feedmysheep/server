@@ -18,17 +18,3 @@ spring:
     hibernate:
       #      db 변경 사항 적용 -> 향후 none
       ddl-auto: update
-
-jwt:
-  secretKey: "RejoiceAlwaysPrayContinuallyGiveThanksInAllCircumstancesForThisIsGodsWillForYouInChristJesus"
-  refreshExpiry: 31536000000
-  accessExpiry: 86400000
-
-twilio:
-  accountSid: "AC8edd3e64ee51444b1a3ea11d5268edee"
-  authToken: "c63a826d7c5e799748ce4a9e78900a5a"
-  fromPhoneNumber: "+17067703741"
-
-verification:
-  maxCodeGenNum: 5
-  maxCodeTryNum: 5
