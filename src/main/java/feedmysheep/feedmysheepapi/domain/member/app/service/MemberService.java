@@ -176,8 +176,9 @@ public class MemberService {
     memberInfo.setMemberId(member.getMemberId());
     memberInfo.setLevel(member.getAuthorization().getLevel());
     memberInfo.setMemberName(member.getMemberName());
+    String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
 
-    return new MemberResDto.signUp(accessToken);
+    return new MemberResDto.signUp(refreshToken, accessToken);
   }
 }

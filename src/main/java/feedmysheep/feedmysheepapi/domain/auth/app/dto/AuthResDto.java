@@ -11,7 +11,8 @@ public class AuthResDto {
   @AllArgsConstructor
   @Getter
   @Setter
-  public static class createAccessToken {
-   private String accessToken;
+  public static class createToken {
+    private String refreshToken;
+    private String accessToken;
   }
 }

@@ -2,8 +2,11 @@ package feedmysheep.feedmysheepapi.domain.member.app.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
+import feedmysheep.feedmysheepapi.TESTDATA;
+import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
+import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
-import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,15 +21,21 @@ class MemberRepositoryTest {
   @Autowired
   private MemberRepository memberRepository;
 
+  @Autowired
+  private AuthorizationRepository authorizationRepository;
+
   @BeforeEach
   public void setup() {
+    AuthorizationEntity authorization = this.authorizationRepository.findById(1L).orElseThrow();
     MemberEntity testMember1 =  MemberEntity.builder()
-        .memberName("testMember")
-        .sex("M")
-        .birthday(LocalDate.parse("2000-01-01"))
-        .phone("01011112222")
-        .address("Test address does not need much")
-        .email("random@random.com")
+        .memberName(TESTDATA.memberName)
+        .sex(TESTDATA.sex)
+        .birthday(TESTDATA.birthday)
+        .phone(TESTDATA.phone)
+        .address(TESTDATA.address)
+        .email(TESTDATA.email)
+        .password(TESTDATA.password)
+        .authorization(authorization)
         .build();
     this.memberRepository.save(testMember1);
   }
@@ -57,5 +66,15 @@ class MemberRepositoryTest {
   public void existsMemberByEmail2() {
     boolean isExistingEmail = this.memberRepository.existsMemberByEmail("r@random.com");
     assertThat(isExistingEmail).isEqualTo(false);
+  }
+
+  @Test
+  @DisplayName("멤버 아이디로 멤버 찾기")
+  public void getMemberByMemberId() {
+    List<MemberEntity> memberList = this.memberRepository.findAll();
+    MemberEntity validMember1 = memberList.stream().filter(memberEntity -> memberEntity.getPhone().equals(
+        TESTDATA.phone)).findFirst().orElseThrow();
+    MemberEntity validMember2 = this.memberRepository.getMemberByMemberId(validMember1.getMemberId()).orElseThrow();
+    assertThat(validMember1).isEqualTo(validMember2);
   }
 }

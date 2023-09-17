@@ -21,7 +21,7 @@ public class AuthController {
   public AuthController(AuthService authService) { this.authService = authService; };
 
   @PostMapping("/token")
-  public AuthResDto.createAccessToken createAccessToken (@Valid @RequestBody AuthReqDto.createAccessToken body) {
-    return this.authService.createAccessToken(body);
+  public AuthResDto.createToken createToken (@Valid @RequestBody AuthReqDto.createToken body) {
+    return this.authService.createToken(body);
   }
 }

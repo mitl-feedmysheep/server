@@ -11,6 +11,7 @@ public class MemberResDto {
   @AllArgsConstructor
   @Getter
   public  static class signUp {
+    private String refreshToken;
     private String accessToken;
   }
 

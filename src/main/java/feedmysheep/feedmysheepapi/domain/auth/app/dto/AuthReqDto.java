@@ -11,7 +11,7 @@ public class AuthReqDto {
   @AllArgsConstructor
   @Getter
   @Setter
-  public static class createAccessToken {
+  public static class createToken {
     @NotEmpty(message = "리프레시 토큰이 존재하지 않아요.")
     private String refreshToken;
   }

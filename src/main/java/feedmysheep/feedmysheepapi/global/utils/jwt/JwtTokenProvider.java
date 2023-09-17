@@ -22,8 +22,7 @@ public class JwtTokenProvider {
   // ACCESS 토큰 생성
   public String createAccessToken(JwtDto.memberInfo memberInfo) {
     Date now = new Date();
-    Long accessExpiry = JWT.ACCESS_EXPIRY;
-    Date expiryDate = new Date(now.getTime() + accessExpiry);
+    Date expiryDate = new Date(now.getTime() + JWT.ACCESS_EXPIRY);
 
     // Private Claims
     Map<String, Object> privateClaims = new HashMap<>();
@@ -32,9 +31,9 @@ public class JwtTokenProvider {
     privateClaims.put("memberName", memberInfo.getMemberName());
 
     return Jwts.builder()
+        .setClaims(privateClaims)
         .setIssuedAt(now)
         .setExpiration(expiryDate)
-        .setClaims(privateClaims)
         .signWith(SignatureAlgorithm.HS256, this.secretKey)
         .compact();
   }
@@ -42,8 +41,7 @@ public class JwtTokenProvider {
   // REFRESH 토큰 생성
   public String createRefreshToken(JwtDto.memberInfo memberInfo) {
     Date now = new Date();
-    Long refreshExpiry = JWT.REFRESH_EXPIRY;
-    Date expiryDate = new Date(now.getTime() + refreshExpiry);
+    Date expiryDate = new Date(now.getTime() + JWT.REFRESH_EXPIRY);
 
     // Private Claims
     Map<String, Object> privateClaims = new HashMap<>();
@@ -52,9 +50,9 @@ public class JwtTokenProvider {
     privateClaims.put("memberName", memberInfo.getMemberName());
 
     return Jwts.builder()
+        .setClaims(privateClaims)
         .setIssuedAt(now)
         .setExpiration(expiryDate)
-        .setClaims(privateClaims)
         .signWith(SignatureAlgorithm.HS256, this.secretKey)
         .compact();
   }
@@ -64,14 +62,16 @@ public class JwtTokenProvider {
     try {
       Claims claims = Jwts
           .parserBuilder()
-          .setSigningKey(Keys.hmacShaKeyFor(this.secretKey.getBytes()))
+          .setSigningKey(this.secretKey)
           .build()
           .parseClaimsJws(token)
           .getBody();
 
+      System.out.println("claims -->" + claims);
+
       JwtDto.memberInfo memberInfo = new memberInfo();
       memberInfo.setMemberId(claims.get("memberId", Long.class));
-      memberInfo.setLevel(claims.get("level", int.class));
+      memberInfo.setLevel(claims.get("level", Integer.class));
       memberInfo.setMemberName(claims.get("memberName", String.class));
 
       return memberInfo;
