@@ -70,9 +70,12 @@ class AuthServiceTest {
   public void 토큰재발급() {
     // given
     AuthReqDto.createToken token = new createToken(this.tokens.getRefreshToken());
+    System.out.println();
+    Thread.sleep(2000);
 
     // when
     AuthResDto.createToken tokenSet = this.authService.createToken(token);
+    System.out.println();
 
     // then
     assertThat(tokenSet.getRefreshToken()).isNotEqualTo(this.tokens.getRefreshToken());

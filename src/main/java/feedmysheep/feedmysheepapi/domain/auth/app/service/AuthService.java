@@ -28,8 +28,8 @@ public class AuthService {
 
   public AuthResDto.createToken createToken (AuthReqDto.createToken body) {
     // 1. 유효한 리프레시 토큰인지 검사
-    System.out.println("body.getRefreshToken() -->" + body.getRefreshToken());
     JwtDto.memberInfo memberInfo = this.jwtTokenProvider.validateToken(body.getRefreshToken());
+
     // 2. 권한 업데이트
     MemberEntity member = this.memberRepository.findById(memberInfo.getMemberId()).orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
     memberInfo.setLevel(member.getAuthorization().getLevel());
