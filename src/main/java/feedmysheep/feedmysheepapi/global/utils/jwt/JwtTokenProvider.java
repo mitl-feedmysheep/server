@@ -67,8 +67,6 @@ public class JwtTokenProvider {
           .parseClaimsJws(token)
           .getBody();
 
-      System.out.println("claims -->" + claims);
-
       JwtDto.memberInfo memberInfo = new memberInfo();
       memberInfo.setMemberId(claims.get("memberId", Long.class));
       memberInfo.setLevel(claims.get("level", Integer.class));

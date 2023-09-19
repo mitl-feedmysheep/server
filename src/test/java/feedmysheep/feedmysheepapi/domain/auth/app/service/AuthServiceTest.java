@@ -67,15 +67,13 @@ class AuthServiceTest {
 
   @Test
   @DisplayName("[토큰재발급] 재발급된 토큰이 유효한지 검사")
-  public void 토큰재발급() {
+  public void 토큰재발급() throws InterruptedException {
     // given
     AuthReqDto.createToken token = new createToken(this.tokens.getRefreshToken());
-    System.out.println();
-    Thread.sleep(2000);
+    Thread.sleep(1000);
 
     // when
     AuthResDto.createToken tokenSet = this.authService.createToken(token);
-    System.out.println();
 
     // then
     assertThat(tokenSet.getRefreshToken()).isNotEqualTo(this.tokens.getRefreshToken());
