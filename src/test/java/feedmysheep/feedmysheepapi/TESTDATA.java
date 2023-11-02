@@ -3,6 +3,8 @@ package feedmysheep.feedmysheepapi;
 import java.time.LocalDate;
 
 public class TESTDATA {
+  public static final Long memberId = 88831954L;
+  public static final int level = 1;
   public static final String memberName = "김창수";
   public static final String sex = "M";
   public static final LocalDate birthday = LocalDate.parse("1991-09-16");
