@@ -2,6 +2,7 @@ package feedmysheep.feedmysheepapi.global.aop;
 
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorEntity;
+import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -21,7 +22,7 @@ public class GlobalExceptionAdvice {
 
   @ExceptionHandler(ExpiredJwtException.class)
   public ErrorEntity handleExpiredJwtException(ExpiredJwtException ex) {
-    return new ErrorEntity("invalidToken", "토큰이 만료되었어요.");
+    return new ErrorEntity("invalidToken", ErrorMessage.JWT_EXPIRED);
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
