@@ -18,12 +18,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
   private static final List<String> BYPASS_URL_PATTERN =
       List.of(
-          "/app/member/phone/send-verification-code",
-          "/app/member/phone/check-verification-code",
-          "/app/member/email/check-duplication",
-          "/app/member/sign-up",
-          "/app/member/sign-in",
-          "/app/token"
+          "/app/member/phone/send-verification-code", // 휴대폰 인증 번호 전송
+          "/app/member/phone/check-verification-code", // 휴대폰 인증 코드 검사
+          "/app/member/email/check-duplication", // 이메일 중복체크
+          "/app/member/sign-up", // 회원가입
+          "/app/member/sign-in", // 로그인
+          "/app/token" // 토큰 재발급
       );
   private JwtTokenProvider jwtTokenProvider;
   private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
