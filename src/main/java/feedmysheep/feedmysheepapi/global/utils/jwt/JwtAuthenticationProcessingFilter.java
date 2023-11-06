@@ -11,10 +11,17 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@RequiredArgsConstructor
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
   private static final List<String> BYPASS_URL_PATTERN =
       List.of(
@@ -55,11 +62,21 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     JwtDto.memberInfo memberInfo = this.jwtTokenProvider.validateToken(accessToken);
     saveAuthentication();
     filterChain.doFilter(request, response);
-
   }
 
   private void saveAuthentication(JwtDto.memberInfo memberInfo) {
     // TODO 커스텀유저디테일 만드는 것 보기!
-    CustomUserDetails user
+    // CustomUserDetails user
+    UserDetails user = User.builder()
+            .username(memberInfo.getMemberName())
+            // FIXME 이렇게 코드 적어도 될까?
+            .roles(String.valueOf(memberInfo.getLevel()))
+            .build();
+
+    Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, authoritiesMapper.mapAuthorities(user.getAuthorities()));
+
+    SecurityContext context = SecurityContextHolder.createEmptyContext();
+    context.setAuthentication(authentication);
+    SecurityContextHolder.setContext(context);
   }
 }
