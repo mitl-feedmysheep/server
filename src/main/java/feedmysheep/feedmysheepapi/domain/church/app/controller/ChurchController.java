@@ -12,5 +12,5 @@ public class ChurchController {
   private final ChurchService churchService;
 
   @Autowired
-  public ChurchController(ChurchService churchService) { this.churchService = churchService };
+  public ChurchController(ChurchService churchService) { this.churchService = churchService; };
 }

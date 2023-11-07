@@ -60,7 +60,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     // 유효 토큰 검증
     JwtDto.memberInfo memberInfo = this.jwtTokenProvider.validateToken(accessToken);
-    saveAuthentication();
+    saveAuthentication(memberInfo);
     filterChain.doFilter(request, response);
   }
 

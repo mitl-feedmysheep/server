@@ -43,7 +43,7 @@ class MemberRepositoryTest {
   @Test
   @DisplayName("휴대폰 중복 멤버 여부 확인 - 중복O")
   public void checkPhoneDuplication1() {
-    boolean isExistingPhone = this.memberRepository.existsMemberByPhone("01011112222");
+    boolean isExistingPhone = this.memberRepository.existsMemberByPhone(TESTDATA.phone);
     assertThat(isExistingPhone).isEqualTo(true);
   }
 
@@ -57,7 +57,7 @@ class MemberRepositoryTest {
   @Test
   @DisplayName("이메일 중복 멤버 여부 확인 - 중복O")
   public void existsMemberByEmail1() {
-    boolean isExistingEmail = this.memberRepository.existsMemberByEmail("random@random.com");
+    boolean isExistingEmail = this.memberRepository.existsMemberByEmail(TESTDATA.email);
     assertThat(isExistingEmail).isEqualTo(true);
   }
 

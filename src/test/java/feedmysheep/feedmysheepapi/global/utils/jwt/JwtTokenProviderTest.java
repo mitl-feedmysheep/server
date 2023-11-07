@@ -14,8 +14,7 @@ import static org.assertj.core.api.Assertions.*;
 
 class JwtTokenProviderTest {
 
-  @Autowired
-  private JwtTokenProvider jwtTokenProvider;
+  private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
 
   private JwtDto.memberInfo memberInfo;
 

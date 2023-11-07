@@ -43,10 +43,10 @@ public class MemberController {
     return this.memberService.signUp(body);
   }
 
-  @GetMapping("/check-church-member")
-  public MemberResDto.checkChurchMember checkChurchMember () {
-    return this.memberService.checkChurchMember();
-  }
+//  @GetMapping("/check-church-member")
+//  public MemberResDto.checkChurchMember checkChurchMember () {
+//    return this.memberService.checkChurchMember();
+//  }
 }
 
 

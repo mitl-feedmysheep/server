@@ -6,9 +6,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
@@ -27,7 +29,8 @@ public class SecurityConfig {
         .formLogin().disable()		//기본 로그인페이지 없애기
         .headers().frameOptions().disable();
 
-    http.addFilterAfter(new JwtAuthenticationProcessingFilter(jwtService, userServiceImpl), LogoutFilter.class);
+//    http.addFilterAfter(new JwtAuthenticationProcessingFilter(new JwtTokenProvider(), new NullAuthoritiesMapper()), LogoutFilter.class);
+    http.addFilterBefore(new JwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
