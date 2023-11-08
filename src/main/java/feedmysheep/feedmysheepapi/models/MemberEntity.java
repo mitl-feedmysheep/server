@@ -1,6 +1,14 @@
 package feedmysheep.feedmysheepapi.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,8 +30,8 @@ public class MemberEntity extends CreatedUpdated {
   @Column(name = "member_id", nullable = false, columnDefinition = "bigint COMMENT '멤버 아이디'")
   private Long memberId;
 
-  @OneToOne
-  @JoinColumn(name = "authorization_id")
+  @ManyToOne
+  @JoinColumn(name = "authorization_id", referencedColumnName = "authorization_id")
   private AuthorizationEntity authorization;
 
   @OneToMany(mappedBy = "member")
@@ -64,7 +72,8 @@ public class MemberEntity extends CreatedUpdated {
   private LocalDateTime registeredAt = LocalDateTime.now();
 
   @Builder
-  public MemberEntity(String memberName, String sex, LocalDate birthday, String phone, String address, String email, String password, AuthorizationEntity authorization) {
+  public MemberEntity(String memberName, String sex, LocalDate birthday, String phone,
+      String address, String email, String password, AuthorizationEntity authorization) {
     this.memberName = memberName;
     this.sex = sex;
     this.birthday = birthday;

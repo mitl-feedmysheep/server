@@ -1,10 +1,16 @@
 package feedmysheep.feedmysheepapi.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "authorization")
@@ -23,6 +29,6 @@ public class AuthorizationEntity extends CreatedUpdated {
   @Column(name = "level_name", length = 20, nullable = false)
   private String levelName;
 
-  @OneToOne(mappedBy = "authorization")
-  private MemberEntity member;
+  @OneToMany(mappedBy = "authorization")
+  private List<MemberEntity> member;
 }

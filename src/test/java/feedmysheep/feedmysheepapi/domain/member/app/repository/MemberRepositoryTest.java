@@ -1,6 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.member.app.repository;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.TESTDATA;
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
@@ -18,16 +18,19 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class MemberRepositoryTest {
+
   @Autowired
   private MemberRepository memberRepository;
 
   @Autowired
   private AuthorizationRepository authorizationRepository;
 
+  private Long testMemberId;
+
   @BeforeEach
   public void setup() {
     AuthorizationEntity authorization = this.authorizationRepository.findById(1L).orElseThrow();
-    MemberEntity testMember1 =  MemberEntity.builder()
+    MemberEntity testMember1 = MemberEntity.builder()
         .memberName(TESTDATA.memberName)
         .sex(TESTDATA.sex)
         .birthday(TESTDATA.birthday)
@@ -37,7 +40,8 @@ class MemberRepositoryTest {
         .password(TESTDATA.password)
         .authorization(authorization)
         .build();
-    this.memberRepository.save(testMember1);
+    MemberEntity testMember = this.memberRepository.save(testMember1);
+    testMemberId = testMember.getMemberId();
   }
 
   @Test
@@ -72,9 +76,36 @@ class MemberRepositoryTest {
   @DisplayName("멤버 아이디로 멤버 찾기")
   public void getMemberByMemberId() {
     List<MemberEntity> memberList = this.memberRepository.findAll();
-    MemberEntity validMember1 = memberList.stream().filter(memberEntity -> memberEntity.getPhone().equals(
-        TESTDATA.phone)).findFirst().orElseThrow();
-    MemberEntity validMember2 = this.memberRepository.getMemberByMemberId(validMember1.getMemberId()).orElseThrow();
+    MemberEntity validMember1 = memberList.stream()
+        .filter(memberEntity -> memberEntity.getPhone().equals(
+            TESTDATA.phone)).findFirst().orElseThrow();
+    MemberEntity validMember2 = this.memberRepository.getMemberByMemberId(
+        validMember1.getMemberId()).orElseThrow();
     assertThat(validMember1).isEqualTo(validMember2);
   }
+
+  @Test
+  @DisplayName("멤버 아이디로 멤버 유효 여부 O")
+  public void 멤버아이디로멤버유효여부O() {
+    // given
+
+    // when
+    boolean isValidMember = this.memberRepository.existsMemberByMemberId(testMemberId);
+
+    // then
+    assertThat(isValidMember).isEqualTo(true);
+  }
+
+  @Test
+  @DisplayName("멤버 아이디로 멤버 유효 여부 X")
+  public void 멤버아이디로멤버유효여부X() {
+    // given
+
+    // when
+    boolean isValidMember = this.memberRepository.existsMemberByMemberId(0L);
+
+    // then
+    assertThat(isValidMember).isEqualTo(false);
+  }
+
 }

@@ -1,9 +1,16 @@
 package feedmysheep.feedmysheepapi.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,6 +44,7 @@ public class ChurchEntity extends CreatedUpdated {
   @Column(name = "church_description", length = 100, columnDefinition = "varchar(100) COMMENT '교회 설명'")
   private String churchDescription;
 
+  @Setter
   @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
   private boolean isValid = false;
 
@@ -45,4 +53,15 @@ public class ChurchEntity extends CreatedUpdated {
 
   @OneToMany(mappedBy = "church")
   private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
+
+  @Builder
+  public ChurchEntity(String churchName, String churchLogoUrl, String churchLocation,
+      String churchNumber, String homepageUrl, String churchDescription) {
+    this.churchName = churchName;
+    this.churchLogoUrl = churchLogoUrl;
+    this.churchLocation = churchLocation;
+    this.churchNumber = churchNumber;
+    this.homepageUrl = homepageUrl;
+    this.churchDescription = churchDescription;
+  }
 }

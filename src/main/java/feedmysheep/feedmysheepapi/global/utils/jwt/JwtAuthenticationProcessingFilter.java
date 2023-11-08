@@ -8,9 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
@@ -23,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
+
   private static final List<String> BYPASS_URL_PATTERN =
       List.of(
           "/app/member/phone/send-verification-code", // 휴대폰 인증 번호 전송
@@ -35,15 +34,17 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
   private JwtTokenProvider jwtTokenProvider;
   private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
-  JwtAuthenticationProcessingFilter(JwtTokenProvider jwtTokenProvider, GrantedAuthoritiesMapper authoritiesMapper) {
+  JwtAuthenticationProcessingFilter(JwtTokenProvider jwtTokenProvider,
+      GrantedAuthoritiesMapper authoritiesMapper) {
     this.jwtTokenProvider = jwtTokenProvider;
     this.authoritiesMapper = authoritiesMapper;
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
     String requestUri = request.getRequestURI();
-
+    
     // Bypass 검증
     for (String urlPattern : BYPASS_URL_PATTERN) {
       if (requestUri.contains(urlPattern)) {
@@ -55,7 +56,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     // 토큰 여부 검증
     String accessToken = request.getHeader("fms-token");
     if (accessToken == null || accessToken.isEmpty()) {
-     throw new CustomException(ErrorMessage.NO_TOKEN);
+      throw new CustomException(ErrorMessage.NO_TOKEN);
     }
 
     // 유효 토큰 검증
@@ -68,12 +69,13 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     // TODO 커스텀유저디테일 만드는 것 보기!
     // CustomUserDetails user
     UserDetails user = User.builder()
-            .username(memberInfo.getMemberName())
-            // FIXME 이렇게 코드 적어도 될까?
-            .roles(String.valueOf(memberInfo.getLevel()))
-            .build();
+        .username(memberInfo.getMemberName())
+        // FIXME 이렇게 코드 적어도 될까?
+        .roles(String.valueOf(memberInfo.getLevel()))
+        .build();
 
-    Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, authoritiesMapper.mapAuthorities(user.getAuthorities()));
+    Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
+        authoritiesMapper.mapAuthorities(user.getAuthorities()));
 
     SecurityContext context = SecurityContextHolder.createEmptyContext();
     context.setAuthentication(authentication);
