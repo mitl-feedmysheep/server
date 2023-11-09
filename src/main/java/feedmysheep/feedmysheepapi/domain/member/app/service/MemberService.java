@@ -4,15 +4,15 @@ import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationReposi
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
-import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
+import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.VERIFICATION;
+import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
-import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
+
   private final MemberRepository memberRepository;
   private final VerificationRepository verificationRepository;
   private final VerificationFailLogRepository verificationFailLogRepository;
@@ -54,7 +55,9 @@ public class MemberService {
     this.twilioService = twilioService;
     this.passwordEncoder = passwordEncoder;
     this.jwtTokenProvider = jwtTokenProvider;
-  };
+  }
+
+  ;
 
   public void sendVerificationCode(MemberReqDto.sendVerificationCode query) {
     String phone = query.getPhone();
@@ -64,16 +67,23 @@ public class MemberService {
 
     // 1. 휴대폰 사용 여부 체크
     boolean isDuplicated = this.memberRepository.existsMemberByPhone(phone);
-    if (isDuplicated) throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    if (isDuplicated) {
+      throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    }
 
     // 2. FailLog 5회 이상 여부 체크
-    int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone, startOfToday, endOfToday);
+    int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone,
+        startOfToday, endOfToday);
     System.out.println("failCount" + failCount);
-    if (failCount >= 5) throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
+    if (failCount >= 5) {
+      throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
+    }
 
     // 3. 인증코드 발급 5회 미만 여부 체크
     int usedCount = this.verificationRepository.countByPhoneAndValidDate(phone, today);
-    if (usedCount >= VERIFICATION.MAX_CODE_GEN_NUM) throw new CustomException(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
+    if (usedCount >= VERIFICATION.MAX_CODE_GEN_NUM) {
+      throw new CustomException(ErrorMessage.CODE_GEN_TODAY_EXCEEDED);
+    }
 
     // 4. 인증코드 generate
     Random random = new Random();
@@ -96,10 +106,10 @@ public class MemberService {
 
     // 6. 인증코드 DB 저장
     VerificationEntity verification = VerificationEntity.builder()
-      .phone(phone)
-      .verificationCode(verificationCode)
-      .validDate(today)
-      .build();
+        .phone(phone)
+        .verificationCode(verificationCode)
+        .validDate(today)
+        .build();
 
     this.verificationRepository.save(verification);
   }
@@ -112,15 +122,22 @@ public class MemberService {
 
     // 1. 휴대폰 사용 여부 체크
     boolean isDuplicated = this.memberRepository.existsMemberByPhone(phone);
-    if (isDuplicated) throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    if (isDuplicated) {
+      throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    }
 
     // 2. 금일 인증실패 5회 여부 체크
-    int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone, startOfToday, endOfToday);
-    if (failCount >= VERIFICATION.MAX_CODE_TRY_NUM) throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
+    int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone,
+        startOfToday, endOfToday);
+    if (failCount >= VERIFICATION.MAX_CODE_TRY_NUM) {
+      throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
+    }
 
     // 3. 휴대폰 번호와 인증코드 여부 체크
-    Optional<VerificationEntity> optionalVerificationEntity = this.verificationRepository.findByPhoneAndVerificationCode(phone, code);
-    VerificationEntity verification = optionalVerificationEntity.orElseThrow(() -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE));
+    Optional<VerificationEntity> optionalVerificationEntity = this.verificationRepository.findByPhoneAndVerificationCode(
+        phone, code);
+    VerificationEntity verification = optionalVerificationEntity.orElseThrow(
+        () -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE));
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime threeMinLater = verification.getCreatedAt().plusMinutes(3);
     // - 존재하지 않는다면, 인증실패 저장 후 재시도 요청
@@ -138,7 +155,9 @@ public class MemberService {
     String email = query.getEmail();
 
     boolean isDuplicated = this.memberRepository.existsMemberByEmail(email);
-    if (isDuplicated) throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+    if (isDuplicated) {
+      throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+    }
   }
 
   @Transactional
@@ -148,13 +167,18 @@ public class MemberService {
 
     // 2. Validation - 방어로직
     boolean isPhoneDuplicated = this.memberRepository.existsMemberByPhone(body.getPhone());
-    if (isPhoneDuplicated) throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    if (isPhoneDuplicated) {
+      throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    }
     boolean isEmailDuplicated = this.memberRepository.existsMemberByEmail(body.getEmail());
-    if (isEmailDuplicated) throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+    if (isEmailDuplicated) {
+      throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+    }
 
     // 3. 기본 authroization 가져오기
     Optional<AuthorizationEntity> optionalAuthorization = this.authorizationRepository.findById(1L);
-    AuthorizationEntity authorization = optionalAuthorization.orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
+    AuthorizationEntity authorization = optionalAuthorization.orElseThrow(
+        () -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
     // 4. 멤버 저장
     MemberEntity memberToSave = MemberEntity.builder()

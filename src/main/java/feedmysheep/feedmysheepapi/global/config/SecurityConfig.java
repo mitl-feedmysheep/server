@@ -6,38 +6,39 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity // 시큐리티 활성화 -> 기본 스프링 필터체인에 등록
 public class SecurityConfig {
+
   // 비밀번호 암호화
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
+  // JWT
+  @Bean(name = "jwtTokenProvider")
+  public JwtTokenProvider jwtTokenProvider() {
+    return new JwtTokenProvider();
+  }
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.cors().disable()			//cors 방지
-        .csrf().disable()			//csrf 방지
-        .formLogin().disable()		//기본 로그인페이지 없애기
+    http.cors().disable()      //cors 방지
+        .csrf().disable()      //csrf 방지
+        .formLogin().disable()    //기본 로그인페이지 없애기
         .headers().frameOptions().disable();
 
 //    http.addFilterAfter(new JwtAuthenticationProcessingFilter(new JwtTokenProvider(), new NullAuthoritiesMapper()), LogoutFilter.class);
-    http.addFilterBefore(new JwtAuthenticationProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(
+        new JwtAuthenticationProcessingFilter(),
+        UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
-  }
-
-  // JWT
-  @Bean
-  public JwtTokenProvider jwtTokenProvider() {
-    return new JwtTokenProvider();
   }
 }

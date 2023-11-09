@@ -22,12 +22,12 @@ public class ChurchService {
 
   public List<ChurchResDto.getChurchList> getChurchList(Authentication authentication) {
     // 1. 유효한 멤버인지 검사
-    System.out.println("1" + authentication.getAuthorities());
-    System.out.println("2" + authentication.getCredentials());
-    System.out.println("3" + authentication.getDetails());
-    System.out.println("4" + authentication.getPrincipal());
-    System.out.println("5" + authentication.getName());
-    System.out.println("6" + authentication.getClass());
+    System.out.println("1 ->" + authentication.getAuthorities());
+    System.out.println("2 ->" + authentication.getCredentials());
+    System.out.println("3 ->" + authentication.getDetails());
+    System.out.println("4 ->" + authentication.getPrincipal());
+    System.out.println("5 ->" + authentication.getName());
+    System.out.println("6 ->" + authentication.getClass());
 //    MemberEntity isValidMember = this.memberRepository.existsMemberByMemberId()
 
     // 2. 교회 리스트 반환

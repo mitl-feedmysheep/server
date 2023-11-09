@@ -31,20 +31,15 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
           "/app/member/sign-in", // 로그인
           "/app/token" // 토큰 재발급
       );
-  private JwtTokenProvider jwtTokenProvider;
-  private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
-  JwtAuthenticationProcessingFilter(JwtTokenProvider jwtTokenProvider,
-      GrantedAuthoritiesMapper authoritiesMapper) {
-    this.jwtTokenProvider = jwtTokenProvider;
-    this.authoritiesMapper = authoritiesMapper;
-  }
+  private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
+  private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
     String requestUri = request.getRequestURI();
-    
+
     // Bypass 검증
     for (String urlPattern : BYPASS_URL_PATTERN) {
       if (requestUri.contains(urlPattern)) {
@@ -70,8 +65,9 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     // CustomUserDetails user
     UserDetails user = User.builder()
         .username(memberInfo.getMemberName())
-        // FIXME 이렇게 코드 적어도 될까?
         .roles(String.valueOf(memberInfo.getLevel()))
+        // TODO 이거 어떻게 할지 구상해보기
+        .password("testetsetstsetsets")
         .build();
 
     Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
