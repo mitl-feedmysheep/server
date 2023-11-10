@@ -14,6 +14,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionAdvice {
+
   @ExceptionHandler(CustomException.class)
   @ResponseBody
   public ErrorEntity handleCustomException(CustomException ex) {
@@ -37,7 +38,8 @@ public class GlobalExceptionAdvice {
   }
 
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-  public ErrorEntity handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
+  public ErrorEntity handleHttpRequestMethodNotSupportedException(
+      HttpRequestMethodNotSupportedException ex) {
     return new ErrorEntity("fail", "메서드가 올바르지 않아요. Swagger 문서를 확인해주세요.");
   }
 

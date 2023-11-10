@@ -28,6 +28,7 @@ public class ChurchService {
     System.out.println("4 ->" + authentication.getPrincipal());
     System.out.println("5 ->" + authentication.getName());
     System.out.println("6 ->" + authentication.getClass());
+
 //    MemberEntity isValidMember = this.memberRepository.existsMemberByMemberId()
 
     // 2. 교회 리스트 반환

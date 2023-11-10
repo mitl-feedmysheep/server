@@ -29,7 +29,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
           "/app/member/email/check-duplication", // 이메일 중복체크
           "/app/member/sign-up", // 회원가입
           "/app/member/sign-in", // 로그인
-          "/app/token" // 토큰 재발급
+          "/app/auth/token" // 토큰 재발급
       );
 
   private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
