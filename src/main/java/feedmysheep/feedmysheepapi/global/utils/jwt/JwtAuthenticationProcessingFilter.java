@@ -15,8 +15,6 @@ import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMap
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
@@ -61,17 +59,10 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
   }
 
   private void saveAuthentication(JwtDto.memberInfo memberInfo) {
-    // TODO 커스텀유저디테일 만드는 것 보기!
-    // CustomUserDetails user
-    UserDetails user = User.builder()
-        .username(memberInfo.getMemberName())
-        .roles(String.valueOf(memberInfo.getLevel()))
-        // TODO 이거 어떻게 할지 구상해보기
-        .password("testetsetstsetsets")
-        .build();
+    CustomUserDetails customUserDetails = new CustomUserDetails(memberInfo);
 
-    Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
-        authoritiesMapper.mapAuthorities(user.getAuthorities()));
+    Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null,
+        authoritiesMapper.mapAuthorities(customUserDetails.getAuthorities()));
 
     SecurityContext context = SecurityContextHolder.createEmptyContext();
     context.setAuthentication(authentication);

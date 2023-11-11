@@ -3,9 +3,11 @@ package feedmysheep.feedmysheepapi.domain.church.app.service;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
+import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
+import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
+import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,16 +22,15 @@ public class ChurchService {
     this.memberRepository = memberRepository;
   }
 
-  public List<ChurchResDto.getChurchList> getChurchList(Authentication authentication) {
+  public List<ChurchResDto.getChurchList> getChurchList(
+      CustomUserDetails customUserDetails) {
     // 1. 유효한 멤버인지 검사
-    System.out.println("1 ->" + authentication.getAuthorities());
-    System.out.println("2 ->" + authentication.getCredentials());
-    System.out.println("3 ->" + authentication.getDetails());
-    System.out.println("4 ->" + authentication.getPrincipal());
-    System.out.println("5 ->" + authentication.getName());
-    System.out.println("6 ->" + authentication.getClass());
+    Boolean isValidMember = this.memberRepository.existsMemberByMemberId(
+        customUserDetails.getMemberId());
 
-//    MemberEntity isValidMember = this.memberRepository.existsMemberByMemberId()
+    if (!isValidMember) {
+      throw new CustomException(ErrorMessage.NO_AUTHORIZATION);
+    }
 
     // 2. 교회 리스트 반환
     return this.churchRepository.getAllValidChurchList();
