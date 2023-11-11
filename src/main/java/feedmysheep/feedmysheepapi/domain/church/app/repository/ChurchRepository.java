@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
 public interface ChurchRepository extends JpaRepository<ChurchEntity, Long> {
 
   @Query("SELECT c.churchId, c.churchName, c.churchLocation FROM ChurchEntity c WHERE c.isValid = true")
-  List<ChurchResDto.getChurchList> getAllValidChurchList();
+  List<ChurchResDto.getChurchList> getChurchList();
 }

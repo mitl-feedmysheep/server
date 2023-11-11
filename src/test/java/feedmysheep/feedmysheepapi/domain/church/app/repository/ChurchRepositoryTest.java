@@ -41,7 +41,7 @@ class ChurchRepositoryTest {
   @Test
   @DisplayName("유효한 교회만 조회")
   public void 유효한교회만조회() {
-    List<ChurchResDto.getChurchList> validChurchList = this.churchRepository.getAllValidChurchList();
+    List<ChurchResDto.getChurchList> validChurchList = this.churchRepository.getChurchList();
 
     assertThat(validChurchList.size()).isEqualTo(1);
     assertThat(validChurchList.get(0).getChurchName()).isEqualTo("번동제일교회");

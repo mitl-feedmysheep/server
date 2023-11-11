@@ -10,8 +10,17 @@ public class ChurchResDto {
   @Getter
   @AllArgsConstructor
   public static class getChurchList {
+
     private Long churchId;
     private String churchName;
     private String churchLocation;
+  }
+
+  @Getter
+  @AllArgsConstructor
+  public static class getBodyListByChurchId {
+
+    private Long bodyId;
+    private String bodyName;
   }
 }
