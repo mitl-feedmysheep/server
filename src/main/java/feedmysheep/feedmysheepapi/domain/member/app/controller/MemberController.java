@@ -53,11 +53,11 @@ public class MemberController {
 //**MemoryMemberRepository같은 저장소에서 해당 리스트들을 찾아야 되는데,
   // 어디서 찾을 수 있는지?
 
-  @GetMapping("/check-church-member") {
-    public MemberResDto.checkChurchMember checkChurchMember() {
-      return this.memberService.checkRegisteredMember();
-    }
-  }
+//  @GetMapping("/check-church-member") {
+//    public MemberResDto.checkChurchMember checkChurchMember() {
+//      return this.memberService.checkRegisteredMember();
+//    }
+
 
   @PostMapping("/sign-up")
   public MemberResDto.signUp signUp(@Valid @RequestBody MemberReqDto.signUp body) {

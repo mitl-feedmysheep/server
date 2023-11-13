@@ -1,14 +1,19 @@
 package feedmysheep.feedmysheepapi.domain.church.app.service;
 
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto.getChurchList;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
+import feedmysheep.feedmysheepapi.models.ChurchEntity;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class ChurchService {
@@ -38,5 +43,52 @@ public class ChurchService {
 
     // 2. 교회 리스트 반환
     return this.churchRepository.getAllValidChurchList();
+  }
+
+  private List<ChurchResDto.getChurchList> churchList = new ArrayList<>();
+
+
+  public ChurchRepository getChurchRepository() {
+    return churchRepository;
+  }
+
+  public MemberRepository getMemberRepository() {
+    return memberRepository;
+  }
+
+  public void setChurchList(
+      List<getChurchList> churchList) {
+    this.churchList = churchList;
+  }
+
+  public List<ChurchResDto.getChurchList> registerChurch(ChurchResDto.getChurchList body){
+    // ChurchResDto.getChurchList 객체에서 교회 정보들을 추출.
+      String churchName = body.getChurchName();
+      String churchLocation = body.getChurchLocation();
+
+      //새로운 교회 정보를 생성하고, DB에 저장하기.
+    ChurchEntity newChurch = new ChurchEntity();
+    newChurch.setChurchName(churchName);
+    newChurch.setChurchLocation(churchLocation);
+    newChurch.setValid(true); // 예시로 유효성을 true로 설정.
+
+    churchRepository.save(newChurch);
+
+
+    //교회 정보를 새로운 ChurchResDto.getChurchList의 객체로 생성.
+//      ChurchResDto.getChurchList newChurch = new ChurchResDto.getChurchList();
+//      newChurch.setChurchName(churchName);
+//      newChurch.setChurchLocation(churchLocation);
+
+//      churchList.add(newChurch);
+  List<ChurchResDto.getChurchList> churchList = churchRepository.getAllValidChurchList();
+
+    return churchList;
+  }
+
+  public List<ChurchResDto.getChurchList> getChurchList() {
+    // 현재 등록된 교회 정보 목록을 반환
+    List<ChurchResDto.getChurchList> churchList = churchRepository.getAllValidChurchList();
+    return churchList;
   }
 }
