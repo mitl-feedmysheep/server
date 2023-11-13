@@ -9,7 +9,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class JwtTokenProvider {
+
   private final String secretKey = JWT.SECRET_KEY;
 
   // ACCESS 토큰 생성
@@ -75,6 +75,8 @@ public class JwtTokenProvider {
       return memberInfo;
     } catch (UnsupportedJwtException | MalformedJwtException e) {
       throw new CustomException(ErrorMessage.INVALID_JWT);
+    } catch (IllegalArgumentException e) {
+      throw new CustomException(ErrorMessage.NO_TOKEN);
     }
     // ExpiredJwtException 은 AOP에서 잡기 위해서 처리를 하지 않음!!
   }

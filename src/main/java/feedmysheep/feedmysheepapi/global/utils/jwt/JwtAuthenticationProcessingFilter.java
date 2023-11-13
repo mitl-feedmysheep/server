@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.global.utils.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import jakarta.servlet.FilterChain;
@@ -7,7 +8,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +26,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
   private static final List<String> BYPASS_URL_PATTERN =
       List.of(
+          "/app/word", // 말씀 가져오
           "/app/member/phone/send-verification-code", // 휴대폰 인증 번호 전송
           "/app/member/phone/check-verification-code", // 휴대폰 인증 코드 검사
           "/app/member/email/check-duplication", // 이메일 중복체크
@@ -36,26 +41,41 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
-    String requestUri = request.getRequestURI();
+    try {
+      String requestUri = request.getRequestURI();
 
-    // Bypass 검증
-    for (String urlPattern : BYPASS_URL_PATTERN) {
-      if (requestUri.contains(urlPattern)) {
-        filterChain.doFilter(request, response);
-        return;
+      // Bypass 검증
+      for (String urlPattern : BYPASS_URL_PATTERN) {
+        if (requestUri.contains(urlPattern)) {
+          filterChain.doFilter(request, response);
+          return;
+        }
       }
+
+      // 토큰 여부 검증
+      String accessToken = request.getHeader("fms-token");
+      if (accessToken == null || accessToken.isEmpty()) {
+        throw new CustomException(ErrorMessage.NO_TOKEN);
+      }
+
+      // 유효 토큰 검증
+      JwtDto.memberInfo memberInfo = this.jwtTokenProvider.validateToken(accessToken);
+      saveAuthentication(memberInfo);
+      filterChain.doFilter(request, response);
+    } catch (CustomException ex) {
+      // 객체 준비
+      response.setContentType("application/json;charset=UTF-8");
+      PrintWriter writer = response.getWriter();
+      Map<String, String> error = new HashMap<>();
+      error.put("status", "fail");
+      error.put("message", ex.getMessage());
+      ObjectMapper objectMapper = new ObjectMapper();
+      String jsonAsString = objectMapper.writeValueAsString(error);
+      // Servlet Response 리턴 (Global AOP에 잡히지 않는 필터)
+      writer.print(jsonAsString);
+      writer.flush();
     }
 
-    // 토큰 여부 검증
-    String accessToken = request.getHeader("fms-token");
-    if (accessToken == null || accessToken.isEmpty()) {
-      throw new CustomException(ErrorMessage.NO_TOKEN);
-    }
-
-    // 유효 토큰 검증
-    JwtDto.memberInfo memberInfo = this.jwtTokenProvider.validateToken(accessToken);
-    saveAuthentication(memberInfo);
-    filterChain.doFilter(request, response);
   }
 
   private void saveAuthentication(JwtDto.memberInfo memberInfo) {
