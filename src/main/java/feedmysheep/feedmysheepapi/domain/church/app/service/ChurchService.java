@@ -79,8 +79,8 @@ public class ChurchService {
 //      ChurchResDto.getChurchList newChurch = new ChurchResDto.getChurchList();
 //      newChurch.setChurchName(churchName);
 //      newChurch.setChurchLocation(churchLocation);
-
 //      churchList.add(newChurch);
+
   List<ChurchResDto.getChurchList> churchList = churchRepository.getAllValidChurchList();
 
     return churchList;
