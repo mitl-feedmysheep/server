@@ -27,6 +27,7 @@ public class ChurchService {
     this.memberRepository = memberRepository;
   }
 
+
   //Boolean타입을 설정해줘서, 만약 멤버가 memberRepository저장소에 있다면,
   //existsMemberByMemberId의 파라미터(?)를 통해서 customUserDeatils객체에서
   // getMemberId를 받아와서, 해당 id를 가진 멤버가 저장소에 존재하는지 여부를 확인함.
@@ -46,22 +47,25 @@ public class ChurchService {
   }
 
   public List<ChurchResDto.getChurchList> registerChurch(ChurchResDto.getChurchList body){
-    // ChurchResDto.getChurchList 객체에서 교회 정보들을 추출.
     String churchName = body.getChurchName();
     String churchLocation = body.getChurchLocation();
 
-//      새로운 교회 정보를 생성하고, DB에 저장하기.
-//    ChurchEntity newChurch = new ChurchEntity();
-//    newChurch.setChurchName(churchName);
-//    newChurch.setChurchLocation(churchLocation);
-//    newChurch.setValid(true); // 예시로 유효성을 true로 설정
-//
-// 새로운 교회 정보를 데이터베이스에 저장
-//    churchRepository.save(newChurch);
+    saveChurchInfo(churchName, churchLocation);
 
     List<ChurchResDto.getChurchList> churchList = churchRepository.getAllValidChurchList();
 
     return churchList;
   }
 
+  //  * 방향: 해당 교회 정보를 담을 변수 및 객체를 생성하고, DB에 저장하기.
+  //  * 문제점 : ChurchEntity에 접근을 하고싶은데, ChurchId랑 ChurchLocation이 private로 되어있어서 그런지,
+  //          Protected 되어있다고 접근 안 됨.
+  public void saveChurchInfo(String churchName, String churchLocation) {
+    ChurchEntity churchEntity = new ChurchEntity();
+    churchEntity.setChurchName(churchName);
+    churchEntity.setChurchLocation(churchLocation);
+
+    churchRepository.save(churchEntity);
+
+  }
 }
