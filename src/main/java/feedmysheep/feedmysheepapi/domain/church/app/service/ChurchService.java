@@ -59,7 +59,7 @@ public class ChurchService {
 
   //  * 방향: 해당 교회 정보를 담을 변수 및 객체를 생성하고, DB에 저장하기.
   //  * 문제점 : ChurchEntity에 접근을 하고싶은데, ChurchId랑 ChurchLocation이 private로 되어있어서 그런지,
-  //          Protected 되어있다고 접근 안 됨.
+  //          Protected 되어있다고 접근 안 됨
   public void saveChurchInfo(String churchName, String churchLocation) {
     ChurchEntity churchEntity = new ChurchEntity();
     churchEntity.setChurchName(churchName);
