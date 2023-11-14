@@ -50,7 +50,7 @@ public class ChurchService {
     String churchName = body.getChurchName();
     String churchLocation = body.getChurchLocation();
 
-//      새로운 교회 정보를 생성하고, DB에 저장하기.
+//      새로운 교회 정보를 생성하고, DB에 저장하기..
 //    ChurchEntity newChurch = new ChurchEntity();
 //    newChurch.setChurchName(churchName);
 //    newChurch.setChurchLocation(churchLocation);
