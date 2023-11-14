@@ -51,9 +51,9 @@ public class ChurchService {
     String churchLocation = body.getChurchLocation();
 
 //      새로운 교회 정보를 생성하고, DB에 저장하기.
-    ChurchEntity newChurch = new ChurchEntity();
-    newChurch.setChurchName(churchName);
-    newChurch.setChurchLocation(churchLocation);
+//    ChurchEntity newChurch = new ChurchEntity();
+//    newChurch.setChurchName(churchName);
+//    newChurch.setChurchLocation(churchLocation);
     newChurch.setValid(true); // 예시로 유효성을 true로 설정
 
     // 새로운 교회 정보를 데이터베이스에 저장
