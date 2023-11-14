@@ -45,50 +45,23 @@ public class ChurchService {
     return this.churchRepository.getAllValidChurchList();
   }
 
-  private List<ChurchResDto.getChurchList> churchList = new ArrayList<>();
-
-
-  public ChurchRepository getChurchRepository() {
-    return churchRepository;
-  }
-
-  public MemberRepository getMemberRepository() {
-    return memberRepository;
-  }
-
-  public void setChurchList(
-      List<getChurchList> churchList) {
-    this.churchList = churchList;
-  }
-
   public List<ChurchResDto.getChurchList> registerChurch(ChurchResDto.getChurchList body){
     // ChurchResDto.getChurchList 객체에서 교회 정보들을 추출.
-      String churchName = body.getChurchName();
-      String churchLocation = body.getChurchLocation();
+    String churchName = body.getChurchName();
+    String churchLocation = body.getChurchLocation();
 
-      //새로운 교회 정보를 생성하고, DB에 저장하기.
+//      새로운 교회 정보를 생성하고, DB에 저장하기.
     ChurchEntity newChurch = new ChurchEntity();
     newChurch.setChurchName(churchName);
     newChurch.setChurchLocation(churchLocation);
-    newChurch.setValid(true); // 예시로 유효성을 true로 설정.
+    newChurch.setValid(true); // 예시로 유효성을 true로 설정
 
+    // 새로운 교회 정보를 데이터베이스에 저장
     churchRepository.save(newChurch);
 
-
-    //교회 정보를 새로운 ChurchResDto.getChurchList의 객체로 생성.
-//      ChurchResDto.getChurchList newChurch = new ChurchResDto.getChurchList();
-//      newChurch.setChurchName(churchName);
-//      newChurch.setChurchLocation(churchLocation);
-//      churchList.add(newChurch);
-
-  List<ChurchResDto.getChurchList> churchList = churchRepository.getAllValidChurchList();
-
-    return churchList;
-  }
-
-  public List<ChurchResDto.getChurchList> getChurchList() {
-    // 현재 등록된 교회 정보 목록을 반환
     List<ChurchResDto.getChurchList> churchList = churchRepository.getAllValidChurchList();
+
     return churchList;
   }
+
 }
