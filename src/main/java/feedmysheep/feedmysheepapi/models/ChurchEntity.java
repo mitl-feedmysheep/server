@@ -64,4 +64,11 @@ public class ChurchEntity extends CreatedUpdated {
     this.homepageUrl = homepageUrl;
     this.churchDescription = churchDescription;
   }
+
+  //이거 내가 작성해도 됨..? (산티노)
+  public void setChurchName(String churchName) {
+  }
+
+  public void setChurchLocation(String churchLocation) {
+  }
 }

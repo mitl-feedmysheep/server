@@ -44,7 +44,8 @@ public class ChurchController {
     return this.churchService.getChurchList(customUserDetails);
   }
 
-  @PostMapping("/register")
+  //consumes = "apllication/json" 이거 꼭 설정 해줘야 함?
+  @PostMapping(value = "/register", consumes = "application/json")
     public List<ChurchResDto.getChurchList> registerChurch(@RequestBody ChurchResDto.getChurchList body){
       return this.churchService.registerChurch(body);
     }
