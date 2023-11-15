@@ -12,7 +12,7 @@ public class CONSTANT {
   public static class TWILIO {
 
     public final static String ACCOUNT_SID = "AC8edd3e64ee51444b1a3ea11d5268edee";
-    public final static String AUTH_TOKEN = "c63a826d7c5e799748ce4a9e78900a5a";
+    public final static String AUTH_TOKEN = "7acfe04253c7da54812b9796cbad2d2f";
     public final static String FROM_PHONE_NUMBER = "+17067703741";
   }
 

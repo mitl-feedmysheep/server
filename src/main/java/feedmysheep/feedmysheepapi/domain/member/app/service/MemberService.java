@@ -74,7 +74,6 @@ public class MemberService {
     // 2. FailLog 5회 이상 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone,
         startOfToday, endOfToday);
-    System.out.println("failCount" + failCount);
     if (failCount >= 5) {
       throw new CustomException(ErrorMessage.FAIL_LOG_OVER_5_TRIES);
     }

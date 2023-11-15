@@ -26,7 +26,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
   private static final List<String> BYPASS_URL_PATTERN =
       List.of(
-          "/app/word", // 말씀 가져오
+          "/data-seeding", // 초기 데이터 셋팅
+          "/app/word", // 말씀 가져오기
           "/app/member/phone/send-verification-code", // 휴대폰 인증 번호 전송
           "/app/member/phone/check-verification-code", // 휴대폰 인증 코드 검사
           "/app/member/email/check-duplication", // 이메일 중복체크
