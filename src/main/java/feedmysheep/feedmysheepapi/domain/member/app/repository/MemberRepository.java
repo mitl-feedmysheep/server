@@ -19,6 +19,11 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.memberId = :memberId")
   Optional<MemberEntity> getMemberByMemberId(@Param("memberId") Long memberId);
 
+  @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.email = :email")
+  Optional<MemberEntity> getMemberByEmail(@Param("email") String email);
+
   @Query("SELECT EXISTS (SELECT 1 FROM MemberEntity m WHERE m.isActive = true and m.memberId = :memberId)")
   boolean existsMemberByMemberId(@Param("memberId") Long memberId);
+
+
 }

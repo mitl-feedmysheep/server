@@ -51,8 +51,8 @@ public class ChurchEntity extends CreatedUpdated {
   @OneToMany(mappedBy = "church")
   private List<BodyEntity> bodyList = new ArrayList<>();
 
-  @OneToMany(mappedBy = "church")
-  private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
+//  @OneToMany(mappedBy = "church")
+//  private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
 
   @Builder
   public ChurchEntity(String churchName, String churchLogoUrl, String churchLocation,

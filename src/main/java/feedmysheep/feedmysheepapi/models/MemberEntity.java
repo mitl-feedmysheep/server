@@ -7,12 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,8 +31,8 @@ public class MemberEntity extends CreatedUpdated {
   @JoinColumn(name = "authorization_id", referencedColumnName = "authorization_id")
   private AuthorizationEntity authorization;
 
-  @OneToMany(mappedBy = "member")
-  private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
+//  @OneToMany(mappedBy = "member")
+//  private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
 
   @Setter
   @Column(name = "is_active", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효 계정 여부'")

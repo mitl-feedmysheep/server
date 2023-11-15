@@ -1,6 +1,5 @@
 package feedmysheep.feedmysheepapi.domain.member.app.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -10,7 +9,16 @@ public class MemberResDto {
 
   @AllArgsConstructor
   @Getter
-  public  static class signUp {
+  public static class signUp {
+
+    private String refreshToken;
+    private String accessToken;
+  }
+
+  @AllArgsConstructor
+  @Getter
+  public static class signIn {
+
     private String refreshToken;
     private String accessToken;
   }
@@ -18,6 +26,7 @@ public class MemberResDto {
   @AllArgsConstructor
   @Getter
   public static class checkChurchMember {
+
     private boolean isChurchMember;
   }
 }

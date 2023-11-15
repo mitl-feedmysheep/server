@@ -3,11 +3,10 @@ package feedmysheep.feedmysheepapi.domain.member.app.controller;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
-import feedmysheep.feedmysheepapi.domain.word.app.dto.WordReqDto;
-import feedmysheep.feedmysheepapi.domain.word.app.dto.WordResDto;
-import feedmysheep.feedmysheepapi.domain.word.app.service.WordService;
+import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,10 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/app/member")
 public class MemberController {
+
   private final MemberService memberService;
 
   @Autowired
-  public MemberController(MemberService memberService) { this.memberService = memberService; };
+  public MemberController(MemberService memberService) {
+    this.memberService = memberService;
+  }
+
+  ;
 
   @GetMapping("/phone/send-verification-code")
   public void sendVerificationCode(@Valid MemberReqDto.sendVerificationCode query) {
@@ -39,14 +43,20 @@ public class MemberController {
   }
 
   @PostMapping("/sign-up")
-  public MemberResDto.signUp signUp (@Valid @RequestBody MemberReqDto.signUp body) {
+  public MemberResDto.signUp signUp(@Valid @RequestBody MemberReqDto.signUp body) {
     return this.memberService.signUp(body);
   }
 
-//  @GetMapping("/check-church-member")
-//  public MemberResDto.checkChurchMember checkChurchMember () {
-//    return this.memberService.checkChurchMember();
-//  }
+  @PostMapping("/sign-in")
+  public MemberResDto.signIn signIn(@Valid @RequestBody MemberReqDto.signIn body) {
+    return this.memberService.signIn(body);
+  }
+
+  @GetMapping("/check-church-member")
+  public MemberResDto.checkChurchMember checkChurchMember(@AuthenticationPrincipal
+  CustomUserDetails customUserDetails) {
+    return this.memberService.checkChurchMember(customUserDetails);
+  }
 }
 
 

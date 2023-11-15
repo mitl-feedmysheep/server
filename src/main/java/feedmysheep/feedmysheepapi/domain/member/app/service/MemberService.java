@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
@@ -8,6 +9,7 @@ import feedmysheep.feedmysheepapi.domain.verification.app.repository.Verificatio
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.VERIFICATION;
 import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
+import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
@@ -38,12 +40,15 @@ public class MemberService {
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
 
+  private final ChurchMemberMapRepository churchMemberMapRepository;
+
   @Autowired
   public MemberService(
       MemberRepository memberRepository,
       VerificationRepository verificationRepository,
       VerificationFailLogRepository verificationFailLogRepository,
       AuthorizationRepository authorizationRepository,
+      ChurchMemberMapRepository churchMemberMapRepository,
       TwilioService twilioService,
       PasswordEncoder passwordEncoder,
       JwtTokenProvider jwtTokenProvider
@@ -52,6 +57,7 @@ public class MemberService {
     this.verificationRepository = verificationRepository;
     this.verificationFailLogRepository = verificationFailLogRepository;
     this.authorizationRepository = authorizationRepository;
+    this.churchMemberMapRepository = churchMemberMapRepository;
     this.twilioService = twilioService;
     this.passwordEncoder = passwordEncoder;
     this.jwtTokenProvider = jwtTokenProvider;
@@ -201,5 +207,34 @@ public class MemberService {
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
 
     return new MemberResDto.signUp(refreshToken, accessToken);
+  }
+
+  public MemberResDto.signIn signIn(MemberReqDto.signIn body) {
+    // 1. 이메일 유저 여부 체크
+    Optional<MemberEntity> optionalMember = this.memberRepository.getMemberByEmail(body.getEmail());
+    MemberEntity member = optionalMember.orElseThrow(
+        () -> new CustomException(ErrorMessage.NO_EMAIL_MEMBER_FOUND));
+
+    // 2. 유저 비밀번호 체크
+    if (!this.passwordEncoder.matches(body.getPassword(), member.getPassword())) {
+      throw new CustomException(ErrorMessage.WRONG_PASSWORD);
+    }
+
+    // 3. access / refresh 토큰 만들기
+    JwtDto.memberInfo memberInfo = new memberInfo();
+    memberInfo.setMemberId(member.getMemberId());
+    memberInfo.setLevel(member.getAuthorization().getLevel());
+    memberInfo.setMemberName(member.getMemberName());
+    String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
+    String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
+
+    return new MemberResDto.signIn(refreshToken, accessToken);
+  }
+
+  public MemberResDto.checkChurchMember checkChurchMember(CustomUserDetails customUserDetails) {
+    boolean isChurchMember = this.churchMemberMapRepository.existsChurchMemberByMemberId(
+        customUserDetails.getMemberId());
+
+    return new MemberResDto.checkChurchMember(isChurchMember);
   }
 }
