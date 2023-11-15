@@ -27,11 +27,9 @@ public class ChurchService {
     this.memberRepository = memberRepository;
   }
 
-
   //Boolean타입을 설정해줘서, 만약 멤버가 memberRepository저장소에 있다면,
   //existsMemberByMemberId의 파라미터(?)를 통해서 customUserDeatils객체에서
   // getMemberId를 받아와서, 해당 id를 가진 멤버가 저장소에 존재하는지 여부를 확인함.
-
   public List<ChurchResDto.getChurchList> getChurchList(
       CustomUserDetails customUserDetails) {
     // 1. 유효한 멤버인지 검사
@@ -56,9 +54,8 @@ public class ChurchService {
 
     return churchList;
   }
+
   //  * 방향: 해당 교회 정보를 담을 변수 및 객체를 생성하고, DB에 저장하기.
-  //  * 문제점 : ChurchEntity에 접근을 하고싶은데, ChurchId랑 ChurchLocation이 private로 되어있어서 그런지,
-  //          Protected 되어있다고 접근 안 됨
   public void saveChurchInfo(String churchName, String churchLocation) {
     ChurchEntity church = ChurchEntity.builder()
         .churchName(churchName)
