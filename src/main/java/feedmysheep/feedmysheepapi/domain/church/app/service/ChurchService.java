@@ -55,8 +55,8 @@ public class ChurchService {
 //    newChurch.setChurchName(churchName);
 //    newChurch.setChurchLocation(churchLocation);
 //    newChurch.setValid(true); // 예시로 유효성을 true로 설정
-
-    // 새로운 교회 정보를 데이터베이스에 저장
+//
+// 새로운 교회 정보를 데이터베이스에 저장
 //    churchRepository.save(newChurch);
 
     List<ChurchResDto.getChurchList> churchList = churchRepository.getAllValidChurchList();
