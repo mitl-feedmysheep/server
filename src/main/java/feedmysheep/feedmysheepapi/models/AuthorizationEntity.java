@@ -9,6 +9,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,4 +32,10 @@ public class AuthorizationEntity extends CreatedUpdated {
 
   @OneToMany(mappedBy = "authorization")
   private List<MemberEntity> member;
+
+  @Builder
+  public AuthorizationEntity(int level, String levelName) {
+    this.level = level;
+    this.levelName = levelName;
+  }
 }

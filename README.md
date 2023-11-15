@@ -21,10 +21,30 @@
        // application-local.yml 파일을 읽게 설정합니다.   
        active profiles >> local
        ```
+3. 초기 Data seeding
+    - 기본 데이터가 셋팅 초기작업을 위해서 API call로 간단하게 구현했습니다.
+    - /data-seeding **"한번"** 만 호출하시면 됩니다. (자세한 내용은 swagger에 나와있습니다.)
 
 ---
 
-## 기타
+## 협업툴
+
+1. SwaggerUI
+    - Frontend <-> Backend 소통을 위해서 만들었습니다.
+    - https://github.com/mitl-feedmysheep/api-spec
+    - 해당 프로젝트의 README를 읽어보시면 사용방법을 알 수 있습니다.
+2. Postman
+    - 초대 요청을 하시면 초대해드리겠습니다.
+    - 함께 사용할 수 있는 Workspace가 있습니다.
+    - 초기작업 / 앱 / 어드민 각 폴더가 분리되어 있으며 도메인별로 하위 폴더가 존재합니다.
+
+---
+
+## 테스트 케이스
+
+---
+
+## 기타 로직
 
 1. 토큰 로직
     - 로그인 시, "refreshToken"과 "accessToken"을 함께 발행해준다.
