@@ -1,6 +1,5 @@
 package feedmysheep.feedmysheepapi.domain.church.app.controller;
 
-import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
 import feedmysheep.feedmysheepapi.domain.church.app.service.ChurchService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,11 +42,13 @@ public class ChurchController {
     return this.churchService.getChurchList(customUserDetails);
   }
 
-  @PostMapping("/register")
-    public List<ChurchResDto.getChurchList> registerChurch(@RequestBody ChurchResDto.getChurchList body){
-      return this.churchService.registerChurch(body);
+  @PostMapping("/register"){
+    public ChurchRegisterRequest(){
+
     }
-  };
+  }
 
-
-
+//  @GetMapping("/{churchId}/body"){
+//
+//  }
+}

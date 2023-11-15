@@ -206,9 +206,9 @@ public class MemberService {
 
   //MemberController에서는 맵핑만 해주고, 서비스에서 로직에 대한 내용들
   //(전체 리스트 - 등록여부 확인 - 있다면 보여주고, 없다면 없다고 알려주기)
-public checkRegisteredMember(){
-  Optional<저장된 인스턴스> MemberList = 레포지토리.
-}
+//public checkRegisteredMember(){
+//  Optional<저장된 인스턴스> MemberList = 레포지토리.
+//}
 
 
 }
