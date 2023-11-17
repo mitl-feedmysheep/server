@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,12 +25,8 @@ public class MemberEntity extends CreatedUpdated {
   @Column(name = "member_id", nullable = false, columnDefinition = "bigint COMMENT '멤버 아이디'")
   private Long memberId;
 
-  @ManyToOne
-  @JoinColumn(name = "authorization_id", referencedColumnName = "authorization_id")
-  private AuthorizationEntity authorization;
-
-//  @OneToMany(mappedBy = "member")
-//  private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
+  @Column(name = "authorization_id", nullable = false, columnDefinition = "bigint COMMENT '권한 아이디'")
+  private Long authorizationId;
 
   @Setter
   @Column(name = "is_active", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효 계정 여부'")
@@ -69,8 +63,10 @@ public class MemberEntity extends CreatedUpdated {
   private LocalDateTime registeredAt = LocalDateTime.now();
 
   @Builder
-  public MemberEntity(String memberName, String sex, LocalDate birthday, String phone,
-      String address, String email, String password, AuthorizationEntity authorization) {
+  public MemberEntity(Long authorizationId, String memberName, String sex, LocalDate birthday,
+      String phone,
+      String address, String email, String password) {
+    this.authorizationId = authorizationId;
     this.memberName = memberName;
     this.sex = sex;
     this.birthday = birthday;
@@ -78,6 +74,5 @@ public class MemberEntity extends CreatedUpdated {
     this.address = address;
     this.email = email;
     this.password = password;
-    this.authorization = authorization;
   }
 }

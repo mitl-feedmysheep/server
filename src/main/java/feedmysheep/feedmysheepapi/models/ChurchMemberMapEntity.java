@@ -24,14 +24,6 @@ public class ChurchMemberMapEntity extends CreatedUpdated {
   @Column(name = "church_member_map_id")
   private Long churchMemberMapId;
 
-  //  @ManyToOne
-//  @JoinColumn(name = "church_id", referencedColumnName = "church_id")
-//  private ChurchEntity church;
-//
-//  @ManyToOne
-//  @JoinColumn(name = "member_id", referencedColumnName = "member_id")
-//  private MemberEntity member;
-  
   @Column(name = "church_id", nullable = false)
   private Long churchId;
 

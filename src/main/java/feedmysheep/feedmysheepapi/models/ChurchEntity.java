@@ -44,12 +44,6 @@ public class ChurchEntity extends CreatedUpdated {
   @Setter
   @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
   private boolean isValid = false;
-  
-//  @OneToMany(mappedBy = "church")
-//  private List<BodyEntity> bodyList = new ArrayList<>();
-
-//  @OneToMany(mappedBy = "church")
-//  private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();
 
   @Builder
   public ChurchEntity(String churchName, String churchLogoUrl, String churchLocation,
