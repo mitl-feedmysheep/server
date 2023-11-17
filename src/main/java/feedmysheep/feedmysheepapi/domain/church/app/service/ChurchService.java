@@ -30,7 +30,7 @@ public class ChurchService {
   }
 
   public List<ChurchResDto.getChurch> getChurchList(
-      CustomUserDetails customUserDetails) {
+      CustomUserDetails customUserDetails, String churchName) {
     // 1. 유효한 멤버인지 검사
     boolean isValidMember = this.memberRepository.existsMemberByMemberId(
         customUserDetails.getMemberId());
@@ -39,7 +39,13 @@ public class ChurchService {
     }
 
     // 2. 교회 리스트
-    List<ChurchEntity> churchList = this.churchRepository.getChurchList();
+    // FIXME 임시
+    List<ChurchEntity> churchList;
+    if (churchName != null && !churchName.isEmpty()) {
+      churchList = this.churchRepository.getChurchListByChurchName(churchName);
+    } else {
+      churchList = this.churchRepository.getChurchList();
+    }
 
     // 3. 반환
     return churchList.stream().map(church -> {
@@ -56,7 +62,7 @@ public class ChurchService {
   public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
       CustomUserDetails customUserDetails, Long churchId) {
     // 1. 유효한 멤버인지 검사
-    Boolean isValidMember = this.memberRepository.existsMemberByMemberId(
+    boolean isValidMember = this.memberRepository.existsMemberByMemberId(
         customUserDetails.getMemberId());
     if (!isValidMember) {
       throw new CustomException(ErrorMessage.NO_AUTHORIZATION);

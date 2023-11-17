@@ -5,15 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "body")
@@ -26,9 +23,8 @@ public class BodyEntity extends CreatedUpdated {
   @Column(name = "body_id", nullable = false, columnDefinition = "bigint COMMENT '바디 아이디'")
   private Long bodyId;
 
-  @ManyToOne
-  @JoinColumn(name = "church_id", nullable = false)
-  private ChurchEntity church;
+  @Column(name = "church_id", nullable = false)
+  private Long churchId;
 
   @Column(name = "body_name", nullable = false, length = 50, columnDefinition = "varchar(50) COMMENT '바디 이름 (ex. 새청)'")
   private String bodyName;
@@ -45,6 +41,7 @@ public class BodyEntity extends CreatedUpdated {
   @Column(name = "body_description", length = 100, columnDefinition = "varchar(100) COMMENT '설명'")
   private String bodyDescription;
 
+  @Setter
   @Column(name = "is_valid", nullable = false)
   private boolean isValid = true;
 
@@ -57,6 +54,18 @@ public class BodyEntity extends CreatedUpdated {
   @Column(name = "facebook_url", length = 100, columnDefinition = "varchar(100) COMMENT '페이스북 주소'")
   private String facebookUrl;
 
-  @OneToMany(mappedBy = "body")
-  private List<OrganEntity> organList = new ArrayList<>();
+  @Builder
+  public BodyEntity(Long churchId, String bodyName, String bodyLogoUrl, String bodyLocation,
+      String bodyNumber,
+      String bodyDescription, String youtubeUrl, String instagramUrl, String facebookUrl) {
+    this.churchId = churchId;
+    this.bodyName = bodyName;
+    this.bodyLogoUrl = bodyLogoUrl;
+    this.bodyLocation = bodyLocation;
+    this.bodyNumber = bodyNumber;
+    this.bodyDescription = bodyDescription;
+    this.youtubeUrl = youtubeUrl;
+    this.instagramUrl = instagramUrl;
+    this.facebookUrl = facebookUrl;
+  }
 }

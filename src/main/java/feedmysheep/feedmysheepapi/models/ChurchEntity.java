@@ -5,10 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,9 +44,9 @@ public class ChurchEntity extends CreatedUpdated {
   @Setter
   @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
   private boolean isValid = false;
-
-  @OneToMany(mappedBy = "church")
-  private List<BodyEntity> bodyList = new ArrayList<>();
+  
+//  @OneToMany(mappedBy = "church")
+//  private List<BodyEntity> bodyList = new ArrayList<>();
 
 //  @OneToMany(mappedBy = "church")
 //  private List<ChurchMemberMapEntity> churchMemberList = new ArrayList<>();

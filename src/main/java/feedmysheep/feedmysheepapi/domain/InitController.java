@@ -1,8 +1,12 @@
 package feedmysheep.feedmysheepapi.domain;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
 import feedmysheep.feedmysheepapi.domain.word.app.repository.WordRepository;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
+import feedmysheep.feedmysheepapi.models.BodyEntity;
+import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.WordEntity;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +20,17 @@ public class InitController {
 
   private final WordRepository wordRepository;
   private final AuthorizationRepository authorizationRepository;
+  private final ChurchRepository churchRepository;
+  private final BodyRepository bodyRepository;
 
   @Autowired
   public InitController(WordRepository wordRepository,
-      AuthorizationRepository authorizationRepository) {
+      AuthorizationRepository authorizationRepository, ChurchRepository churchRepository,
+      BodyRepository bodyRepository) {
     this.wordRepository = wordRepository;
     this.authorizationRepository = authorizationRepository;
+    this.churchRepository = churchRepository;
+    this.bodyRepository = bodyRepository;
   }
 
   // health-check 나중에 해야 함
@@ -44,5 +53,36 @@ public class InitController {
         .levelName("기본 권한")
         .build();
     this.authorizationRepository.save(seedAuth);
+
+    // 교회
+    ChurchEntity seedChurch1 = ChurchEntity.builder()
+        .churchName("번동제일교회")
+        .churchLocation("서울 강북구 수유")
+        .build();
+
+    seedChurch1.setValid(true);
+    ChurchEntity seedChurch1Saved = this.churchRepository.save(seedChurch1);
+    ChurchEntity seedChurch2 = ChurchEntity.builder()
+        .churchName("양곡교회")
+        .churchLocation("창원 성산구 신촌동")
+        .build();
+    seedChurch2.setValid(true);
+    this.churchRepository.save(seedChurch2);
+
+    // 교회별 부서
+    BodyEntity seedBody1 = BodyEntity.builder()
+        .churchId(seedChurch1Saved.getChurchId())
+        .bodyName("새청")
+        .bodyLocation("3층 중예배실")
+        .bodyDescription("새벽이슬 같은 청년")
+        .build();
+    BodyEntity seedBody1Saved = this.bodyRepository.save(seedBody1);
+    BodyEntity seedBody2 = BodyEntity.builder()
+        .churchId(seedChurch1Saved.getChurchId())
+        .bodyName("신혼부부모임")
+        .bodyLocation("2층 헤븐")
+        .bodyDescription("신혼부부 모임입니다.")
+        .build();
+    this.bodyRepository.save(seedBody2);
   }
 }
