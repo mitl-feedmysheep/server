@@ -12,7 +12,7 @@ public interface ChurchRepository extends JpaRepository<ChurchEntity, Long> {
 
   @Query("SELECT c FROM ChurchEntity c WHERE c.isValid = true")
   List<ChurchEntity> getChurchList();
-
+  
   @Query("SELECT c FROM ChurchEntity c WHERE c.isValid = true and c.churchName = :churchName")
   List<ChurchEntity> getChurchListByChurchName(@Param("churchName") String churchName);
 }

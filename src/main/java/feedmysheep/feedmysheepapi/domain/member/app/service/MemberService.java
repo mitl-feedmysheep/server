@@ -16,13 +16,14 @@ import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
+import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Optional;
+import java.util.List;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -72,10 +73,8 @@ public class MemberService {
     LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
 
     // 1. 휴대폰 사용 여부 체크
-    boolean isDuplicated = this.memberRepository.existsMemberByPhone(phone);
-    if (isDuplicated) {
-      throw new CustomException(ErrorMessage.PHONE_IN_USE);
-    }
+    this.memberRepository.getMemberByPhone(phone)
+        .orElseThrow((() -> new CustomException(ErrorMessage.PHONE_IN_USE)));
 
     // 2. FailLog 5회 이상 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone,
@@ -126,10 +125,8 @@ public class MemberService {
     LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
 
     // 1. 휴대폰 사용 여부 체크
-    boolean isDuplicated = this.memberRepository.existsMemberByPhone(phone);
-    if (isDuplicated) {
-      throw new CustomException(ErrorMessage.PHONE_IN_USE);
-    }
+    this.memberRepository.getMemberByPhone(phone)
+        .orElseThrow(() -> new CustomException(ErrorMessage.PHONE_IN_USE));
 
     // 2. 금일 인증실패 5회 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone,
@@ -139,10 +136,8 @@ public class MemberService {
     }
 
     // 3. 휴대폰 번호와 인증코드 여부 체크
-    Optional<VerificationEntity> optionalVerificationEntity = this.verificationRepository.findByPhoneAndVerificationCode(
-        phone, code);
-    VerificationEntity verification = optionalVerificationEntity.orElseThrow(
-        () -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE));
+    VerificationEntity verification = this.verificationRepository.findByPhoneAndVerificationCode(
+        phone, code).orElseThrow(() -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE));
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime threeMinLater = verification.getCreatedAt().plusMinutes(3);
     // - 존재하지 않는다면, 인증실패 저장 후 재시도 요청
@@ -159,10 +154,8 @@ public class MemberService {
   public void checkEmailDuplication(MemberReqDto.checkEmailDuplication query) {
     String email = query.getEmail();
 
-    boolean isDuplicated = this.memberRepository.existsMemberByEmail(email);
-    if (isDuplicated) {
-      throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
-    }
+    this.memberRepository.getMemberByEmail(email)
+        .orElseThrow(() -> new CustomException(ErrorMessage.EMAIL_DUPLICATED));
   }
 
   @Transactional
@@ -171,22 +164,18 @@ public class MemberService {
     body.setPassword(this.passwordEncoder.encode(body.getPassword()));
 
     // 2. Validation - 방어로직
-    boolean isPhoneDuplicated = this.memberRepository.existsMemberByPhone(body.getPhone());
-    if (isPhoneDuplicated) {
-      throw new CustomException(ErrorMessage.PHONE_IN_USE);
-    }
-    boolean isEmailDuplicated = this.memberRepository.existsMemberByEmail(body.getEmail());
-    if (isEmailDuplicated) {
-      throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
-    }
+    this.memberRepository.getMemberByPhone(body.getPhone())
+        .orElseThrow(() -> new CustomException(ErrorMessage.PHONE_IN_USE));
+    this.memberRepository.getMemberByEmail(body.getEmail())
+        .orElseThrow(() -> new CustomException(ErrorMessage.EMAIL_DUPLICATED));
 
     // 3. 기본 authroization 가져오기
-    Optional<AuthorizationEntity> optionalAuthorization = this.authorizationRepository.findById(1L);
-    AuthorizationEntity authorization = optionalAuthorization.orElseThrow(
-        () -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
+    AuthorizationEntity authorization = this.authorizationRepository.findById(1L)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
     // 4. 멤버 저장
     MemberEntity memberToSave = MemberEntity.builder()
+        .authorizationId(authorization.getAuthorizationId())
         .memberName(body.getMemberName())
         .sex(body.getSex())
         .birthday(body.getBirthday())
@@ -194,14 +183,13 @@ public class MemberService {
         .address(body.getAddress())
         .email(body.getEmail())
         .password(body.getPassword())
-        .authorization(authorization)
         .build();
     MemberEntity member = this.memberRepository.save(memberToSave);
 
     // 5. access / refresh 토큰 만들기
     JwtDto.memberInfo memberInfo = new memberInfo();
     memberInfo.setMemberId(member.getMemberId());
-    memberInfo.setLevel(member.getAuthorization().getLevel());
+    memberInfo.setLevel(authorization.getLevel());
     memberInfo.setMemberName(member.getMemberName());
     String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
@@ -211,9 +199,11 @@ public class MemberService {
 
   public MemberResDto.signIn signIn(MemberReqDto.signIn body) {
     // 1. 이메일 유저 여부 체크
-    Optional<MemberEntity> optionalMember = this.memberRepository.getMemberByEmail(body.getEmail());
-    MemberEntity member = optionalMember.orElseThrow(
+    MemberEntity member = this.memberRepository.getMemberByEmail(body.getEmail()).orElseThrow(
         () -> new CustomException(ErrorMessage.NO_EMAIL_MEMBER_FOUND));
+    AuthorizationEntity authorization = this.authorizationRepository.findById(
+            member.getAuthorizationId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_AUTHORIZATION));
 
     // 2. 유저 비밀번호 체크
     if (!this.passwordEncoder.matches(body.getPassword(), member.getPassword())) {
@@ -223,7 +213,7 @@ public class MemberService {
     // 3. access / refresh 토큰 만들기
     JwtDto.memberInfo memberInfo = new memberInfo();
     memberInfo.setMemberId(member.getMemberId());
-    memberInfo.setLevel(member.getAuthorization().getLevel());
+    memberInfo.setLevel(authorization.getLevel());
     memberInfo.setMemberName(member.getMemberName());
     String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
@@ -232,8 +222,10 @@ public class MemberService {
   }
 
   public MemberResDto.checkChurchMember checkChurchMember(CustomUserDetails customUserDetails) {
-    boolean isChurchMember = this.churchMemberMapRepository.existsChurchMemberByMemberId(
-        customUserDetails.getMemberId());
+    List<ChurchMemberMapEntity> churchMemberMapList =
+        this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
+            customUserDetails.getMemberId());
+    boolean isChurchMember = churchMemberMapList.size() > 0;
 
     return new MemberResDto.checkChurchMember(isChurchMember);
   }

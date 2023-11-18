@@ -32,14 +32,10 @@ public class ChurchService {
   public List<ChurchResDto.getChurch> getChurchList(
       CustomUserDetails customUserDetails, String churchName) {
     // 1. 유효한 멤버인지 검사
-    boolean isValidMember = this.memberRepository.existsMemberByMemberId(
-        customUserDetails.getMemberId());
-    if (!isValidMember) {
-      throw new CustomException(ErrorMessage.NO_AUTHORIZATION);
-    }
+    this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 교회 리스트
-    // FIXME 임시
     List<ChurchEntity> churchList;
     if (churchName != null && !churchName.isEmpty()) {
       churchList = this.churchRepository.getChurchListByChurchName(churchName);
@@ -62,11 +58,8 @@ public class ChurchService {
   public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
       CustomUserDetails customUserDetails, Long churchId) {
     // 1. 유효한 멤버인지 검사
-    boolean isValidMember = this.memberRepository.existsMemberByMemberId(
-        customUserDetails.getMemberId());
-    if (!isValidMember) {
-      throw new CustomException(ErrorMessage.NO_AUTHORIZATION);
-    }
+    this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 바디 리스트 반환
     List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(churchId);

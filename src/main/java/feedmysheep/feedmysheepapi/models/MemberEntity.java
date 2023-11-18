@@ -25,6 +25,7 @@ public class MemberEntity extends CreatedUpdated {
   @Column(name = "member_id", nullable = false, columnDefinition = "bigint COMMENT '멤버 아이디'")
   private Long memberId;
 
+  @Setter
   @Column(name = "authorization_id", nullable = false, columnDefinition = "bigint COMMENT '권한 아이디'")
   private Long authorizationId;
 
@@ -38,24 +39,30 @@ public class MemberEntity extends CreatedUpdated {
   @Column(name = "sex", nullable = false, length = 5, columnDefinition = "varchar(1) COMMENT '성별 (M / F)'")
   private String sex;
 
+  @Setter
   @Column(name = "birthday", nullable = false, columnDefinition = "date COMMENT '멤버 생년월일'")
   private LocalDate birthday;
 
+  @Setter
   @Column(name = "phone", nullable = false, length = 20, columnDefinition = "varchar(20) COMMENT '멤버 휴대폰번호'")
   private String phone;
 
+  @Setter
   @Column(name = "profile_image_url", length = 200, columnDefinition = "varchar(200) COMMENT '멤버 프로필 이미지 URL'")
   private String profileImageUrl;
 
+  @Setter
   @Column(name = "address", nullable = false, length = 100, columnDefinition = "varchar(100) COMMENT '멤버 주소'")
   private String address;
 
+  @Setter
   @Column(name = "member_description", length = 100, columnDefinition = "varchar(100) COMMENT '멤버 특이사항'")
   private String memberDescription;
 
   @Column(name = "email", nullable = false, length = 100, columnDefinition = "varchar(100) COMMENT '멤버 로그인 이메일'")
   private String email;
 
+  @Setter
   @Column(name = "password", nullable = false, length = 100, columnDefinition = "varchar(100) COMMENT '멤버 해싱된 비밀번호'")
   private String password;
 

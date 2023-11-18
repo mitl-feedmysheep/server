@@ -1,11 +1,16 @@
 package feedmysheep.feedmysheepapi.domain.word.app.repository;
 
-import feedmysheep.feedmysheepapi.domain.word.app.dto.WordResDto;
 import feedmysheep.feedmysheepapi.models.WordEntity;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface WordRepository extends JpaRepository<WordEntity, Long> {
-  WordResDto.getWordByMainAndSubScreen findByMainScreenAndSubScreen(String mainScreen, String subScreen);
+
+  @Query("SELECT w FROM WordEntity w WHERE w.isValid = true and w.mainScreen = :mainScreen and w.subScreen = :subScreen")
+  List<WordEntity> getWordByMainScreenAndSubScreen(@Param("mainScreen") String mainScreen,
+      @Param("subScreen") String subScreen);
 }

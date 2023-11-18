@@ -1,15 +1,18 @@
 package feedmysheep.feedmysheepapi.domain.word.app.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Data
 public class WordResDto {
 
   @Getter
-  @AllArgsConstructor
+  @Setter
+  @RequiredArgsConstructor
   public static class getWordByMainAndSubScreen {
+
     private String words;
     private String book;
     private int chapter;

@@ -10,20 +10,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 
-  @Query("SELECT EXISTS (SELECT 1 FROM MemberEntity m WHERE m.isActive = true and m.phone = :phone)")
-  boolean existsMemberByPhone(@Param("phone") String phone);
-
-  @Query("SELECT EXISTS (SELECT 1 FROM MemberEntity m WHERE m.isActive = true and m.email = :email)")
-  boolean existsMemberByEmail(@Param("email") String email);
-
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.memberId = :memberId")
   Optional<MemberEntity> getMemberByMemberId(@Param("memberId") Long memberId);
 
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.email = :email")
   Optional<MemberEntity> getMemberByEmail(@Param("email") String email);
 
-  @Query("SELECT EXISTS (SELECT 1 FROM MemberEntity m WHERE m.isActive = true and m.memberId = :memberId)")
-  boolean existsMemberByMemberId(@Param("memberId") Long memberId);
-
-
+  @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.email = :phone")
+  Optional<MemberEntity> getMemberByPhone(@Param("phone") String phone);
 }

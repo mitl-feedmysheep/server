@@ -1,7 +1,11 @@
 package feedmysheep.feedmysheepapi.models;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,12 +31,6 @@ public class WordEntity extends CreatedUpdated {
   @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 1 COMMENT '활성화 여부'")
   private boolean isValid = true;
 
-  @Column(name = "display_start_date", nullable = false, columnDefinition = "date COMMENT '노출 시작날짜'")
-  private LocalDate displayStartDate;
-
-  @Column(name = "display_end_date", nullable = false, columnDefinition = "date COMMENT '노출 종료날짜'")
-  private LocalDate displayEndDate;
-
   @Column(name = "words", nullable = false, length = 2048, columnDefinition = "varchar(2048) COMMENT '말씀'")
   private String words;
 
@@ -46,11 +44,10 @@ public class WordEntity extends CreatedUpdated {
   private int verse;
 
   @Builder
-  public WordEntity(String mainScreen, String subScreen, LocalDate displayStartDate, LocalDate displayEndDate, String book, int chapter, int verse, String words) {
+  public WordEntity(String mainScreen, String subScreen, String book, int chapter, int verse,
+      String words) {
     this.mainScreen = mainScreen;
     this.subScreen = subScreen;
-    this.displayStartDate = displayStartDate;
-    this.displayEndDate = displayEndDate;
     this.book = book;
     this.chapter = chapter;
     this.verse = verse;

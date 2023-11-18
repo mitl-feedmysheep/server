@@ -25,8 +25,6 @@ public class MemberController {
     this.memberService = memberService;
   }
 
-  ;
-
   @GetMapping("/phone/send-verification-code")
   public void sendVerificationCode(@Valid MemberReqDto.sendVerificationCode query) {
     this.memberService.sendVerificationCode(query);
@@ -37,6 +35,7 @@ public class MemberController {
     this.memberService.checkVerificationCode(query);
   }
 
+  // TODO 여기 볼 차례~
   @GetMapping("/email/check-duplication")
   public void checkEmailDuplication(@Valid MemberReqDto.checkEmailDuplication query) {
     this.memberService.checkEmailDuplication(query);
