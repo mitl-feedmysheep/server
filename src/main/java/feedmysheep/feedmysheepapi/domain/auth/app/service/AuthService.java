@@ -2,7 +2,6 @@ package feedmysheep.feedmysheepapi.domain.auth.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthReqDto;
 import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthResDto;
-import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthResDto.createToken;
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
@@ -20,6 +19,7 @@ public class AuthService {
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberRepository memberRepository;
   private final AuthorizationRepository authorizationRepository;
+
 
   @Autowired
   public AuthService(MemberRepository memberRepository,
@@ -45,6 +45,6 @@ public class AuthService {
     String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
 
-    return new createToken(refreshToken, accessToken);
+    return new AuthResDto.createToken(refreshToken, accessToken);
   }
 }

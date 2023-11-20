@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.church.app.service;
 
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchMapper;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
@@ -20,13 +21,15 @@ public class ChurchService {
   private final MemberRepository memberRepository;
 
   private final BodyRepository bodyRepository;
+  private final ChurchMapper churchMapper;
 
   @Autowired
   public ChurchService(ChurchRepository churchRepository, MemberRepository memberRepository,
-      BodyRepository bodyRepository) {
+      BodyRepository bodyRepository, ChurchMapper churchMapper) {
     this.churchRepository = churchRepository;
     this.memberRepository = memberRepository;
     this.bodyRepository = bodyRepository;
+    this.churchMapper = churchMapper;
   }
 
   public List<ChurchResDto.getChurch> getChurchList(
@@ -44,15 +47,7 @@ public class ChurchService {
     }
 
     // 3. 반환
-    return churchList.stream().map(church -> {
-      ChurchResDto.getChurch churchDto = new ChurchResDto.getChurch();
-      churchDto.setChurchId(church.getChurchId());
-      churchDto.setChurchName(church.getChurchName());
-      churchDto.setChurchLocation(church.getChurchLocation());
-
-      return churchDto;
-    }).toList();
-//
+    return this.churchMapper.getChurchList(churchList);
   }
 
   public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
@@ -65,12 +60,6 @@ public class ChurchService {
     List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(churchId);
 
     // 3. DTO 매핑
-    return bodyList.stream().map(body -> {
-      ChurchResDto.getBodyListByChurchId bodyDto = new ChurchResDto.getBodyListByChurchId();
-      bodyDto.setBodyId(body.getBodyId());
-      bodyDto.setBodyName(body.getBodyName());
-
-      return bodyDto;
-    }).toList();
+    return this.churchMapper.getBodyListByChurchId(bodyList);
   }
 }

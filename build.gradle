@@ -28,6 +28,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    // MapStruct
+    // https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    // https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
+    testAnnotationProcessor("org.mapstruct:mapstruct-processor:1.5.3.Final")
+    // https://mvnrepository.com/artifact/org.mapstruct/mapstruct
+    implementation("org.mapstruct:mapstruct:1.5.3.Final")
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding
+    implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'

@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.word.app.service;
 
+import feedmysheep.feedmysheepapi.domain.word.app.dto.WordMapper;
 import feedmysheep.feedmysheepapi.domain.word.app.dto.WordReqDto;
 import feedmysheep.feedmysheepapi.domain.word.app.dto.WordResDto;
 import feedmysheep.feedmysheepapi.domain.word.app.repository.WordRepository;
@@ -16,9 +17,12 @@ public class WordService {
 
   private final WordRepository wordRepository;
 
+  private final WordMapper wordMapper;
+
   @Autowired
-  public WordService(WordRepository wordRepository) {
+  public WordService(WordRepository wordRepository, WordMapper wordMapper) {
     this.wordRepository = wordRepository;
+    this.wordMapper = wordMapper;
   }
 
   public WordResDto.getWordByMainAndSubScreen getWordByMainAndSubScreen(
@@ -26,24 +30,21 @@ public class WordService {
     String mainScreen = queries.getMainScreen();
     String subScreen = queries.getSubScreen();
 
-    // 스크린들에 맞는 데이터 가져오기
-    List<WordEntity> wordList = this.wordRepository.getWordByMainScreenAndSubScreen(mainScreen,
+    System.out.println(mainScreen + subScreen);
+
+    // 1. 스크린들에 맞는 데이터 가져오기
+    List<WordEntity> wordList = this.wordRepository.getWordListByMainScreenAndSubScreen(mainScreen,
         subScreen);
+    System.out.println("wordList -->" + wordList);
     if (wordList.isEmpty()) {
       throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
     }
 
-    // 말씀 랜덤으로 가져오기
+    // 2. 말씀 랜덤으로 가져오기
     Collections.shuffle(wordList);
     WordEntity word = wordList.get(0);
 
-    // 데이터 변환
-    WordResDto.getWordByMainAndSubScreen wordRes = new WordResDto.getWordByMainAndSubScreen();
-    wordRes.setBook(word.getBook());
-    wordRes.setChapter(word.getChapter());
-    wordRes.setVerse(word.getVerse());
-    wordRes.setWords(word.getWords());
-
-    return wordRes;
+    // 3. 반환
+    return this.wordMapper.getWordByMainAndSubScreen(word);
   }
 }

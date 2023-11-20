@@ -2,6 +2,7 @@ package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchMemberMapRepository;
+import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberMapper;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
@@ -42,6 +43,7 @@ public class MemberService {
   private final JwtTokenProvider jwtTokenProvider;
 
   private final ChurchMemberMapRepository churchMemberMapRepository;
+  private final MemberMapper memberMapper;
 
   @Autowired
   public MemberService(
@@ -52,8 +54,8 @@ public class MemberService {
       ChurchMemberMapRepository churchMemberMapRepository,
       TwilioService twilioService,
       PasswordEncoder passwordEncoder,
-      JwtTokenProvider jwtTokenProvider
-  ) {
+      JwtTokenProvider jwtTokenProvider,
+      MemberMapper memberMapper) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
     this.verificationFailLogRepository = verificationFailLogRepository;
@@ -62,6 +64,7 @@ public class MemberService {
     this.twilioService = twilioService;
     this.passwordEncoder = passwordEncoder;
     this.jwtTokenProvider = jwtTokenProvider;
+    this.memberMapper = memberMapper;
   }
 
   ;
