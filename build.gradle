@@ -51,7 +51,9 @@ dependencies {
     // SMS
     implementation "com.twilio.sdk:twilio:9.10.0"
     // TEST
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 }
 
 tasks.named('test') {

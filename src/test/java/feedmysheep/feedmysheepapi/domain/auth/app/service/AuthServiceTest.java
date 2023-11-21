@@ -1,6 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.auth.app.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.TESTDATA;
 import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthReqDto;
@@ -12,11 +12,6 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.signUp;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
-import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
-import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
-import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
-import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
-import feedmysheep.feedmysheepapi.models.MemberEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,14 +19,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 //@DataJpaTest
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class AuthServiceTest {
+
   @Autowired
   private MemberRepository memberRepository;
 
