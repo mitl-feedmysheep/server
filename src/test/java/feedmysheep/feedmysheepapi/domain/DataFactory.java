@@ -1,34 +1,26 @@
 package feedmysheep.feedmysheepapi.domain;
 
-import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
-import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
+import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
+import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
+import feedmysheep.feedmysheepapi.models.MemberEntity;
 
 public class DataFactory {
 
-  private final ChurchRepository churchRepository;
-
-  private final BodyRepository bodyRepository;
-
-  public DataFactory(ChurchRepository churchRepository, BodyRepository bodyRepository) {
-    this.churchRepository = churchRepository;
-    this.bodyRepository = bodyRepository;
-  }
-
   // 교회 생성
-  public ChurchEntity createTestChurch(boolean isValid) {
+  public static ChurchEntity createChurch(boolean isValid) {
     ChurchEntity church = ChurchEntity.builder()
         .churchName(TestUtil.getRandomString())
         .churchLocation(TestUtil.getRandomString())
         .build();
     church.setValid(isValid);
 
-    return this.churchRepository.save(church);
+    return church;
   }
 
   // 바디 생성
-  public BodyEntity createTestBodyByChurchId(Long churchId, boolean isValid) {
+  public static BodyEntity createBodyByChurchId(Long churchId, boolean isValid) {
     BodyEntity body = BodyEntity.builder()
         .churchId(churchId)
         .bodyName(TestUtil.getRandomString())
@@ -36,6 +28,36 @@ public class DataFactory {
         .build();
     body.setValid(isValid);
 
-    return this.bodyRepository.save(body);
+    return body;
+  }
+
+  // 권한 생성
+  public static AuthorizationEntity createAuthorization() {
+    return AuthorizationEntity.builder()
+        .level(TestUtil.getRandomNum(3))
+        .levelName(TestUtil.getRandomString())
+        .build();
+  }
+
+  // 멤버 생성
+  public static MemberEntity createMember(Long authorizationId) {
+    return MemberEntity.builder()
+        .authorizationId(authorizationId)
+        .memberName(TestUtil.getRandomString())
+        .sex(TestUtil.getRandomSex())
+        .birthday(TestUtil.getRandomBirthday())
+        .phone(TestUtil.getRandomPhone())
+        .address(TestUtil.getRandomString())
+        .email(TestUtil.getRandomEmail())
+        .password(TestUtil.getRandomString(20))
+        .build();
+  }
+
+  // 교회멤버매퍼 생성
+  public static ChurchMemberMapEntity createChurchMemberMap(Long churchId, Long memberId) {
+    return ChurchMemberMapEntity.builder()
+        .churchId(churchId)
+        .memberId(memberId)
+        .build();
   }
 }

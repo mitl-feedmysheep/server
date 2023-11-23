@@ -22,8 +22,6 @@ class BodyRepositoryTest {
   @Autowired
   private BodyRepository bodyRepository;
 
-  static DataFactory dataFactory;
-
   static ChurchEntity church1;
   static BodyEntity body1;
 
@@ -31,16 +29,15 @@ class BodyRepositoryTest {
   public static void setup(@Autowired BodyRepository bodyRepository,
       @Autowired ChurchRepository churchRepository) {
     // 기본 한개씩
-    dataFactory = new DataFactory(churchRepository, bodyRepository);
-    church1 = dataFactory.createTestChurch(true);
-    body1 = dataFactory.createTestBodyByChurchId(church1.getChurchId(), true);
+    church1 = churchRepository.save(DataFactory.createChurch(true));
+    body1 = bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId(), true));
   }
 
   @Test
   @DisplayName("교회아이디가 있을 때 -> 유효한 바디리스트 2개 가져오기")
   void test1() {
     // given
-    dataFactory.createTestBodyByChurchId(church1.getChurchId(), true);
+    this.bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId(), true));
 
     // when
     List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church1.getChurchId());
@@ -53,13 +50,14 @@ class BodyRepositoryTest {
   @DisplayName("교회아이디가 있을 때 -> 유효한 바디리스트 1개 가져오기")
   void test2() {
     // given
-    dataFactory.createTestBodyByChurchId(church1.getChurchId(), false);
+    this.bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId(), false));
 
     // when
     List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church1.getChurchId());
 
     // then
     assertThat(bodyList.size()).isEqualTo(1);
+    assertThat(bodyList.get(0).getChurchId()).isEqualTo(church1.getChurchId());
   }
 
   @Test

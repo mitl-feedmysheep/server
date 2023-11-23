@@ -1,6 +1,8 @@
 package feedmysheep.feedmysheepapi.domain;
 
+import java.time.LocalDate;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class TestUtil {
 
@@ -39,5 +41,24 @@ public class TestUtil {
 
   public static String getRandomEmail() {
     return getRandomString(10) + "@" + getRandomString(10) + ".com";
+  }
+
+  public static String getRandomSex() {
+    return Math.random() < 0.5 ? "M" : "F";
+  }
+
+  public static LocalDate getRandomBirthday() {
+    int minAge = 0; // 최소 연령 설정 (예: 18세)
+    int maxAge = 100; // 최대 연령 설정 (예: 65세)
+
+    LocalDate currentDate = LocalDate.now();
+    LocalDate minValidDate = currentDate.minusYears(maxAge);
+    LocalDate maxValidDate = currentDate.minusYears(minAge);
+
+    long minDay = minValidDate.toEpochDay();
+    long maxDay = maxValidDate.toEpochDay();
+    long randomDay = ThreadLocalRandom.current().nextLong(minDay, maxDay);
+
+    return LocalDate.ofEpochDay(randomDay);
   }
 }

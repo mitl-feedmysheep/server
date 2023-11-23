@@ -13,13 +13,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString
 public class MemberEntity extends CreatedUpdated {
 
+
+  //  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "member_id", nullable = false, columnDefinition = "bigint COMMENT '멤버 아이디'")
