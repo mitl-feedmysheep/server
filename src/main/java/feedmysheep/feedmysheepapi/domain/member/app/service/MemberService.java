@@ -72,8 +72,8 @@ public class MemberService {
   public void sendVerificationCode(MemberReqDto.sendVerificationCode query) {
     String phone = query.getPhone();
     LocalDate today = LocalDate.now();
-    LocalDateTime startOfToday = LocalDate.now().atTime(LocalTime.MIN);
-    LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
+    LocalDateTime startOfToday = today.atTime(LocalTime.MIN);
+    LocalDateTime endOfToday = today.atTime(LocalTime.MAX);
 
     // 1. 휴대폰 사용 여부 체크
     this.memberRepository.getMemberByPhone(phone)
@@ -115,7 +115,6 @@ public class MemberService {
     VerificationEntity verification = VerificationEntity.builder()
         .phone(phone)
         .verificationCode(verificationCode)
-        .validDate(today)
         .build();
 
     this.verificationRepository.save(verification);
@@ -139,7 +138,7 @@ public class MemberService {
     }
 
     // 3. 휴대폰 번호와 인증코드 여부 체크
-    VerificationEntity verification = this.verificationRepository.findByPhoneAndVerificationCode(
+    VerificationEntity verification = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
         phone, code).orElseThrow(() -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE));
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime threeMinLater = verification.getCreatedAt().plusMinutes(3);

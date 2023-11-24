@@ -1,94 +1,86 @@
-//package feedmysheep.feedmysheepapi.domain.verification.app.repository;
-//
-//import static org.assertj.core.api.Assertions.*;
-//
-//import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
-//import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
-//import feedmysheep.feedmysheepapi.models.VerificationEntity;
-//import java.time.LocalDate;
-//import java.time.LocalDateTime;
-//import java.util.List;
-//import java.util.Optional;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-//
-//
-//@DataJpaTest
-//@AutoConfigureTestDatabase(replace = Replace.NONE)
-//class VerificationRepositoryTest {
-//  @Autowired
-//  VerificationRepository verificationRepository;
-//
-//  public final LocalDate today = LocalDate.now();
-//  public final LocalDate yesterday = today.minusDays(1);
-//
-//  @Test
-//  @DisplayName("휴대폰번호와 인증번호 유효날짜를 통해 횟수 조회")
-//  public void countByPhoneAndValidDate() {
-//    // given
-//    VerificationEntity test1 = VerificationEntity.builder()
-//        .phone("01011112222")
-//        .verificationCode("111111")
-//        .validDate(yesterday)
-//        .build();
-//    VerificationEntity test2 = VerificationEntity.builder()
-//        .phone("01011112222")
-//        .verificationCode("222222")
-//        .validDate(yesterday)
-//        .build();
-//    VerificationEntity test3 = VerificationEntity.builder()
-//        .phone("01011112222")
-//        .verificationCode("333333")
-//        .validDate(today)
-//        .build();
-//    verificationRepository.save(test1);
-//    verificationRepository.save(test2);
-//    verificationRepository.save(test3);
-//    // when
-//    int yesterdayCount = verificationRepository.countByPhoneAndValidDate("01011112222", yesterday);
-//    int todayCount = verificationRepository.countByPhoneAndValidDate("01011112222", today);
-//    // then
-//    assertThat(yesterdayCount).isEqualTo(2);
-//    assertThat(todayCount).isEqualTo(1);
-//  }
-//
-//  @Test
-//  @DisplayName("휴대폰번호와 인증번호가 3분이내에 존재하는지 조회")
-//  public void findByPhoneAndVerificationCode() {
-//    // given
-//    LocalDateTime now = LocalDateTime.now();
-//    LocalDateTime fourMinAgo = now.minusMinutes(4);
-//    LocalDateTime threeMinAgo = now.minusMinutes(3);
-//    VerificationEntity test1 = VerificationEntity.builder()
-//        .phone("01011112222")
-//        .verificationCode("111111")
-//        .validDate(yesterday)
-//        .build();
-//    test1.setCreatedAt(fourMinAgo);
-//    VerificationEntity test2 = VerificationEntity.builder()
-//        .phone("01011112222")
-//        .verificationCode("111112")
-//        .validDate(today)
-//        .build();
-//    test2.setCreatedAt(now);
-//    verificationRepository.save(test1);
-//    verificationRepository.save(test2);
-//    // when
-//    Optional<VerificationEntity> optionalVerificationEntity1 = this.verificationRepository.findByPhoneAndVerificationCode("01011112222", "111111");
-//    Optional<VerificationEntity> optionalVerificationEntity2 = this.verificationRepository.findByPhoneAndVerificationCode("01011112222", "222222");
-//    VerificationEntity validVerification = optionalVerificationEntity1.orElseThrow(() -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE));
-//
-//    List<VerificationEntity> verificationList = this.verificationRepository.findAll();
-//    // then
-//    assertThat(validVerification.getVerificationCode()).isEqualTo("111111");
-//    assertThat(validVerification.getValidDate()).isEqualTo(yesterday);
-//
-//    assertThatThrownBy(() -> optionalVerificationEntity2.orElseThrow(() -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE))).hasMessageContaining(ErrorMessage.NO_VERIFICATION_CODE);
-//
-//    assertThat(verificationList.size()).isEqualTo(2);
-//  }
-//}
+package feedmysheep.feedmysheepapi.domain.verification.app.repository;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import feedmysheep.feedmysheepapi.domain.DataFactory;
+import feedmysheep.feedmysheepapi.domain.TestUtil;
+import feedmysheep.feedmysheepapi.models.VerificationEntity;
+import java.time.LocalDate;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+class VerificationRepositoryTest {
+
+  @Autowired
+  VerificationRepository verificationRepository;
+
+  static VerificationEntity verification1;
+
+  @BeforeAll
+  public static void setup(@Autowired VerificationRepository verificationRepository) {
+    String phone = TestUtil.getRandomPhone();
+    verification1 = verificationRepository.save(DataFactory.createVerificationByPhone(phone));
+    verificationRepository.save(DataFactory.createVerificationByPhone(phone));
+    verificationRepository.save(DataFactory.createVerificationByPhone(phone));
+  }
+
+  @AfterAll
+  public static void cleanup(@Autowired VerificationRepository verificationRepository) {
+    verificationRepository.deleteAll();
+  }
+
+  @Test
+  @DisplayName("휴대폰번호로 오늘 인증번호 전송 횟수 조회")
+  void test1() {
+    // given
+    LocalDate today = LocalDate.now(); // DB default로 CURRENT_DATE 잘 들어갔나 확인
+
+    // when
+    int verificationListCount = this.verificationRepository.countByPhoneAndValidDate(
+        verification1.getPhone(), today);
+
+    // then
+    assertThat(verificationListCount).isEqualTo(3);
+  }
+
+  @Test
+  @DisplayName("휴대폰번호와 인증번호로 전송 여부 조회 -> 성공")
+  void test2() {
+    // given
+
+    // when
+    Optional<VerificationEntity> validVerification = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+        verification1.getPhone(),
+        verification1.getVerificationCode());
+
+    // then
+    assertThat(validVerification).isPresent();
+  }
+
+  @Test
+  @DisplayName("휴대폰번호와 인증번호로 전송 여부 조회 -> 실패")
+  void test3() {
+    // given
+
+    // when
+    Optional<VerificationEntity> invalidVerificationByPhone = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+        TestUtil.getRandomPhone(),
+        verification1.getVerificationCode());
+    Optional<VerificationEntity> invalidVerificationByVerificationCode = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+        verification1.getPhone(),
+        TestUtil.getRandomString(6));
+
+    // then
+    assertThat(invalidVerificationByPhone).isNotPresent();
+    assertThat(invalidVerificationByVerificationCode).isNotPresent();
+  }
+}

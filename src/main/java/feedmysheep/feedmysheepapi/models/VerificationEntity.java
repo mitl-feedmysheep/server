@@ -1,6 +1,11 @@
 package feedmysheep.feedmysheepapi.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,13 +29,12 @@ public class VerificationEntity extends CreatedUpdated {
   @Column(name = "verification_code", nullable = false, length = 6)
   private String verificationCode;
 
-  @Column(name = "valid_date", nullable = false)
-  private LocalDate validDate;
+  @Column(name = "valid_date", nullable = false, columnDefinition = "datetime DEFAULT CURRENT_DATE COMMENT '유효날짜'")
+  private LocalDate validDate = LocalDate.now();
 
   @Builder
-  public VerificationEntity(String phone, String verificationCode, LocalDate validDate) {
+  public VerificationEntity(String phone, String verificationCode) {
     this.phone = phone;
     this.verificationCode = verificationCode;
-    this.validDate = validDate;
   }
 }

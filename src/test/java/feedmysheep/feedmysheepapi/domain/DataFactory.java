@@ -5,7 +5,9 @@ import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
+import feedmysheep.feedmysheepapi.models.WordEntity;
 
 public class DataFactory {
 
@@ -61,6 +63,26 @@ public class DataFactory {
     return VerificationFailLogEntity.builder()
         .phone(phone)
         .verificationCode(TestUtil.getRandomString(6))
+        .build();
+  }
+
+  // 인증코드 생성
+  public static VerificationEntity createVerificationByPhone(String phone) {
+    return VerificationEntity.builder()
+        .phone(phone)
+        .verificationCode(TestUtil.getRandomString(6))
+        .build();
+  }
+
+  // 말씀 생성
+  public static WordEntity createWordByMainScreenAndSubScreen(String mainScreen, String subScreen) {
+    return WordEntity.builder()
+        .mainScreen(mainScreen)
+        .subScreen(subScreen)
+        .book(TestUtil.getRandomString())
+        .chapter(TestUtil.getRandomNum(2))
+        .verse(TestUtil.getRandomNum(2))
+        .words(TestUtil.getRandomString())
         .build();
   }
 }
