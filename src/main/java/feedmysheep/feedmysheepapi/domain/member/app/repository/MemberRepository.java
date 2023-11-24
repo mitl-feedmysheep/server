@@ -16,6 +16,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.email = :email")
   Optional<MemberEntity> getMemberByEmail(@Param("email") String email);
 
-  @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.email = :phone")
+  @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.phone = :phone")
   Optional<MemberEntity> getMemberByPhone(@Param("phone") String phone);
 }

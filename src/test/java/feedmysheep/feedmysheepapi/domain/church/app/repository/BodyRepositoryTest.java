@@ -7,6 +7,7 @@ import feedmysheep.feedmysheepapi.domain.TestUtil;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import java.util.List;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,15 +30,24 @@ class BodyRepositoryTest {
   public static void setup(@Autowired BodyRepository bodyRepository,
       @Autowired ChurchRepository churchRepository) {
     // 기본 한개씩
-    church1 = churchRepository.save(DataFactory.createChurch(true));
-    body1 = bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId(), true));
+    ChurchEntity church = DataFactory.createChurch();
+    church.setValid(true);
+    church1 = churchRepository.save(church);
+    body1 = bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId()));
+  }
+
+  @AfterAll
+  public static void cleanup(@Autowired BodyRepository bodyRepository,
+      @Autowired ChurchRepository churchRepository) {
+    bodyRepository.deleteAll();
+    churchRepository.deleteAll();
   }
 
   @Test
   @DisplayName("교회아이디가 있을 때 -> 유효한 바디리스트 2개 가져오기")
   void test1() {
     // given
-    this.bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId(), true));
+    this.bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId()));
 
     // when
     List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church1.getChurchId());
@@ -50,7 +60,9 @@ class BodyRepositoryTest {
   @DisplayName("교회아이디가 있을 때 -> 유효한 바디리스트 1개 가져오기")
   void test2() {
     // given
-    this.bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId(), false));
+    BodyEntity body = DataFactory.createBodyByChurchId(church1.getChurchId());
+    body.setValid(false);
+    this.bodyRepository.save(body);
 
     // when
     List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church1.getChurchId());

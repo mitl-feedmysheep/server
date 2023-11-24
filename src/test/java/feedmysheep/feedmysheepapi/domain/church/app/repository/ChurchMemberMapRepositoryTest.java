@@ -11,6 +11,7 @@ import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.List;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,12 +44,25 @@ class ChurchMemberMapRepositoryTest {
       @Autowired AuthorizationRepository authorizationRepository,
       @Autowired MemberRepository memberRepository,
       @Autowired ChurchMemberMapRepository churchMemberMapRepository) {
-    church1 = churchRepository.save(DataFactory.createChurch(true));
+    ChurchEntity church = DataFactory.createChurch();
+    church.setValid(true);
+    church1 = churchRepository.save(church);
     authorization1 = authorizationRepository.save(DataFactory.createAuthorization());
     member1 = memberRepository.save(DataFactory.createMember(authorization1.getAuthorizationId()));
     churchMemberMap1 = churchMemberMapRepository.save(
         DataFactory.createChurchMemberMap(church1.getChurchId(),
             member1.getMemberId()));
+  }
+
+  @AfterAll
+  public static void cleanup(@Autowired ChurchRepository churchRepository,
+      @Autowired AuthorizationRepository authorizationRepository,
+      @Autowired MemberRepository memberRepository,
+      @Autowired ChurchMemberMapRepository churchMemberMapRepository) {
+    churchMemberMapRepository.deleteAll();
+    authorizationRepository.deleteAll();
+    memberRepository.deleteAll();
+    churchRepository.deleteAll();
   }
 
   @Test
@@ -84,7 +98,9 @@ class ChurchMemberMapRepositoryTest {
   @DisplayName("멤버가 존재한다 -> 교회에 등록되어 있으나 현재는 다니지 않는다")
   void test3() {
     // given
-    ChurchEntity church2 = this.churchRepository.save(DataFactory.createChurch(true));
+    ChurchEntity church = DataFactory.createChurch();
+    church.setValid(true);
+    ChurchEntity church2 = this.churchRepository.save(church);
     ChurchMemberMapEntity churchMemberMap2 = DataFactory.createChurchMemberMap(
         church2.getChurchId(),
         member1.getMemberId());

@@ -9,26 +9,20 @@ import feedmysheep.feedmysheepapi.models.MemberEntity;
 public class DataFactory {
 
   // 교회 생성
-  public static ChurchEntity createChurch(boolean isValid) {
-    ChurchEntity church = ChurchEntity.builder()
+  public static ChurchEntity createChurch() {
+    return ChurchEntity.builder()
         .churchName(TestUtil.getRandomString())
         .churchLocation(TestUtil.getRandomString())
         .build();
-    church.setValid(isValid);
-
-    return church;
   }
 
   // 바디 생성
-  public static BodyEntity createBodyByChurchId(Long churchId, boolean isValid) {
-    BodyEntity body = BodyEntity.builder()
+  public static BodyEntity createBodyByChurchId(Long churchId) {
+    return BodyEntity.builder()
         .churchId(churchId)
         .bodyName(TestUtil.getRandomString())
         .bodyLocation(TestUtil.getRandomString())
         .build();
-    body.setValid(isValid);
-
-    return body;
   }
 
   // 권한 생성
