@@ -1,71 +1,53 @@
-//package feedmysheep.feedmysheepapi.domain.verification.app.repository;
-//
-//import static org.assertj.core.api.Assertions.*;
-//
-//import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
-//import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
-//import java.time.LocalDate;
-//import java.time.LocalDateTime;
-//import java.time.LocalTime;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-//import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-//import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-//
-//@DataJpaTest
-//@AutoConfigureTestDatabase(replace = Replace.NONE)
-//class VerificationFailLogRepositoryTest {
-//  @Autowired
-//  VerificationFailLogRepository verificationFailLogRepository;
-//
-//  public final String phone = "01088831954";
-//
-//  @Test
-//  @DisplayName("오늘 실패 횟수 체크")
-//  public void countByPhoneAndIsFailedAndCreatedAtBetween() {
-//    // given
-//    LocalDateTime now = LocalDateTime.now();
-//    LocalDateTime yesterday = now.minusHours(24);
-//    LocalDateTime startOfToday = LocalDate.now().atTime(LocalTime.MIN);
-//    LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
-//
-//    VerificationFailLogEntity testData1 = VerificationFailLogEntity.builder()
-//        .phone(this.phone)
-//        .verificationCode("111111")
-//        .build();
-//    VerificationFailLogEntity testData2 = VerificationFailLogEntity.builder()
-//        .phone(this.phone)
-//        .verificationCode("111111")
-//        .build();
-//    VerificationFailLogEntity testData3 = VerificationFailLogEntity.builder()
-//        .phone(this.phone)
-//        .verificationCode("111111")
-//        .build();
-//    VerificationFailLogEntity testData4 = VerificationFailLogEntity.builder()
-//        .phone(this.phone)
-//        .verificationCode("111111")
-//        .build();
-//    testData4.setFailed(false);
-//    VerificationFailLogEntity testData5 = VerificationFailLogEntity.builder()
-//        .phone(this.phone)
-//        .verificationCode("111111")
-//        .build();
-//    testData5.setCreatedAt(yesterday);
-//    // 카운트 되어야 하는 데이터
-//    verificationFailLogRepository.save(testData1);
-//    verificationFailLogRepository.save(testData2);
-//    verificationFailLogRepository.save(testData3);
-//    // 비활성화 시킨 데이터
-//    verificationFailLogRepository.save(testData4);
-//    // 다시 활성화 & 어제 만든 것
-//    verificationFailLogRepository.save(testData5);
-//
-//    // when
-//    int failNum = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(this.phone, startOfToday, endOfToday);
-//
-//    // then
-//    assertThat(failNum).isEqualTo(3);
-//  }
-//}
+package feedmysheep.feedmysheepapi.domain.verification.app.repository;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import feedmysheep.feedmysheepapi.domain.DataFactory;
+import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+class VerificationFailLogRepositoryTest {
+
+  @Autowired
+  VerificationFailLogRepository verificationFailLogRepository;
+
+  @AfterAll
+  public static void cleanup(@Autowired VerificationRepository verificationRepository) {
+    verificationRepository.deleteAll();
+  }
+
+  @Test
+  @DisplayName("같은 번호로 저장되어 있을 때 -> 유효한 데이터의 개수 가져오기")
+  public void test1() {
+    // given
+    LocalDateTime startOfToday = LocalDate.now().atTime(LocalTime.MIN);
+    LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
+
+    String phone = "01011112222";
+    this.verificationFailLogRepository.save(DataFactory.createVerificationFailLogByPhone(phone));
+    this.verificationFailLogRepository.save(DataFactory.createVerificationFailLogByPhone(phone));
+    VerificationFailLogEntity invalidVerificationFailLog = DataFactory.createVerificationFailLogByPhone(
+        phone);
+    invalidVerificationFailLog.setFailed(false);
+    this.verificationFailLogRepository.save(invalidVerificationFailLog);
+    this.verificationFailLogRepository.save(DataFactory.createVerificationFailLogByPhone(phone));
+
+    // when
+    int verificationFailLogCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(
+        phone, startOfToday, endOfToday);
+
+    // then
+    assertThat(verificationFailLogCount).isEqualTo(3);
+  }
+}

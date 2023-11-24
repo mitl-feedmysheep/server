@@ -5,6 +5,7 @@ import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 
 public class DataFactory {
 
@@ -52,6 +53,14 @@ public class DataFactory {
     return ChurchMemberMapEntity.builder()
         .churchId(churchId)
         .memberId(memberId)
+        .build();
+  }
+
+  // 인증실패로그 생성 (by phone: 예외적)
+  public static VerificationFailLogEntity createVerificationFailLogByPhone(String phone) {
+    return VerificationFailLogEntity.builder()
+        .phone(phone)
+        .verificationCode(TestUtil.getRandomString(6))
         .build();
   }
 }
