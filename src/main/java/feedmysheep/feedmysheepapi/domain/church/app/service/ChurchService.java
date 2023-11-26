@@ -44,7 +44,13 @@ public class ChurchService {
       churchList = this.churchRepository.getChurchListByChurchName(churchName);
     } else {
       churchList = this.churchRepository.getChurchList();
-    }HGTFXUTBodyListByChurchId(
+    }
+
+    // 3. 반환
+    return this.churchMapper.getChurchList(churchList);
+  }
+
+  public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
       CustomUserDetails customUserDetails, Long churchId) {
     // 1. 유효한 멤버인지 검사
     this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
