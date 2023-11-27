@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.church.app.service;
 
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchMapper;
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
@@ -62,4 +63,19 @@ public class ChurchService {
     // 3. DTO 매핑
     return this.churchMapper.getBodyListByChurchId(bodyList);
   }
+
+  public String registerChurch(ChurchReqDto.Church body){
+    String churchName = body.getChurchName();
+    String churchLocation = body.getChurchLocation();
+
+    ChurchEntity church = ChurchEntity.builder()
+            .churchName(churchName)
+            .churchLocation(churchLocation)
+            .build();
+
+    churchRepository.save(church);
+
+    return "등록 완료 되었습니다.";
+  }
+
 }
