@@ -1,8 +1,14 @@
 package feedmysheep.feedmysheepapi.domain.auth.app.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import feedmysheep.feedmysheepapi.TESTDATA;
+import feedmysheep.feedmysheepapi.domain.DataFactory;
+import feedmysheep.feedmysheepapi.domain.TestUtil;
 import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthReqDto;
 import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthReqDto.createToken;
 import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthResDto;
@@ -12,65 +18,84 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto.signUp;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
+import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
+import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
+import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
+import feedmysheep.feedmysheepapi.models.MemberEntity;
+import java.util.Optional;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.context.SpringBootTest;
 
-//@DataJpaTest
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class AuthServiceTest {
 
-  @Autowired
+  @Mock
   private MemberRepository memberRepository;
 
-  @Autowired
+  @Mock
+  private JwtTokenProvider jwtTokenProvider;
+
+  @Mock
   private AuthorizationRepository authorizationRepository;
 
-  @Autowired
-  private AuthService authService;
-
-  @Autowired
+  @Mock
   private MemberService memberService;
 
-  private MemberResDto.signUp tokens;
+  @InjectMocks
+  private AuthService authService;
 
-  @BeforeEach
-  public void beforeEach() {
-    MemberReqDto.signUp body = new signUp();
-    body.setMemberName(TESTDATA.memberName);
-    body.setSex(TESTDATA.sex);
-    body.setBirthday(TESTDATA.birthday);
-    body.setPhone(TESTDATA.phone);
-    body.setEmail(TESTDATA.email);
-    body.setPassword(TESTDATA.password);
-    body.setPhone(TESTDATA.phone);
-    body.setAddress(TESTDATA.address);
-    this.tokens = this.memberService.signUp(body);
-  }
-
-  @AfterEach
-  public void afterEach() {
-    this.memberRepository.deleteAll();
+  private static AuthReqDto.createToken body;
+  private static JwtDto.memberInfo memberInfo;
+  private static AuthorizationEntity authorization;
+  private static MemberEntity member;
+  @BeforeAll
+  static void setup() {
+    body = new AuthReqDto.createToken();
+    memberInfo = new JwtDto.memberInfo();
+    authorization = DataFactory.createAuthorization();
+    member = DataFactory.createMember(authorization.getAuthorizationId());
   }
 
   @Test
-  @DisplayName("[토큰재발급] 재발급된 토큰이 유효한지 검사")
-  public void 토큰재발급() throws InterruptedException {
+  @DisplayName("유효한 리프레시 토큰 -> 권한 업데이트 -> 토큰 재발급 성공")
+  public void test1() {
     // given
-    AuthReqDto.createToken token = new createToken(this.tokens.getRefreshToken());
-    Thread.sleep(1000);
+    when(this.jwtTokenProvider.validateToken(body.getRefreshToken())).thenReturn(memberInfo);
+    when(this.memberRepository.getMemberByMemberId(memberInfo.getMemberId())).thenReturn(
+        Optional.ofNullable(member));
+    when(this.authorizationRepository.getAuthorizationByAuthorizationId(authorization.getAuthorizationId())).thenReturn(Optional.ofNullable(authorization));
+    when(this.jwtTokenProvider.createRefreshToken(memberInfo)).thenReturn(TestUtil.getRandomString());
+    when(this.jwtTokenProvider.createAccessToken(memberInfo)).thenReturn(TestUtil.getRandomString());
 
     // when
-    AuthResDto.createToken tokenSet = this.authService.createToken(token);
+    AuthResDto.createToken ret = this.authService.createToken(body);
 
     // then
-    assertThat(tokenSet.getRefreshToken()).isNotEqualTo(this.tokens.getRefreshToken());
+    verify(jwtTokenProvider, times(1)).validateToken(body.getRefreshToken());
+    verify(memberRepository, times(1)).getMemberByMemberId(memberInfo.getMemberId());
+    verify(authorizationRepository, times(1)).getAuthorizationByAuthorizationId(authorization.getAuthorizationId());
+    verify(jwtTokenProvider, times(1)).createRefreshToken(memberInfo);
+    verify(jwtTokenProvider, times(1)).createAccessToken(memberInfo);
 
+    InOrder inOrder = inOrder(jwtTokenProvider, memberRepository, authorizationRepository);
+    inOrder.verify(jwtTokenProvider).validateToken(body.getRefreshToken());
+    inOrder.verify(memberRepository).getMemberByMemberId(memberInfo.getMemberId());
+    inOrder.verify(authorizationRepository).getAuthorizationByAuthorizationId(authorization.getAuthorizationId());
+
+    assertThat(ret.getRefreshToken()).isNotNull();
+    assertThat(ret.getAccessToken()).isNotNull();
   }
 }

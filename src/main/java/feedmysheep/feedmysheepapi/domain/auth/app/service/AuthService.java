@@ -36,7 +36,7 @@ public class AuthService {
     // 2. 권한 업데이트
     MemberEntity member = this.memberRepository.getMemberByMemberId(memberInfo.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
-    AuthorizationEntity authorization = this.authorizationRepository.findById(
+    AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
             member.getAuthorizationId())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_AUTHORIZATION));
     memberInfo.setLevel(authorization.getLevel());
