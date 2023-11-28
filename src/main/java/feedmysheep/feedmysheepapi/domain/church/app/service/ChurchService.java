@@ -73,6 +73,9 @@ public class ChurchService {
             .churchLocation(churchLocation)
             .build();
 
+    //.churchName("제일 번동교회") 라고 설정된다면, churchName의 필드값이 "제일 번동교회"가 되고
+    // DB의 table에서 churchName이라는 row에 해당 필드값("제일 번동교회")이 들어가는 구조?
+
     churchRepository.save(church);
 
     return "등록 완료 되었습니다.";

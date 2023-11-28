@@ -44,5 +44,4 @@ public class ChurchController {
   public String registerChurch(@Valid @RequestBody ChurchReqDto.Church body){
     return this.churchService.registerChurch(body);
   }
-
 }
