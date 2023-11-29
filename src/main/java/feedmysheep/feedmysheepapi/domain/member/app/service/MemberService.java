@@ -77,7 +77,9 @@ public class MemberService {
 
     // 1. 휴대폰 사용 여부 체크
     this.memberRepository.getMemberByPhone(phone)
-        .orElseThrow((() -> new CustomException(ErrorMessage.PHONE_IN_USE)));
+        .ifPresent((member -> {
+          throw new CustomException(ErrorMessage.PHONE_IN_USE);
+        }));
 
     // 2. FailLog 5회 이상 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone,
@@ -128,7 +130,9 @@ public class MemberService {
 
     // 1. 휴대폰 사용 여부 체크
     this.memberRepository.getMemberByPhone(phone)
-        .orElseThrow(() -> new CustomException(ErrorMessage.PHONE_IN_USE));
+        .ifPresent(member -> {
+          throw new CustomException(ErrorMessage.PHONE_IN_USE);
+        });
 
     // 2. 금일 인증실패 5회 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone,
@@ -157,7 +161,9 @@ public class MemberService {
     String email = query.getEmail();
 
     this.memberRepository.getMemberByEmail(email)
-        .orElseThrow(() -> new CustomException(ErrorMessage.EMAIL_DUPLICATED));
+        .ifPresent(member -> {
+          throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+        });
   }
 
   @Transactional
@@ -167,9 +173,13 @@ public class MemberService {
 
     // 2. Validation - 방어로직
     this.memberRepository.getMemberByPhone(body.getPhone())
-        .orElseThrow(() -> new CustomException(ErrorMessage.PHONE_IN_USE));
+        .ifPresent(member -> {
+          throw new CustomException(ErrorMessage.PHONE_IN_USE);
+        });
     this.memberRepository.getMemberByEmail(body.getEmail())
-        .orElseThrow(() -> new CustomException(ErrorMessage.EMAIL_DUPLICATED));
+        .ifPresent(member -> {
+          throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+        });
 
     // 3. 기본 authroization 가져오기
     AuthorizationEntity authorization = this.authorizationRepository.findById(1L)

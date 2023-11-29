@@ -64,6 +64,7 @@ class AuthServiceTest {
   @BeforeAll
   static void setup() {
     body = new AuthReqDto.createToken();
+    body.setRefreshToken("eyJhbGciOiJIUzI1NiJ9.eyJsZXZlbCI6MTAwLCJtZW1iZXJOYW1lIjoi6rmA7LC97IiYIiwibWVtYmVySWQiOjEsImlhdCI6MTcwMDA1MjI5MCwiZXhwIjoxNzAwNjU3MDkwfQ.DIPN8g9VVbRpa6EIFruf5ntVOIWRE6GUashsGKY8KIg");
     memberInfo = new JwtDto.memberInfo();
     authorization = DataFactory.createAuthorization();
     member = DataFactory.createMember(authorization.getAuthorizationId());
