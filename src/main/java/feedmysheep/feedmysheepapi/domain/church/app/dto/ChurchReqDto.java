@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.church.app.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -23,8 +24,15 @@ public class ChurchReqDto {
     @Getter
     @RequiredArgsConstructor
     public static class Church {
+        //필수값
         private String churchName;
         private String churchLocation;
+
+        //필수x -> 값은 받아서 저장해둠.
+        private String churchLogoUrl;
+        private String churchNumber;
+        private String homepageUrl;
+        private String churchDescription;
     }
 
 }

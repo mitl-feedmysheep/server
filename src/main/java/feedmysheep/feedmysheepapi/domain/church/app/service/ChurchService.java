@@ -2,6 +2,7 @@ package feedmysheep.feedmysheepapi.domain.church.app.service;
 
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchMapper;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto.Church;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
@@ -12,7 +13,9 @@ import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -64,21 +67,28 @@ public class ChurchService {
     return this.churchMapper.getBodyListByChurchId(bodyList);
   }
 
-  public String registerChurch(ChurchReqDto.Church body){
-    String churchName = body.getChurchName();
-    String churchLocation = body.getChurchLocation();
+  public ChurchEntity registerChurch(ChurchReqDto.Church body){
+   String churchName = body.getChurchName();
+   String churchLocation = body.getChurchLocation();
 
-    ChurchEntity church = ChurchEntity.builder()
+   Optional<String> churchLogoUrl = Optional.ofNullable(body.getChurchLogoUrl());
+   Optional<String> churchNumber = Optional.ofNullable(body.getChurchNumber());
+   Optional<String> homepageUrl = Optional.ofNullable(body.getHomepageUrl());
+   Optional<String> churchDescription = Optional.ofNullable(body.getChurchDescription());
+
+    if(churchName == null || churchLocation == null){
+      throw new IllegalArgumentException("교회 이름 또는 위치는 필수값입니다.");
+    }
+
+    ChurchEntity churchEntity = ChurchEntity.builder()
             .churchName(churchName)
             .churchLocation(churchLocation)
+            .churchLogoUrl(churchLogoUrl.orElse(null))
+            .churchNumber(churchNumber.orElse(null))
+            .homepageUrl(homepageUrl.orElse(null))
+            .churchDescription(churchDescription.orElse(null))
             .build();
 
-    //.churchName("제일 번동교회") 라고 설정된다면, churchName의 필드값이 "제일 번동교회"가 되고
-    // DB의 table에서 churchName이라는 row에 해당 필드값("제일 번동교회")이 들어가는 구조?
-
-    churchRepository.save(church);
-
-    return "등록 완료 되었습니다.";
+    return churchRepository.save(churchEntity);
   }
-
 }
