@@ -1,12 +1,16 @@
 package feedmysheep.feedmysheepapi.domain.church.app.controller;
 
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto.Church;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
 import feedmysheep.feedmysheepapi.domain.church.app.service.ChurchService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
+import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +45,7 @@ public class ChurchController {
   }
 
   @PostMapping("/register")
-  public String registerChurch(@Valid @RequestBody ChurchReqDto.Church body){
+  public ChurchEntity registerChurch(@Valid @RequestBody ChurchReqDto.Church body){
     return this.churchService.registerChurch(body);
   }
 }

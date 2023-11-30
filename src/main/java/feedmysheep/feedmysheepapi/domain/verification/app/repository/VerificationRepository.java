@@ -13,7 +13,7 @@ public interface VerificationRepository extends JpaRepository<VerificationEntity
 
   @Query("SELECT COUNT(v) FROM VerificationEntity v WHERE v.phone = :phone AND v.validDate = :validDate")
   int countByPhoneAndValidDate(@Param("phone") String phone,
-      @Param("validDate") LocalDate validDate);
+          @Param("validDate") LocalDate validDate);
 
   @Query("SELECT v FROM VerificationEntity v WHERE v.phone = :phone AND v.verificationCode = :verificationCode")
   Optional<VerificationEntity> getVerificationByPhoneAndVerificationCode(
