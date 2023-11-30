@@ -45,7 +45,7 @@ public class ChurchController {
   }
 
   @PostMapping("/register")
-  public ChurchEntity registerChurch(@Valid @RequestBody ChurchReqDto.Church body){
-    return this.churchService.registerChurch(body);
+  public void registerChurch(@Valid @RequestBody ChurchReqDto.Church body){
+    this.churchService.registerChurch(body);
   }
 }
