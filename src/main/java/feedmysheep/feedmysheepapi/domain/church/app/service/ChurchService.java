@@ -67,7 +67,7 @@ public class ChurchService {
     return this.churchMapper.getBodyListByChurchId(bodyList);
   }
 
-  public ChurchEntity registerChurch(ChurchReqDto.Church body){
+  public void registerChurch(ChurchReqDto.Church body){
    String churchName = body.getChurchName();
    String churchLocation = body.getChurchLocation();
 
@@ -89,6 +89,6 @@ public class ChurchService {
             .churchDescription(churchDescription.orElse(null))
             .build();
 
-    return churchRepository.save(churchEntity);
+      churchRepository.save(churchEntity);
   }
 }
