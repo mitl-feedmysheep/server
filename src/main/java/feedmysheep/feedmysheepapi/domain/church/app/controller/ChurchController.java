@@ -37,13 +37,11 @@ public class ChurchController {
       @RequestParam(required = false) String churchName) {
     return this.churchService.getChurchList(customUserDetails, churchName);
   }
-
   @GetMapping("/{churchId}/body")
   public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
       @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long churchId) {
     return this.churchService.getBodyListByChurchId(customUserDetails, churchId);
   }
-
   @PostMapping("/register")
   public void registerChurch(@RequestBody ChurchReqDto.Church body){
     this.churchService.registerChurch(body);
