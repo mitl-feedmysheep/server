@@ -21,4 +21,18 @@ public class ChurchReqDto {
 //    @Nullable
 //    private String subScreen;
 //  }
+
+    @Getter
+    @RequiredArgsConstructor
+    public static class Church {
+        // 필수값
+        private String churchName;
+        private String churchLocation;
+
+        //필수값 x
+        private String churchLogoUrl;
+        private String churchNumber;
+        private String homepageUrl;
+        private String churchDescription;
+    }
 }
