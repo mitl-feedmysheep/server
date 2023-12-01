@@ -21,20 +21,4 @@ public class ChurchReqDto {
 //    @Nullable
 //    private String subScreen;
 //  }
-
-    @Getter
-    @RequiredArgsConstructor
-    public static class Church {
-        //필수값
-        @NotNull
-        private String churchName;
-        private String churchLocation;
-
-        //필수x -> 값은 받아서 저장해둠.
-        private String churchLogoUrl;
-        private String churchNumber;
-        private String homepageUrl;
-        private String churchDescription;
-    }
-
 }
