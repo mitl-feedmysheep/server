@@ -2,7 +2,6 @@ package feedmysheep.feedmysheepapi.domain.church.app.service;
 
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchMapper;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
-import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto.Church;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
@@ -15,7 +14,6 @@ import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -67,7 +65,7 @@ public class ChurchService {
     return this.churchMapper.getBodyListByChurchId(bodyList);
   }
 
-  public void registerChurch(ChurchReqDto.Church body){
+  public void registerChurch(ChurchReqDto.register body){
    String churchName = body.getChurchName();
    String churchLocation = body.getChurchLocation();
 
@@ -76,6 +74,7 @@ public class ChurchService {
    Optional<String> homepageUrl = Optional.ofNullable(body.getHomepageUrl());
    Optional<String> churchDescription = Optional.ofNullable(body.getChurchDescription());
 
+   // message뜨게 수정 필요.
     if(churchName == null || churchLocation == null){
       throw new IllegalArgumentException("교회 이름 또는 위치는 필수값입니다.");
     }
