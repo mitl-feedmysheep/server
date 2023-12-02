@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.auth.app.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -64,6 +65,7 @@ class AuthServiceTest {
   @BeforeAll
   static void setup() {
     body = new AuthReqDto.createToken();
+    body.setRefreshToken("eyJhbGciOiJIUzI1NiJ9.eyJsZXZlbCI6MTAwLCJtZW1iZXJOYW1lIjoi6rmA7LC97IiYIiwibWVtYmVySWQiOjEsImlhdCI6MTcwMTIzMTQzOCwiZXhwIjoxNzMyNzY3NDM4fQ.0cBhooqEXQoUiH3EGYysFa8GvZE-HQr6STrOeQ9q5Z0");
     memberInfo = new JwtDto.memberInfo();
     authorization = DataFactory.createAuthorization();
     member = DataFactory.createMember(authorization.getAuthorizationId());
@@ -74,7 +76,7 @@ class AuthServiceTest {
   public void test1() {
     // given
     when(this.jwtTokenProvider.validateToken(body.getRefreshToken())).thenReturn(memberInfo);
-    when(this.memberRepository.getMemberByMemberId(memberInfo.getMemberId())).thenReturn(
+    when(this.memberRepository.getMemberByMemberId(anyLong())).thenReturn(
         Optional.ofNullable(member));
     when(this.authorizationRepository.getAuthorizationByAuthorizationId(authorization.getAuthorizationId())).thenReturn(Optional.ofNullable(authorization));
     when(this.jwtTokenProvider.createRefreshToken(memberInfo)).thenReturn(TestUtil.getRandomString());
