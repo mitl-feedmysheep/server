@@ -25,7 +25,9 @@ public class ChurchController {
   @Autowired
   public ChurchController(ChurchService churchService) {
     this.churchService = churchService;
-  };
+  }
+
+  ;
 
   @GetMapping("/churches")
   public List<ChurchResDto.getChurch> getChurchList(
@@ -39,7 +41,7 @@ public class ChurchController {
       @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long churchId) {
     return this.churchService.getBodyListByChurchId(customUserDetails, churchId);
   }
-  @PostMapping("/church/register")
+  @PostMapping("/register")
   public void registerChurch(@Valid @RequestBody ChurchReqDto.register body){
     this.churchService.registerChurch(body);
   }
