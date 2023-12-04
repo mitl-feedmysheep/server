@@ -31,22 +31,9 @@ public class WordEntity extends CreatedUpdated {
   @Column(name = "words", nullable = false, length = 2048, columnDefinition = "varchar(2048) COMMENT '말씀'")
   private String words;
 
-  @Column(name = "book", nullable = false, length = 10, columnDefinition = "varchar(10) COMMENT '서'")
-  private String book;
-
-  @Column(name = "chapter", nullable = false, columnDefinition = "int COMMENT '장'")
-  private int chapter;
-
-  @Column(name = "verse", nullable = false, columnDefinition = "int COMMENT '절'")
-  private int verse;
-
   @Builder
-  public WordEntity(String screenKey, String book, int chapter, int verse,
-      String words) {
+  public WordEntity(String screenKey, String words) {
     this.screenKey = screenKey;
-    this.book = book;
-    this.chapter = chapter;
-    this.verse = verse;
     this.words = words;
   }
 }

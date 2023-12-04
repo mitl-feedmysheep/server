@@ -14,8 +14,5 @@ public class WordResDto {
   public static class getWordByScreenKey {
 
     private String words;
-    private String book;
-    private int chapter;
-    private int verse;
   }
 }
