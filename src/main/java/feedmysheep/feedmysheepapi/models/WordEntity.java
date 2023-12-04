@@ -22,11 +22,8 @@ public class WordEntity extends CreatedUpdated {
   @Column(name = "word_id", nullable = false, columnDefinition = "bigint COMMENT '말씀 아이디'")
   private Long wordId;
 
-  @Column(name = "main_screen", nullable = false, length = 50, columnDefinition = "varchar(50) COMMENT '메인 스크린'")
-  private String mainScreen;
-
-  @Column(name = "sub_screen", length = 50, columnDefinition = "varchar(50) COMMENT '서브 스크린'")
-  private String subScreen;
+  @Column(name = "screen_key", nullable = false, length = 50, columnDefinition = "varchar(50) COMMENT '스크린 키'")
+  private String screenKey;
 
   @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 1 COMMENT '활성화 여부'")
   private boolean isValid = true;
@@ -44,10 +41,9 @@ public class WordEntity extends CreatedUpdated {
   private int verse;
 
   @Builder
-  public WordEntity(String mainScreen, String subScreen, String book, int chapter, int verse,
+  public WordEntity(String screenKey, String book, int chapter, int verse,
       String words) {
-    this.mainScreen = mainScreen;
-    this.subScreen = subScreen;
+    this.screenKey = screenKey;
     this.book = book;
     this.chapter = chapter;
     this.verse = verse;

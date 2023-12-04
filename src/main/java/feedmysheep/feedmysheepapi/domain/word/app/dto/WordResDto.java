@@ -11,7 +11,7 @@ public class WordResDto {
   @Getter
   @Setter
   @RequiredArgsConstructor
-  public static class getWordByMainAndSubScreen {
+  public static class getWordByScreenKey {
 
     private String words;
     private String book;

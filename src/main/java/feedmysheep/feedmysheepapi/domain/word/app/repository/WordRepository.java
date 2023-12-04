@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WordRepository extends JpaRepository<WordEntity, Long> {
 
-  @Query("SELECT w FROM WordEntity w WHERE w.isValid = true and w.mainScreen = :mainScreen and (w.subScreen = :subScreen or :subScreen is null)")
-  List<WordEntity> getWordListByMainScreenAndSubScreen(@Param("mainScreen") String mainScreen,
-      @Param("subScreen") String subScreen);
+  @Query("SELECT w FROM WordEntity w WHERE w.isValid = true and w.screenKey = :screenKey")
+  List<WordEntity> getWordListByScreenKey(@Param("screenKey") String screenKey);
 }

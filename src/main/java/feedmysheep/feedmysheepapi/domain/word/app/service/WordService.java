@@ -25,17 +25,12 @@ public class WordService {
     this.wordMapper = wordMapper;
   }
 
-  public WordResDto.getWordByMainAndSubScreen getWordByMainAndSubScreen(
-      WordReqDto.mainAndSubScreen queries) {
-    String mainScreen = queries.getMainScreen();
-    String subScreen = queries.getSubScreen();
-
-    System.out.println(mainScreen + subScreen);
+  public WordResDto.getWordByScreenKey getWordByMainAndSubScreen(
+      WordReqDto.getWordByScreenKey query) {
+    String screenKey = query.getScreenKey();
 
     // 1. 스크린들에 맞는 데이터 가져오기
-    List<WordEntity> wordList = this.wordRepository.getWordListByMainScreenAndSubScreen(mainScreen,
-        subScreen);
-    System.out.println("wordList -->" + wordList);
+    List<WordEntity> wordList = this.wordRepository.getWordListByScreenKey(screenKey);
     if (wordList.isEmpty()) {
       throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
     }
@@ -45,6 +40,6 @@ public class WordService {
     WordEntity word = wordList.get(0);
 
     // 3. 반환
-    return this.wordMapper.getWordByMainAndSubScreen(word);
+    return this.wordMapper.getWordByScreenKey(word);
   }
 }

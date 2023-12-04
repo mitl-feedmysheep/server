@@ -6,5 +6,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface WordMapper {
 
-  WordResDto.getWordByMainAndSubScreen getWordByMainAndSubScreen(WordEntity word);
+  WordResDto.getWordByScreenKey getWordByScreenKey(WordEntity word);
 }

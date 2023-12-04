@@ -21,8 +21,8 @@ public class WordController {
   }
 
   @GetMapping("/words")
-  public WordResDto.getWordByMainAndSubScreen getWordByMainAndSubScreen(@Valid WordReqDto.mainAndSubScreen queries) {
-    return wordService.getWordByMainAndSubScreen(queries);
+  public WordResDto.getWordByScreenKey getWordByMainAndSubScreen(@Valid WordReqDto.getWordByScreenKey query) {
+    return wordService.getWordByMainAndSubScreen(query);
   }
 }
 

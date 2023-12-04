@@ -11,10 +11,8 @@ public class WordReqDto {
 
   @AllArgsConstructor
   @Getter
-  public static class mainAndSubScreen {
-    @NotEmpty(message = "메인 스크린 값은 존재해야해요.")
-    private String mainScreen;
-    @Nullable
-    private String subScreen;
+  public static class getWordByScreenKey {
+    @NotEmpty(message = "스크린 키 값이 존재하지 않아요.")
+    private String screenKey;
   }
 }
