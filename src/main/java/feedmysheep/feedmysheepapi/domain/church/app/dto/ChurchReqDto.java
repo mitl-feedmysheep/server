@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.church.app.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,9 @@ public class ChurchReqDto {
 @RequiredArgsConstructor
 public static class register {
     // 필수값
+    @NotNull
     private String churchName;
+    @NotNull
     private String churchLocation;
 
     //필수값 x
