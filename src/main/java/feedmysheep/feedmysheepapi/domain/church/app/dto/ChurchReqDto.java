@@ -1,10 +1,8 @@
 package feedmysheep.feedmysheepapi.domain.church.app.dto;
 
-import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import org.springframework.lang.Nullable;
+import lombok.RequiredArgsConstructor;
 
 @Data
 public class ChurchReqDto {
@@ -17,4 +15,17 @@ public class ChurchReqDto {
 //    @Nullable
 //    private String subScreen;
 //  }
+@Getter
+@RequiredArgsConstructor
+public static class register {
+    // 필수값
+    private String churchName;
+    private String churchLocation;
+
+    //필수값 x
+    private String churchLogoUrl;
+    private String churchNumber;
+    private String homepageUrl;
+    private String churchDescription;
+}
 }
