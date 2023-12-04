@@ -19,7 +19,6 @@ import lombok.ToString;
 @Table(name = "member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
 public class MemberEntity extends CreatedUpdated {
 
 

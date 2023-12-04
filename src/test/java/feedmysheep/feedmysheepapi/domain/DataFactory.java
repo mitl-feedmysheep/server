@@ -75,13 +75,9 @@ public class DataFactory {
   }
 
   // 말씀 생성
-  public static WordEntity createWordByMainScreenAndSubScreen(String mainScreen, String subScreen) {
+  public static WordEntity createWordByScreenKey(String screenKey) {
     return WordEntity.builder()
-        .mainScreen(mainScreen)
-        .subScreen(subScreen)
-        .book(TestUtil.getRandomString())
-        .chapter(TestUtil.getRandomNum(2))
-        .verse(TestUtil.getRandomNum(2))
+        .screenKey(screenKey)
         .words(TestUtil.getRandomString())
         .build();
   }

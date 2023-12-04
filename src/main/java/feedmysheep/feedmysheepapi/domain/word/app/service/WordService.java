@@ -25,7 +25,7 @@ public class WordService {
     this.wordMapper = wordMapper;
   }
 
-  public WordResDto.getWordByScreenKey getWordByMainAndSubScreen(
+  public WordResDto.getWordByScreenKey getWordByScreenKey(
       WordReqDto.getWordByScreenKey query) {
     String screenKey = query.getScreenKey();
 

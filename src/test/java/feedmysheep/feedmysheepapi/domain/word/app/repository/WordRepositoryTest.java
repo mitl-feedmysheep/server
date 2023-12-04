@@ -26,11 +26,9 @@ class WordRepositoryTest {
 
   @BeforeAll
   public static void setup(@Autowired WordRepository wordRepository) {
-    String mainScreen = TestUtil.getRandomString();
-    String subScreen = TestUtil.getRandomString();
-    word1 = wordRepository.save(
-        DataFactory.createWordByMainScreenAndSubScreen(mainScreen, subScreen));
-    wordRepository.save(DataFactory.createWordByMainScreenAndSubScreen(mainScreen, subScreen));
+    String screenKey = TestUtil.getRandomString();
+    word1 = wordRepository.save(DataFactory.createWordByScreenKey(screenKey));
+    wordRepository.save(DataFactory.createWordByScreenKey(screenKey));
   }
 
   @AfterAll
@@ -44,8 +42,7 @@ class WordRepositoryTest {
     // given
 
     // when
-    List<WordEntity> wordList = this.wordRepository.getWordListByMainScreenAndSubScreen(
-        word1.getMainScreen(), word1.getSubScreen());
+    List<WordEntity> wordList = this.wordRepository.getWordListByScreenKey(word1.getScreenKey());
 
     // then
     assertThat(wordList.size()).isEqualTo(2);
@@ -56,11 +53,10 @@ class WordRepositoryTest {
   public void test2() {
     // given
     WordEntity word = this.wordRepository.save(
-        DataFactory.createWordByMainScreenAndSubScreen(TestUtil.getRandomString(), null));
+        DataFactory.createWordByScreenKey(TestUtil.getRandomString()));
 
     // when
-    List<WordEntity> emptyWordList = this.wordRepository.getWordListByMainScreenAndSubScreen(
-        word.getMainScreen(), null);
+    List<WordEntity> emptyWordList = this.wordRepository.getWordListByScreenKey(word.getScreenKey());
 
     // then
     assertThat(emptyWordList.size()).isEqualTo(1);
