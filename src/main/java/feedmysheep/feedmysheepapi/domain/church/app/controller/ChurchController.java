@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/app/church")
+@RequestMapping("/app")
 public class ChurchController {
 
   private final ChurchService churchService;
@@ -25,14 +25,14 @@ public class ChurchController {
 
   ;
 
-  @GetMapping
+  @GetMapping("/churches")
   public List<ChurchResDto.getChurch> getChurchList(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
       @RequestParam(required = false) String churchName) {
     return this.churchService.getChurchList(customUserDetails, churchName);
   }
 
-  @GetMapping("/{churchId}/body")
+  @GetMapping("church/{churchId}/bodies")
   public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
       @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long churchId) {
     return this.churchService.getBodyListByChurchId(customUserDetails, churchId);

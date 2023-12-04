@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/app/word")
+@RequestMapping("/app")
 public class WordController {
   private final WordService wordService;
 
@@ -20,7 +20,7 @@ public class WordController {
     this.wordService = wordService;
   }
 
-  @GetMapping
+  @GetMapping("/words")
   public WordResDto.getWordByMainAndSubScreen getWordByMainAndSubScreen(@Valid WordReqDto.mainAndSubScreen queries) {
     return wordService.getWordByMainAndSubScreen(queries);
   }
