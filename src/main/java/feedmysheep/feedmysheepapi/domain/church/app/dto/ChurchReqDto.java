@@ -14,7 +14,7 @@ public class ChurchReqDto {
 //    @NotEmpty(message = "메인 스크린 값은 존재해야해요.")
 //    private String mainScreen;
 //    @Nullable
-//    private String subScreen;;
+//    private String subScreen;
 //  }
 
     @Getter
