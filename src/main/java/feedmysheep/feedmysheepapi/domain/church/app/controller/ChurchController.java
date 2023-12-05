@@ -38,6 +38,7 @@ public class ChurchController {
       @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long churchId) {
     return this.churchService.getBodyListByChurchId(customUserDetails, churchId);
   }
+  //푸쉬하고 새인생..
   @PostMapping("/register")
   public void registerChurch(@Valid @RequestBody ChurchReqDto.register body){
     this.churchService.registerChurch(body);
