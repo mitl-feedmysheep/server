@@ -75,9 +75,7 @@ public class ChurchService {
    Optional<String> churchDescription = Optional.ofNullable(body.getChurchDescription());
 
    // message뜨게 수정 필요.
-    if(churchName == null || churchLocation == null){
-      throw new IllegalArgumentException("교회 이름 또는 위치는 필수값입니다.");
-    }
+
 
     ChurchEntity churchEntity = ChurchEntity.builder()
             .churchName(churchName)

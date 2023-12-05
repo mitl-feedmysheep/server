@@ -21,8 +21,9 @@ public class ChurchReqDto {
     @RequiredArgsConstructor
     public static class register {
         // 필수값
-        @NotNull
+        @NotNull(message ="교회 이름은 필수값입니다.")
         private String churchName;
+        @NotNull(message = "교회 위치는 필수값입니다.")
         private String churchLocation;
 
         //필수값 x
