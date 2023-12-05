@@ -18,6 +18,5 @@ public class ErrorMessage {
   public static final String NO_EMAIL_MEMBER_FOUND = "해당 이메일로 등록된 유저가 존재하지 않아요.";
   public static final String WRONG_PASSWORD = "비밀번호가 틀렸어요. 다시 시도해주세요.";
 
-  public static final String NO_CHURCHNAME_OR_CHURCHLOCATION = "교회 이름 또는 위치는 필수값입니다";
   public static final String NO_WORD_FOR_SCREENS = "해당 스크린에 말씀이 존재하지 않아요. 다시 시도해주세요.";
 }
