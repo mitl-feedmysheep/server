@@ -38,9 +38,8 @@ public class InitController {
   public void insertDataSeeds() {
     // 스플래시 화면 말씀
     WordEntity seedWord = WordEntity.builder()
-        .mainScreen("splash")
-        .book("요한복음").chapter(15).verse(12)
-        .words("내 계명은 곧 내가 너희를 사랑한 것 같이 너희도 서로 사랑하라 하는 이것이니라")
+        .screenKey("splash")
+        .words("내 계명은 곧 내가 너희를 사랑한 것 같이 너희도 서로 사랑하라 하는 이것이니라 (요한복음 15:12)")
         .build();
     this.wordRepository.save(seedWord);
 
