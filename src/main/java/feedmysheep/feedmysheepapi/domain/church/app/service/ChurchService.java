@@ -26,7 +26,7 @@ public class ChurchService {
 
   @Autowired
   public ChurchService(ChurchRepository churchRepository, MemberRepository memberRepository,
-      BodyRepository bodyRepository, ChurchMapper churchMapper) {
+          BodyRepository bodyRepository, ChurchMapper churchMapper) {
     this.churchRepository = churchRepository;
     this.memberRepository = memberRepository;
     this.bodyRepository = bodyRepository;
@@ -34,10 +34,10 @@ public class ChurchService {
   }
 
   public List<ChurchResDto.getChurch> getChurchList(
-      CustomUserDetails customUserDetails, String churchName) {
+          CustomUserDetails customUserDetails, String churchName) {
     // 1. 유효한 멤버인지 검사
     this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
-        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 교회 리스트
     List<ChurchEntity> churchList;
@@ -52,10 +52,10 @@ public class ChurchService {
   }
 
   public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
-      CustomUserDetails customUserDetails, Long churchId) {
+          CustomUserDetails customUserDetails, Long churchId) {
     // 1. 유효한 멤버인지 검사
     this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
-        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 바디 리스트 반환
     List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(churchId);
@@ -65,6 +65,21 @@ public class ChurchService {
   }
 
   public void registerChurch(ChurchReqDto.register body){
-    String churchName = body.getChurchName();
+    ChurchEntity church = new ChurchEntity(
+            body.getChurchName(),
+            body.getChurchLocation(),
+            body.getChurchLogoUrl(),
+            body.getChurchNumber(),
+            body.getHomepageUrl(),
+            body.getChurchDescription()
+    );
+
+    churchRepository.save(church);
   }
 }
+
+//해당 ErrorMessage 실행 안 됨 => @Valid 조건에 부합하지 않을 시 출력되는 에러메시지 설정되어있음
+// handleMethodArgumentNotValidException(MethodArgumentNotValidException ex)
+//    if (churchName == null || churchLocation == null) {
+//            throw new CustomException(ErrorMessage.NO_CHURCHNAME_OR_NO_CHURCHLOCATION);
+//            }
