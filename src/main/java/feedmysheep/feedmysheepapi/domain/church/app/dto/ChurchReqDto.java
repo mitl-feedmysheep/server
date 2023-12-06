@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
 
 @Data
@@ -16,5 +17,17 @@ public class ChurchReqDto {
     private String mainScreen;
     @Nullable
     private String subScreen;
+  }
+
+  @RequiredArgsConstructor
+  @Getter
+  public static class register {
+    @Nullable
+    private String churchName;
+    @Nullable
+    private String churchLocation;
+
+
+
   }
 }
