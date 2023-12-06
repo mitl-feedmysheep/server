@@ -22,9 +22,6 @@ public class OrganEntity extends CreatedUpdated {
   @Column(name = "organ_id")
   private Long organId;
 
-  @Column(name = "member_id", nullable = false)
-  private Long memberId;
-
   @Column(name = "body_id", nullable = false)
   private Long bodyId;
 
