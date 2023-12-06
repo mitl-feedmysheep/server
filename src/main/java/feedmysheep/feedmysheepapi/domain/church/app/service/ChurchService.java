@@ -77,9 +77,3 @@ public class ChurchService {
     churchRepository.save(church);
   }
 }
-
-//해당 ErrorMessage 실행 안 됨 => @Valid 조건에 부합하지 않을 시 출력되는 에러메시지 설정되어있음
-// handleMethodArgumentNotValidException(MethodArgumentNotValidException ex)
-//    if (churchName == null || churchLocation == null) {
-//            throw new CustomException(ErrorMessage.NO_CHURCHNAME_OR_NO_CHURCHLOCATION);
-//            }
