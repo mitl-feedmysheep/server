@@ -1,7 +1,9 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchMemberMapRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberMapper;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
@@ -17,6 +19,8 @@ import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
+import feedmysheep.feedmysheepapi.models.BodyEntity;
+import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
@@ -24,6 +28,7 @@ import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +46,10 @@ public class MemberService {
   private final TwilioService twilioService;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
-
   private final ChurchMemberMapRepository churchMemberMapRepository;
   private final MemberMapper memberMapper;
+  private final ChurchRepository churchRepository;
+  private final BodyRepository bodyRepository;
 
   @Autowired
   public MemberService(
@@ -55,7 +61,9 @@ public class MemberService {
       TwilioService twilioService,
       PasswordEncoder passwordEncoder,
       JwtTokenProvider jwtTokenProvider,
-      MemberMapper memberMapper) {
+      MemberMapper memberMapper,
+      ChurchRepository churchRepository,
+      BodyRepository bodyRepository) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
     this.verificationFailLogRepository = verificationFailLogRepository;
@@ -65,6 +73,8 @@ public class MemberService {
     this.passwordEncoder = passwordEncoder;
     this.jwtTokenProvider = jwtTokenProvider;
     this.memberMapper = memberMapper;
+    this.churchRepository = churchRepository;
+    this.bodyRepository = bodyRepository;
   }
 
   ;
@@ -240,5 +250,24 @@ public class MemberService {
     boolean isChurchMember = churchMemberMapList.size() > 0;
 
     return new MemberResDto.checkChurchMember(isChurchMember);
+  }
+
+  public List<MemberResDto.getChurchWithBody> getMemberChurchesWithBodies(CustomUserDetails customUserDetails) {
+    // 1. 유저 아이디로 교회 조회
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(customUserDetails.getMemberId());
+
+    // 2. 유저가 다니는 교회별 부서 매핑
+    List<ChurchEntity> churchList = new ArrayList<>();
+    for (ChurchMemberMapEntity churchMemberMap : churchMemberMapList) {
+      // 2-1. 유저가 다니는 교회 조회
+      ChurchEntity church = this.churchRepository.getChurchByChurchId(churchMemberMap.getChurchId());
+      // 2-2. 유저가 다니는 교회별 부서 조회
+      List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church.getChurchId());
+      church.setBodyList(bodyList);
+      churchList.add(church);
+    }
+
+    // 3. 리턴
+    return this.memberMapper.getMemberChurchesWithBodies(churchList);
   }
 }

@@ -2,9 +2,11 @@ package feedmysheep.feedmysheepapi.domain.member.app.controller;
 
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
+import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto.getChurchWithBody;
 import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,6 +56,11 @@ public class MemberController {
   public MemberResDto.checkChurchMember checkChurchMember(@AuthenticationPrincipal
   CustomUserDetails customUserDetails) {
     return this.memberService.checkChurchMember(customUserDetails);
+  }
+
+  @GetMapping("/churches-with-bodies")
+  public List<getChurchWithBody> getMemberChurchesWithBodies(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    return this.memberService.getMemberChurchesWithBodies(customUserDetails);
   }
 }
 

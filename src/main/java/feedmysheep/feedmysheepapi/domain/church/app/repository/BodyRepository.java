@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BodyRepository extends JpaRepository<BodyEntity, Long> {
 
-  @Query("SELECT b FROM BodyEntity b WHERE b.churchId = :churchId and b.isValid = true")
+  @Query("SELECT b FROM BodyEntity b WHERE b.isValid = true and b.churchId = :churchId")
   List<BodyEntity> getBodyListByChurchId(@Param("churchId") Long churchId);
 }

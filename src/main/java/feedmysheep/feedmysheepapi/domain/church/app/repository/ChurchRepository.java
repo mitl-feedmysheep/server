@@ -9,10 +9,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ChurchRepository extends JpaRepository<ChurchEntity, Long> {
-
   @Query("SELECT c FROM ChurchEntity c WHERE c.isValid = true")
   List<ChurchEntity> getChurchList();
   
   @Query("SELECT c FROM ChurchEntity c WHERE c.isValid = true and c.churchName = :churchName")
   List<ChurchEntity> getChurchListByChurchName(@Param("churchName") String churchName);
+
+  // TODO 테스트코드
+  @Query("SELECT c FROM ChurchEntity c WHERE c.isValid = true and c.churchId = :churchId")
+  ChurchEntity getChurchByChurchId(@Param("churchId") Long churchId);
 }
