@@ -64,15 +64,15 @@ public class ChurchService {
     return this.churchMapper.getBodyListByChurchId(bodyList);
   }
 
-  public void registerChurch(ChurchReqDto.register body){
-    ChurchEntity church = new ChurchEntity(
-            body.getChurchName(),
-            body.getChurchLocation(),
-            body.getChurchLogoUrl(),
-            body.getChurchNumber(),
-            body.getHomepageUrl(),
-            body.getChurchDescription()
-    );
+  public void register(ChurchReqDto.register body){
+    ChurchEntity church = ChurchEntity.builder()
+            .churchName(body.getChurchName())
+            .churchLocation((body.getChurchLocation()))
+            .churchLogoUrl((body.getChurchLogoUrl()))
+            .churchNumber(body.getChurchNumber())
+            .churchDescription(body.getChurchDescription())
+            .build();
+
 
     churchRepository.save(church);
   }

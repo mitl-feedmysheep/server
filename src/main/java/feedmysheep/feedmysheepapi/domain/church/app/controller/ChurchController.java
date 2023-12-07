@@ -42,8 +42,8 @@ public class ChurchController {
     return this.churchService.getBodyListByChurchId(customUserDetails, churchId);
   }
 
-  @PostMapping("church/register")
-  public void registerChurch(@Valid @RequestBody ChurchReqDto.register body){
-    this.churchService.registerChurch(body);
+  @PostMapping("/church/register")
+  public void register(@Valid @RequestBody ChurchReqDto.register body){
+    this.churchService.register(body);
   }
 }
