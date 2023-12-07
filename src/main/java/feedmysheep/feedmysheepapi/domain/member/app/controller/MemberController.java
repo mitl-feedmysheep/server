@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,6 +66,13 @@ public class MemberController {
   @GetMapping("/info")
   public MemberResDto.getMemberInfo getMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.memberService.getMemberInfo(customUserDetails);
+  }
+
+  @GetMapping("/body/{bodyId}/cells")
+  public List<MemberResDto.getCellByBodyId> getCellListByBodyIdAndMemberId(
+      @Valid @AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @PathVariable Long bodyId) {
+    return this.memberService.getCellListByBodyIdAndMemberId(customUserDetails, bodyId);
   }
 }
 

@@ -63,4 +63,15 @@ public class MemberResDto {
     private String email;
     private LocalDateTime registeredAt;
   }
+
+  @AllArgsConstructor
+  @Getter
+  public static class getCellByBodyId {
+    private int cellMemberCount;
+    private Long cellId;
+    private String cellName;
+    private String cellLogoUrl;
+    private String cellPlace;
+    private String description;
+  }
 }

@@ -5,6 +5,7 @@ import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyMemberMapRepo
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.OrganRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberMapper;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
@@ -54,6 +55,7 @@ public class MemberService {
   private final ChurchRepository churchRepository;
   private final BodyRepository bodyRepository;
   private final BodyMemberMapRepository bodyMemberMapRepository;
+  private final OrganRepository organRepository;
 
   @Autowired
   public MemberService(
@@ -68,7 +70,8 @@ public class MemberService {
       MemberMapper memberMapper,
       ChurchRepository churchRepository,
       BodyRepository bodyRepository,
-      BodyMemberMapRepository bodyMemberMapRepository) {
+      BodyMemberMapRepository bodyMemberMapRepository,
+      OrganRepository organRepository) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
     this.verificationFailLogRepository = verificationFailLogRepository;
@@ -81,6 +84,7 @@ public class MemberService {
     this.churchRepository = churchRepository;
     this.bodyRepository = bodyRepository;
     this.bodyMemberMapRepository = bodyMemberMapRepository;
+    this.organRepository = organRepository;
   }
 
   ;
@@ -292,5 +296,12 @@ public class MemberService {
 
     // 2. 리턴
     return this.memberMapper.getMemberInfo(member);
+  }
+
+  public List<MemberResDto.getCellByBodyId> getCellListByBodyIdAndMemberId(CustomUserDetails customUserDetails, Long bodyId) {
+    // 1. 바디로 올건 조회
+    this.organRepository.getOrganListByBodyId();
+    // 2. 올건으로 셀리스트 조회 (셀리스트 flatten)
+    // 3. 셀리스트 중에 유저가 속한 셀리스트 반환
   }
 }
