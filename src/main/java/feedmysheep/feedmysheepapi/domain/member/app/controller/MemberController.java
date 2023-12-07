@@ -2,7 +2,6 @@ package feedmysheep.feedmysheepapi.domain.member.app.controller;
 
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
-import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto.getChurchWithBody;
 import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -59,8 +58,13 @@ public class MemberController {
   }
 
   @GetMapping("/churches-with-bodies")
-  public List<getChurchWithBody> getMemberChurchesWithBodies(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+  public List<MemberResDto.getChurchWithBody> getMemberChurchesWithBodies(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.memberService.getMemberChurchesWithBodies(customUserDetails);
+  }
+
+  @GetMapping("/info")
+  public MemberResDto.getMemberInfo getMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    return this.memberService.getMemberInfo(customUserDetails);
   }
 }
 

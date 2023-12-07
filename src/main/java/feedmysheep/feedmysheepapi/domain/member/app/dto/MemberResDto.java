@@ -1,5 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.member.app.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,5 +48,19 @@ public class MemberResDto {
   public static class Body {
     private Long bodyId;
     private String bodyName;
+  }
+
+  @AllArgsConstructor
+  @Getter
+  public static class getMemberInfo {
+    private String memberName;
+    private String sex;
+    private LocalDate birthday;
+    private String phone;
+    private String profileImageUrl;
+    private String address;
+    private String memberDescription;
+    private String email;
+    private LocalDateTime registeredAt;
   }
 }

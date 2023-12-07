@@ -285,4 +285,12 @@ public class MemberService {
     // 3. 리턴
     return this.memberMapper.getMemberChurchesWithBodies(churchList);
   }
+
+  public MemberResDto.getMemberInfo getMemberInfo(CustomUserDetails customUserDetails) {
+    // 1. 유저 정보 검색
+    MemberEntity member = this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId()).orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+
+    // 2. 리턴
+    return this.memberMapper.getMemberInfo(member);
+  }
 }
