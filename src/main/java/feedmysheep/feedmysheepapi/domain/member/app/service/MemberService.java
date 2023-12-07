@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
@@ -20,6 +21,7 @@ import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
+import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
@@ -30,6 +32,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,6 +53,7 @@ public class MemberService {
   private final MemberMapper memberMapper;
   private final ChurchRepository churchRepository;
   private final BodyRepository bodyRepository;
+  private final BodyMemberMapRepository bodyMemberMapRepository;
 
   @Autowired
   public MemberService(
@@ -63,7 +67,8 @@ public class MemberService {
       JwtTokenProvider jwtTokenProvider,
       MemberMapper memberMapper,
       ChurchRepository churchRepository,
-      BodyRepository bodyRepository) {
+      BodyRepository bodyRepository,
+      BodyMemberMapRepository bodyMemberMapRepository) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
     this.verificationFailLogRepository = verificationFailLogRepository;
@@ -75,6 +80,7 @@ public class MemberService {
     this.memberMapper = memberMapper;
     this.churchRepository = churchRepository;
     this.bodyRepository = bodyRepository;
+    this.bodyMemberMapRepository = bodyMemberMapRepository;
   }
 
   ;
@@ -261,9 +267,18 @@ public class MemberService {
     for (ChurchMemberMapEntity churchMemberMap : churchMemberMapList) {
       // 2-1. 유저가 다니는 교회 조회
       ChurchEntity church = this.churchRepository.getChurchByChurchId(churchMemberMap.getChurchId());
-      // 2-2. 유저가 다니는 교회별 부서 조회
+      // 2-2. 교회별 부서 조회
       List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church.getChurchId());
-      church.setBodyList(bodyList);
+      // 2-3. 교회별 부서 중, 유저가 속한 부서 필터링
+      List<BodyEntity> validBodyList = new ArrayList<>();
+      for (BodyEntity body : bodyList) {
+        Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(body.getBodyId(), customUserDetails.getMemberId());
+        // 2-4. 유저가 속한 부서만 add
+        if (bodyMemberMap.isPresent()) {
+          validBodyList.add(body);
+        }
+      }
+      church.setBodyList(validBodyList);
       churchList.add(church);
     }
 
