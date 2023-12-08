@@ -67,12 +67,12 @@ public class ChurchService {
   public void register(ChurchReqDto.register body){
     ChurchEntity church = ChurchEntity.builder()
             .churchName(body.getChurchName())
-            .churchLocation((body.getChurchLocation()))
-            .churchLogoUrl((body.getChurchLogoUrl()))
+            .churchLocation(body.getChurchLocation())
+            .churchLogoUrl(body.getChurchLogoUrl())
             .churchNumber(body.getChurchNumber())
             .churchDescription(body.getChurchDescription())
+            .churchNumber(body.getChurchNumber())
             .build();
-
 
     churchRepository.save(church);
   }
