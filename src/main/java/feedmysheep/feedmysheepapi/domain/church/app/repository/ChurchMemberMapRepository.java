@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChurchMemberMapRepository extends JpaRepository<ChurchMemberMapEntity, Long> {
 
+  // TODO: 날짜 추가;;;
   @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.isValid = true and cmm.memberId = :memberId")
   List<ChurchMemberMapEntity> getChurchMemberMapListByMemberId(@Param("memberId") Long memberId);
 }

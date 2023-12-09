@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,23 +32,25 @@ public class OrganMemberMapEntity extends CreatedUpdated {
   private Long memberId;
 
   @Setter
-  @Column(name = "is_valid")
-  private boolean isValid = true;
-
-  @Column(name = "serving_start_date", nullable = true)
-  private LocalDate servingStartDate;
+  @Column(name = "is_leader", nullable = false)
+  private boolean isLeader = false;
 
   @Setter
-  @Column(name = "serving_end_date", nullable = true)
-  private LocalDate servingEndDate;
+  @Column(name = "is_valid", nullable = false)
+  private boolean isValid = true;
 
   @Setter
   @Column(name = "invalid_reason", length = 50, nullable = true)
   private String invalidReason;
 
+  @Setter
+  @Column(name = "invalid_at", nullable = true)
+  private LocalDateTime invalidAt;
+
   @Builder
-  public OrganMemberMapEntity(Long organId, Long memberId) {
+  public OrganMemberMapEntity(Long organId, Long memberId, boolean isLeader) {
     this.organId = organId;
     this.memberId = memberId;
+    this.isLeader = isLeader;
   }
 }

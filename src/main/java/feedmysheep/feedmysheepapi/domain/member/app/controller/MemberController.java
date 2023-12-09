@@ -59,12 +59,14 @@ public class MemberController {
   }
 
   @GetMapping("/churches-with-bodies")
-  public List<MemberResDto.getChurchWithBody> getMemberChurchesWithBodies(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+  public List<MemberResDto.getChurchWithBody> getMemberChurchesWithBodies(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.memberService.getMemberChurchesWithBodies(customUserDetails);
   }
 
   @GetMapping("/info")
-  public MemberResDto.getMemberInfo getMemberInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+  public MemberResDto.getMemberInfo getMemberInfo(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.memberService.getMemberInfo(customUserDetails);
   }
 

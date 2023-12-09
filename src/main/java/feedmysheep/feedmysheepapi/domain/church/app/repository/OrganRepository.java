@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrganRepository extends JpaRepository<OrganEntity, Long> {
   // TODO 테스트코드
-  // TODO 날짜를 적어야 하는가....
-  @Query("SELECT o FROM OrganEntity o")
+  @Query("SELECT o FROM OrganEntity o WHERE o.bodyId = :bodyId and o.isValid = true and CURDATE() BETWEEN o.startDate and o.endDate")
   List<OrganEntity> getOrganListByBodyId(@Param("bodyId") Long bodyId);
 }

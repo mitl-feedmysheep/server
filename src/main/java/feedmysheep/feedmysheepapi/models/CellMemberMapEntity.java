@@ -15,18 +15,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "church_member_map")
+@Table(name = "cell_member_map")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChurchMemberMapEntity extends CreatedUpdated {
+public class CellMemberMapEntity extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "church_member_map_id")
-  private Long churchMemberMapId;
+  @Column(name = "cell_member_map_id")
+  private Long cellMemberMapId;
 
-  @Column(name = "church_id", nullable = false)
-  private Long churchId;
+  @Column(name = "cell_id", nullable = false)
+  private Long cellId;
 
   @Column(name = "member_id", nullable = false)
   private Long memberId;
@@ -39,6 +39,12 @@ public class ChurchMemberMapEntity extends CreatedUpdated {
   @Column(name = "is_valid", nullable = false)
   private boolean isValid = true;
 
+  @Column(name = "start_date", nullable = false)
+  private LocalDate startDate;
+
+  @Column(name = "end_date", nullable = false)
+  private LocalDate endDate;
+
   @Setter
   @Column(name = "invalid_reason", length = 50, nullable = true)
   private String invalidReason;
@@ -48,9 +54,14 @@ public class ChurchMemberMapEntity extends CreatedUpdated {
   private LocalDateTime invalidAt;
 
   @Builder
-  public ChurchMemberMapEntity(Long churchId, Long memberId, boolean isLeader) {
-    this.churchId = churchId;
+  public CellMemberMapEntity(Long cellId, Long memberId, boolean isLeader, LocalDate startDate,
+      LocalDate endDate) {
+    this.cellId = cellId;
     this.memberId = memberId;
     this.isLeader = isLeader;
+    // Default: 이번 해 첫 날로 지정
+    this.startDate = (startDate != null) ? startDate : LocalDate.now().withDayOfYear(1);
+    // Default: 이번 해 마지막 날로 지정
+    this.endDate = (endDate != null) ? endDate : LocalDate.now().withDayOfYear(365);
   }
 }

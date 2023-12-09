@@ -66,7 +66,7 @@ public class MemberResDto {
 
   @AllArgsConstructor
   @Getter
-  public static class getCellByBodyId {
+  public static class getCellByBodyIdAndMemberId {
     private int cellMemberCount;
     private Long cellId;
     private String cellName;
