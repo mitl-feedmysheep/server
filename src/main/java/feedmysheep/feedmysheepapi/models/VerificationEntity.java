@@ -29,7 +29,7 @@ public class VerificationEntity extends CreatedUpdated {
   @Column(name = "verification_code", nullable = false, length = 6)
   private String verificationCode;
 
-  @Column(name = "valid_date", nullable = false, columnDefinition = "datetime DEFAULT CURRENT_DATE COMMENT '유효날짜'")
+  @Column(name = "valid_date", nullable = false, columnDefinition = "datetime COMMENT '유효날짜'")
   private LocalDate validDate = LocalDate.now();
 
   @Builder
