@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,9 +22,6 @@ public class OrganEntity extends CreatedUpdated {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "organ_id")
   private Long organId;
-
-  @Column(name = "member_id", nullable = false)
-  private Long memberId;
 
   @Column(name = "body_id", nullable = false)
   private Long bodyId;
@@ -50,8 +48,8 @@ public class OrganEntity extends CreatedUpdated {
   private boolean isValid;
 
   @Column(name = "start_date", nullable = false)
-  private Date startDate;
+  private LocalDate startDate;
 
   @Column(name = "end_date", nullable = false)
-  private Date endDate;
+  private LocalDate endDate;
 }

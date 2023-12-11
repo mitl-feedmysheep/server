@@ -15,18 +15,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "church_member_map")
+@Table(name = "organ_member_map")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ChurchMemberMapEntity extends CreatedUpdated {
+public class OrganMemberMapEntity extends CreatedUpdated {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "church_member_map_id")
-  private Long churchMemberMapId;
+  @Column(name = "organ_member_map_id")
+  private Long organMemberMapId;
 
-  @Column(name = "church_id", nullable = false)
-  private Long churchId;
+  @Column(name = "organ_id", nullable = false)
+  private Long organId;
 
   @Column(name = "member_id", nullable = false)
   private Long memberId;
@@ -48,8 +48,8 @@ public class ChurchMemberMapEntity extends CreatedUpdated {
   private LocalDateTime invalidAt;
 
   @Builder
-  public ChurchMemberMapEntity(Long churchId, Long memberId, boolean isLeader) {
-    this.churchId = churchId;
+  public OrganMemberMapEntity(Long organId, Long memberId, boolean isLeader) {
+    this.organId = organId;
     this.memberId = memberId;
     this.isLeader = isLeader;
   }

@@ -38,7 +38,8 @@ public class ChurchController {
 
   @GetMapping("/church/{churchId}/bodies")
   public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
-      @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long churchId) {
+      @AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @PathVariable Long churchId) {
     return this.churchService.getBodyListByChurchId(customUserDetails, churchId);
   }
 
