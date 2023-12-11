@@ -26,18 +26,18 @@ public class ChurchService {
 
   @Autowired
   public ChurchService(ChurchRepository churchRepository, MemberRepository memberRepository,
-          BodyRepository bodyRepository, ChurchMapper churchMapper) {
+      BodyRepository bodyRepository, ChurchMapper churchMapper) {
     this.churchRepository = churchRepository;
     this.memberRepository = memberRepository;
     this.bodyRepository = bodyRepository;
     this.churchMapper = churchMapper;
   }
 
-  public List<ChurchResDto.getChurch> getChurchList(
-          CustomUserDetails customUserDetails, String churchName) {
+  public List<ChurchResDto.getChurch> getChurchList(CustomUserDetails customUserDetails,
+      String churchName) {
     // 1. 유효한 멤버인지 검사
     this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
-            .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 교회 리스트
     List<ChurchEntity> churchList;
@@ -52,10 +52,10 @@ public class ChurchService {
   }
 
   public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
-          CustomUserDetails customUserDetails, Long churchId) {
+      CustomUserDetails customUserDetails, Long churchId) {
     // 1. 유효한 멤버인지 검사
     this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
-            .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 바디 리스트 반환
     List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(churchId);
@@ -64,16 +64,12 @@ public class ChurchService {
     return this.churchMapper.getBodyListByChurchId(bodyList);
   }
 
-  public void register(ChurchReqDto.register body){
-    ChurchEntity church = ChurchEntity.builder()
-            .churchName(body.getChurchName())
-            .churchLocation(body.getChurchLocation())
-            .churchLogoUrl(body.getChurchLogoUrl())
-            .churchNumber(body.getChurchNumber())
-            .churchDescription(body.getChurchDescription())
-            .churchNumber(body.getChurchNumber())
-            .build();
+  public void register(ChurchReqDto.register body) {
+    ChurchEntity church = ChurchEntity.builder().churchName(body.getChurchName())
+        .churchLocation(body.getChurchLocation()).churchLogoUrl(body.getChurchLogoUrl())
+        .churchNumber(body.getChurchNumber()).churchDescription(body.getChurchDescription())
+        .churchNumber(body.getChurchNumber()).build();
 
-    churchRepository.save(church);
+    this.churchRepository.save(church);
   }
 }

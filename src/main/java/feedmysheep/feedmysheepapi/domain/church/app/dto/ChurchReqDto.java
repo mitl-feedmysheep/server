@@ -14,6 +14,7 @@ public class ChurchReqDto {
   @AllArgsConstructor
   @Getter
   public static class mainAndSubScreen {
+
     @NotEmpty(message = "메인 스크린 값은 존재해야해요.")
     private String mainScreen;
     @Nullable
@@ -23,6 +24,7 @@ public class ChurchReqDto {
   @RequiredArgsConstructor
   @Getter
   public static class register {
+
     @NotBlank
     private String churchName;
     @NotBlank
