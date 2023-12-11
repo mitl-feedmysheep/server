@@ -325,7 +325,5 @@ public class MemberService {
 
     // 5. DTO 매핑
     return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
-
-    // TODO 테스트하기
   }
 }

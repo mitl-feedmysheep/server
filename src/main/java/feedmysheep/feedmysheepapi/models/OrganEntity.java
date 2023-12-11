@@ -32,13 +32,13 @@ public class OrganEntity extends CreatedUpdated {
   @Column(name = "organ_logo_url", length = 200)
   private String organLogoUrl;
 
-  @Column(name = "organ_role", length = 200, nullable = false)
+  @Column(name = "organ_role", length = 200)
   private String organRole;
 
-  @Column(name = "organ_words", length = 200, nullable = false)
+  @Column(name = "organ_words", length = 200)
   private String organWords;
 
-  @Column(name = "organ_goal", length = 200, nullable = false)
+  @Column(name = "organ_goal", length = 200)
   private String organGoal;
 
   @Column(name = "organ_description", length = 200)
@@ -46,10 +46,4 @@ public class OrganEntity extends CreatedUpdated {
 
   @Column(name = "is_valid", nullable = false)
   private boolean isValid;
-
-  @Column(name = "start_date", nullable = false)
-  private LocalDate startDate;
-
-  @Column(name = "end_date", nullable = false)
-  private LocalDate endDate;
 }
