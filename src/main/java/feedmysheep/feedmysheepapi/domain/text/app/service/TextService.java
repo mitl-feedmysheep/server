@@ -31,9 +31,12 @@ public class TextService {
     List<TextEntity> textList = this.textRepository.getTextListByScreenKey(screenKey);
     if (textList.isEmpty()) {
       throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
-    } else {
-      TextEntity text = textList.get(0);
-      return this.textMapper.getTextByScreenKey(text);
     }
+
+    // 2. 텍스트 가져오기
+    TextEntity text = textList.get(0);
+
+    // 3. 반환
+    return this.textMapper.getTextByScreenKey(text);
   }
 }

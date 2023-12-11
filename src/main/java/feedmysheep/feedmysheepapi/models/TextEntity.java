@@ -26,8 +26,8 @@ public class TextEntity extends CreatedUpdated {
     private String screenKey;
 
     @Setter
-    @Column(name = "is_valid", nullable = false)
-    private boolean isValid;
+    @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 1 COMMENT '활성화 여부'")
+    private boolean isValid = true;
 
     @Column(name = "text", length = 2048, nullable = false)
     private String text;

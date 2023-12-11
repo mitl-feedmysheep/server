@@ -8,7 +8,6 @@ import lombok.Getter;
 @Data
 public class TextReqDto {
 
-  @SuppressWarnings("checkstyle:MissingJavadocType")
   @AllArgsConstructor
   @Getter
   public static class getTextByScreenKey {

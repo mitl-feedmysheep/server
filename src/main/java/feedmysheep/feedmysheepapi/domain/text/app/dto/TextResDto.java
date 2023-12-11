@@ -13,7 +13,7 @@ public class TextResDto {
   @RequiredArgsConstructor
   public static class getTextByScreenKey {
 
-    private String texts;
+    private String text;
   }
 
 }
