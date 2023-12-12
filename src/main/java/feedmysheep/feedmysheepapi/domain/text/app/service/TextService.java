@@ -7,7 +7,6 @@ import feedmysheep.feedmysheepapi.domain.text.app.repository.TextRepository;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.TextEntity;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,15 +27,12 @@ public class TextService {
     String screenKey = query.getScreenKey();
 
     // 1. 스크린들에 맞는 데이터 가져오기.
-    TextEntity textList = this.textRepository.getTextByScreenKey(screenKey);
-    if (textList.isEmpty()) {
+    TextEntity text = this.textRepository.getTextByScreenKey(screenKey);
+    if (text.getScreenKey() == null) {
       throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
     }
 
-    // 2. 텍스트 가져오기
-    TextEntity text = textList.get(0);
-
-    // 3. 반환
+    // 2. 반환
     return this.textMapper.getTextByScreenKey(text);
   }
 }
