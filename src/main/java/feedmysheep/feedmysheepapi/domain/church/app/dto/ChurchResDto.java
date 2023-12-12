@@ -22,7 +22,7 @@ public class ChurchResDto {
   @Getter
   @Setter
   @RequiredArgsConstructor
-  public static class getBodyListByChurchId {
+  public static class getBodyByChurchId {
 
     private Long bodyId;
     private String bodyName;
