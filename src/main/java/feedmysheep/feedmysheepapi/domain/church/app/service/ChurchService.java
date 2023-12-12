@@ -51,7 +51,7 @@ public class ChurchService {
     return this.churchMapper.getChurchList(churchList);
   }
 
-  public List<ChurchResDto.getBodyListByChurchId> getBodyListByChurchId(
+  public List<ChurchResDto.getBodyByChurchId> getBodyListByChurchId(
       CustomUserDetails customUserDetails, Long churchId) {
     // 1. 유효한 멤버인지 검사
     this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
