@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrganRepository extends JpaRepository<OrganEntity, Long> {
   // TODO 테스트코드
-  @Query("SELECT o FROM OrganEntity o WHERE o.bodyId = :bodyId and o.isValid = true and CURDATE() BETWEEN o.startDate and o.endDate")
+  @Query("SELECT o FROM OrganEntity o WHERE o.bodyId = :bodyId and o.isValid = true")
   List<OrganEntity> getOrganListByBodyId(@Param("bodyId") Long bodyId);
 }

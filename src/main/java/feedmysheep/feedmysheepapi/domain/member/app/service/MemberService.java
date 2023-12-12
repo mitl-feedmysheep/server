@@ -32,6 +32,7 @@ import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.OrganEntity;
+import feedmysheep.feedmysheepapi.models.OrganMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
@@ -62,6 +63,7 @@ public class MemberService {
   private final BodyRepository bodyRepository;
   private final BodyMemberMapRepository bodyMemberMapRepository;
   private final OrganRepository organRepository;
+  private final OrganMemberMapRepository organMemberMapRepository;
   private final CellRepository cellRepository;
   private final CellMemberMapRepository cellMemberMapRepository;
 
@@ -89,6 +91,7 @@ public class MemberService {
     this.bodyRepository = bodyRepository;
     this.bodyMemberMapRepository = bodyMemberMapRepository;
     this.organRepository = organRepository;
+    this.organMemberMapRepository = organMemberMapRepository;
     this.cellRepository = cellRepository;
     this.cellMemberMapRepository = cellMemberMapRepository;
   }
@@ -295,37 +298,47 @@ public class MemberService {
 
   public List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
       CustomUserDetails customUserDetails, Long bodyId) {
-    // 1. 바디에 속한 올건리스트 조회
+    // TODO 나중에 캐싱처리하면 좋을 듯
+    // 1. 유저가 속한 바디인가?
+    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId,
+            customUserDetails.getMemberId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
+
+    // 2. 바디 밑에 속한 올건 리스트 조회
     List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
     List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
         .toList();
 
-    // 2. 올건리스트에 속한 셀리스트 조회 (flattened)
+    // 3. 유저가 속한 올건 조회 및 필터링
+    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
+        organIdListByBodyId, customUserDetails.getMemberId());
+    List<Long> organIdListByMemberId = organMemberMapList.stream()
+        .map(OrganMemberMapEntity::getOrganId).toList();
+
+    // 5. 유저가 속한 올건 중 셀 리스트 조회
     List<CellEntity> cellListByBodyId = this.cellRepository.getCellListByOrganIdList(
-        organIdListByBodyId);
+        organIdListByMemberId);
     List<Long> cellIdListByBodyId = cellListByBodyId.stream().map(CellEntity::getCellId).toList();
 
-    // 3. 유저가 속한 셀멤버맵리스트 조회
-    List<CellMemberMapEntity> cellMemberMapListByMemberId = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
+    // 6. 유저가 속한 셀 리스트 조회
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
         cellIdListByBodyId, customUserDetails.getMemberId());
-    List<Long> cellIdListByMemberId = cellMemberMapListByMemberId.stream()
-        .map(CellMemberMapEntity::getCellId).toList();
+    List<Long> cellIdListByMemberId = cellMemberMapList.stream().map(CellMemberMapEntity::getCellId)
+        .toList();
 
-    // 3. 올건리스트에 속한 셀리스트 vs 유저가 속한 셀 리스트 (다른 교회 포함) => 바디 아래의 유저가 속한 셀리스트 추출
+    // 7. 유저가 속한 셀 리스트 필터링
     List<CellEntity> cellListByMemberId = cellListByBodyId.stream()
         .filter(cell -> cellIdListByMemberId.contains(cell.getCellId())).toList();
 
-    // 4. 셀 인원 조회 및 매핑
+    // 8. 셀 인원 조회 및 매핑
     List<CellEntity> cellList = cellListByMemberId.stream().map(cell -> {
-      List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+      List<CellMemberMapEntity> cellMemberMapListByCellId = this.cellMemberMapRepository.getCellMemberMapListByCellId(
           cell.getCellId());
-      cell.setCellMemberCount(cellMemberMapList.size());
+      cell.setCellMemberCount(cellMemberMapListByCellId.size());
       return cell;
     }).toList();
 
     // 5. DTO 매핑
     return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
-
-    // TODO 테스트하기
   }
 }
