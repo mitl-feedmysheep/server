@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.church.app.service;
 
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchMapper;
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
@@ -32,8 +33,8 @@ public class ChurchService {
     this.churchMapper = churchMapper;
   }
 
-  public List<ChurchResDto.getChurch> getChurchList(
-      CustomUserDetails customUserDetails, String churchName) {
+  public List<ChurchResDto.getChurch> getChurchList(CustomUserDetails customUserDetails,
+      String churchName) {
     // 1. 유효한 멤버인지 검사
     this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
@@ -61,5 +62,14 @@ public class ChurchService {
 
     // 3. DTO 매핑
     return this.churchMapper.getBodyListByChurchId(bodyList);
+  }
+
+  public void register(ChurchReqDto.register body) {
+    ChurchEntity church = ChurchEntity.builder().churchName(body.getChurchName())
+        .churchLocation(body.getChurchLocation()).churchLogoUrl(body.getChurchLogoUrl())
+        .churchNumber(body.getChurchNumber()).churchDescription(body.getChurchDescription())
+        .churchNumber(body.getChurchNumber()).build();
+
+    this.churchRepository.save(church);
   }
 }
