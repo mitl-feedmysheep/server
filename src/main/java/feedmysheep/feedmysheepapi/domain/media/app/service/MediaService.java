@@ -32,14 +32,16 @@ public class MediaService {
     List<MediaEntity> mediaList = this.mediaRepository.getMediaListsByScreenKey(screenKey);
     if (mediaList.isEmpty()) {
       throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
-    } else {
-      mediaMapper.getMediasByScreenKey(media);
     }
-    // 2. 반환
-    return mediaList;
-  }
-}
+    MediaEntity medias = mediaList.toArray();
 
+    return this.mediaMapper.getMediasByScreenKey(medias);
+
+    // 2. 반
+  }
+
+// 1. 스크린 키 가져오기
+// 2. 스크린 키에 맞는 미디어 리스트 가져오기 (
 
 
 

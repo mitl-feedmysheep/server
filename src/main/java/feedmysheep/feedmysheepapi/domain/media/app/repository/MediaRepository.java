@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-
 public interface MediaRepository extends JpaRepository<MediaEntity, Long> {
 
   @Query("SELECT m FROM MediaEntity m WHERE m.isValid = true and m.screenKey = :screenKey")
