@@ -41,9 +41,11 @@ public class CellEntity extends CreatedUpdated {
   @Column(name = "is_valid", nullable = false)
   private boolean isValid = true;
 
+  @Setter
   @Column(name = "start_date", nullable = false)
   private LocalDate startDate;
 
+  @Getter
   @Column(name = "end_date", nullable = false)
   private LocalDate endDate;
 
@@ -53,9 +55,8 @@ public class CellEntity extends CreatedUpdated {
   int cellMemberCount;
 
   @Builder
-  public CellEntity(Long cellId, Long organId, String cellName, String cellLogoUrl,
+  public CellEntity(Long organId, String cellName, String cellLogoUrl,
       String description, LocalDate startDate, LocalDate endDate) {
-    this.cellId = cellId;
     this.organId = organId;
     this.cellName = cellName;
     this.cellLogoUrl = cellLogoUrl;
