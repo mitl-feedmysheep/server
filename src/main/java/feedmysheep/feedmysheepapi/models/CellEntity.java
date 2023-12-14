@@ -45,7 +45,7 @@ public class CellEntity extends CreatedUpdated {
   @Column(name = "start_date", nullable = false)
   private LocalDate startDate;
 
-  @Getter
+  @Setter
   @Column(name = "end_date", nullable = false)
   private LocalDate endDate;
 

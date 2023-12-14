@@ -2,11 +2,13 @@ package feedmysheep.feedmysheepapi.domain;
 
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
+import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.CellEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import feedmysheep.feedmysheepapi.models.OrganMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import feedmysheep.feedmysheepapi.models.WordEntity;
@@ -70,4 +72,15 @@ public class DataFactory {
   public static CellEntity createCellByOrganId(Long organId) {
     return CellEntity.builder().organId(organId).cellName(TestUtil.getRandomString()).build();
   }
+
+  public static BodyMemberMapEntity createBodyMemberMapByBodyIdAndMemberId(Long bodyId,
+      Long memberId) {
+    return BodyMemberMapEntity.builder().bodyId(bodyId).memberId(memberId).build();
+  }
+
+  public static OrganMemberMapEntity createOrganMemberMapByOrganIdAndMemberId(Long organId,
+      Long memberId) {
+    return OrganMemberMapEntity.builder().organId(organId).memberId(memberId).build();
+  }
+
 }

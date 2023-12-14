@@ -10,7 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BodyMemberMapRepository extends JpaRepository<BodyMemberMapEntity, Long> {
-  // TODO 테스트코드
+
   @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.isValid = true and bmm.bodyId = :bodyId and bmm.memberId = :memberId")
-  Optional<BodyMemberMapEntity> getBodyMemberMapByBodyIdAndMemberId(@Param("bodyId") Long bodyId, @Param("memberId") Long memberId);
+  Optional<BodyMemberMapEntity> getBodyMemberMapByBodyIdAndMemberId(@Param("bodyId") Long bodyId,
+      @Param("memberId") Long memberId);
 }
