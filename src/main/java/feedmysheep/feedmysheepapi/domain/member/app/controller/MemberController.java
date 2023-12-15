@@ -71,7 +71,7 @@ public class MemberController {
   }
 
   @GetMapping("/body/{bodyId}/cells")
-  public List<MemberResDto.getCellByBodyId> getCellListByBodyIdAndMemberId(
+  public List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
       @Valid @AuthenticationPrincipal CustomUserDetails customUserDetails,
       @PathVariable Long bodyId) {
     return this.memberService.getCellListByBodyIdAndMemberId(customUserDetails, bodyId);

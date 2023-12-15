@@ -24,25 +24,23 @@ public class MediaService {
     this.mediaMapper = mediaMapper;
   }
 
-  public List<MediaResDto.getMediaListByScreenKey> getMediasByScreenKey(
+  public MediaResDto.getMediaListByScreenKey[] getMediasByScreenKey(
       MediaReqDto.getMediasByScreenKey query) {
-    String screenKey = query.getSreenKey();
+    String[] screenKey = query.getSreenKey();
 
     // 1. 스크린들에 맞는 데이터 가져오기
-    List<MediaEntity> mediaList = this.mediaRepository.getMediaListsByScreenKey(screenKey);
+    List<MediaEntity> mediaList = this.mediaRepository.getMediaListsByScreenKey(screenKey[0]);
     if (mediaList.isEmpty()) {
       throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
     }
-    MediaEntity medias = mediaList.toArray();
 
-    return this.mediaMapper.getMediasByScreenKey(medias);
+    MediaEntity media = mediaList.get(0);
+    MediaEntity[] mediaArray = new MediaEntity[]{media};
 
-    // 2. 반
+    return this.mediaMapper.getMediasByScreenKey(mediaArray);
+
   }
-
-// 1. 스크린 키 가져오기
-// 2. 스크린 키에 맞는 미디어 리스트 가져오기 (
-
+}
 
 
 
