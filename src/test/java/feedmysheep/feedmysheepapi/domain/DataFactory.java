@@ -8,6 +8,7 @@ import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import feedmysheep.feedmysheepapi.models.OrganEntity;
 import feedmysheep.feedmysheepapi.models.OrganMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
@@ -64,23 +65,31 @@ public class DataFactory {
     return WordEntity.builder().screenKey(screenKey).words(TestUtil.getRandomString()).build();
   }
 
+  // 셀멤버맵 생성
   public static CellMemberMapEntity createCellMemberMapByCellIdAndMemberId(Long cellId,
       Long memberId) {
     return CellMemberMapEntity.builder().cellId(cellId).memberId(memberId).build();
   }
 
+  // 셀 생성
   public static CellEntity createCellByOrganId(Long organId) {
     return CellEntity.builder().organId(organId).cellName(TestUtil.getRandomString()).build();
   }
 
+  // 바디멤버맵 생성
   public static BodyMemberMapEntity createBodyMemberMapByBodyIdAndMemberId(Long bodyId,
       Long memberId) {
     return BodyMemberMapEntity.builder().bodyId(bodyId).memberId(memberId).build();
   }
 
+  // 올건멤버맵 생성
   public static OrganMemberMapEntity createOrganMemberMapByOrganIdAndMemberId(Long organId,
       Long memberId) {
     return OrganMemberMapEntity.builder().organId(organId).memberId(memberId).build();
   }
 
+  // 올건 생성
+  public static OrganEntity createOrganByBodyId(Long bodyId) {
+    return OrganEntity.builder().bodyId(bodyId).organName(TestUtil.getRandomString()).build();
+  }
 }
