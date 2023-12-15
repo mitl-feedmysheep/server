@@ -5,15 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Table(name = "member")
@@ -27,6 +28,9 @@ public class MemberEntity extends CreatedUpdated {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "member_id", nullable = false, columnDefinition = "bigint COMMENT '멤버 아이디'")
   private Long memberId;
+
+  @ManyToMany(mappedBy = "members")
+  private List<BodyEntity> bodies;
 
   @Setter
   @Column(name = "authorization_id", nullable = false, columnDefinition = "bigint COMMENT '권한 아이디'")

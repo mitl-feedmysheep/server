@@ -39,9 +39,11 @@ public class CellMemberMapEntity extends CreatedUpdated {
   @Column(name = "is_valid", nullable = false)
   private boolean isValid = true;
 
+  @Setter
   @Column(name = "start_date", nullable = false)
   private LocalDate startDate;
 
+  @Setter
   @Column(name = "end_date", nullable = false)
   private LocalDate endDate;
 

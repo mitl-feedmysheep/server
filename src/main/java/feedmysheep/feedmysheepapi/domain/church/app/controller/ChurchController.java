@@ -46,4 +46,13 @@ public class ChurchController {
   public void register(@Valid @RequestBody ChurchReqDto.register body) {
     this.churchService.register(body);
   }
+
+  //  bodyMemberMapRepository사용하기
+  @GetMapping("/church/body/{bodyId}/member-events")
+  public List<ChurchResDto.getMemberEventByMemberId> getMemberEventsByBodyId(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @Valid ChurchReqDto.getMemberEventsByBodyId query, @PathVariable Long bodyId) {
+    return this.churchService.getMemberEventsByBodyId(customUserDetails, query, bodyId);
+  }
+
 }

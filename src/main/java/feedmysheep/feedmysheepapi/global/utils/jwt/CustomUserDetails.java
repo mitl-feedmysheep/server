@@ -26,6 +26,7 @@ public class CustomUserDetails implements UserDetails {
     this.memberId = memberInfo.getMemberId();
     this.level = memberInfo.getLevel();
     this.memberName = memberInfo.getMemberName();
+
   }
 
   public Long getMemerId() {
@@ -39,4 +40,6 @@ public class CustomUserDetails implements UserDetails {
   public String getMemberName() {
     return this.memberName;
   }
+
+
 }

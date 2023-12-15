@@ -2,6 +2,7 @@ package feedmysheep.feedmysheepapi.domain.church.app.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -38,5 +39,13 @@ public class ChurchReqDto {
     private String homepageUrl;
     @Nullable
     private String churchDescription;
+  }
+
+  @RequiredArgsConstructor
+  @Getter
+  public static class getMemberEventsByBodyId {
+
+    public LocalDate birthday;
+
   }
 }

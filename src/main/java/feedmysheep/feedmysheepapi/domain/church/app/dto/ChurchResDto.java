@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.church.app.dto;
 
+import java.time.LocalDate;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ public class ChurchResDto {
     private Long churchId;
     private String churchName;
     private String churchLocation;
-    // TODO mapStruct 한번 보기!!!
   }
 
   @Getter
@@ -27,4 +27,14 @@ public class ChurchResDto {
     private Long bodyId;
     private String bodyName;
   }
+
+  @Getter
+  @Setter
+  @RequiredArgsConstructor
+  public static class getMemberEventByMemberId {
+
+    private LocalDate birthday;
+    private Long memberId;
+  }
+
 }
