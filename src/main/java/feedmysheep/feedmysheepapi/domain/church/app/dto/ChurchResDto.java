@@ -16,7 +16,6 @@ public class ChurchResDto {
     private Long churchId;
     private String churchName;
     private String churchLocation;
-    // TODO mapStruct 한번 보기!!!
   }
 
   @Getter

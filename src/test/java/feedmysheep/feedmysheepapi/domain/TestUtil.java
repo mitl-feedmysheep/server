@@ -61,4 +61,9 @@ public class TestUtil {
 
     return LocalDate.ofEpochDay(randomDay);
   }
+
+  public static Long getRandomLong() {
+    Random random = new Random();
+    return random.nextLong();
+  }
 }

@@ -10,12 +10,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CellMemberMapRepository extends JpaRepository<CellMemberMapEntity, Long> {
 
-  // TODO 테스트코드
   @Query("SELECT cmm FROM CellMemberMapEntity cmm WHERE cmm.memberId = :memberId and cmm.isValid = true and cmm.cellId IN (:cellIdList) and CURDATE() BETWEEN cmm.startDate and cmm.endDate")
   List<CellMemberMapEntity> getCellMemberMapListByCellIdListAndMemberId(
       @Param("cellIdList") List<Long> cellIdList, @Param("memberId") Long memberId);
 
-  // TODO 테스트코드
-  @Query("SELECT cmm FROM CellMemberMapEntity cmm WHERE cmm.cellId = :cellId and cmm.isValid = true")
+  @Query("SELECT cmm FROM CellMemberMapEntity cmm WHERE cmm.cellId = :cellId and cmm.isValid = true and CURDATE() BETWEEN cmm.startDate and cmm.endDate")
   List<CellMemberMapEntity> getCellMemberMapListByCellId(@Param("cellId") Long cellId);
 }

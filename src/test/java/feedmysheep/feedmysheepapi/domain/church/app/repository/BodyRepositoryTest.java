@@ -25,6 +25,7 @@ class BodyRepositoryTest {
 
   static ChurchEntity church1;
   static BodyEntity body1;
+  static BodyEntity invalidBody1;
 
   @BeforeAll
   public static void setup(@Autowired BodyRepository bodyRepository,
@@ -34,6 +35,9 @@ class BodyRepositoryTest {
     church.setValid(true);
     church1 = churchRepository.save(church);
     body1 = bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId()));
+    BodyEntity invalidBody = DataFactory.createBodyByChurchId(church1.getChurchId());
+    invalidBody.setValid(false);
+    invalidBody1 = bodyRepository.save(invalidBody);
   }
 
   @AfterAll
@@ -84,5 +88,4 @@ class BodyRepositoryTest {
     // then
     assertThat(bodyList.size()).isEqualTo(0);
   }
-
 }
