@@ -21,7 +21,7 @@ public class MediaController {
   }
 
   @GetMapping
-  public MediaResDto.getMediaListByScreenKey[] getMediasByScreenKey(
+  public MediaResDto.getMediaByScreenKey getMediasByScreenKey(
       @Valid MediaReqDto.getMediasByScreenKey query) {
     return this.mediaService.getMediasByScreenKey(query);
   }

@@ -7,7 +7,7 @@ import feedmysheep.feedmysheepapi.domain.media.app.repository.MediaRepository;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.MediaEntity;
-import java.util.List;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,22 +23,18 @@ public class MediaService {
     this.mediaRepository = mediaRepository;
     this.mediaMapper = mediaMapper;
   }
+  private EntityManager entityManager;
 
-  public MediaResDto.getMediaListByScreenKey[] getMediasByScreenKey(
+  public MediaResDto.getMediaByScreenKey getMediasByScreenKey(
       MediaReqDto.getMediasByScreenKey query) {
-    String[] screenKey = query.getSreenKey();
+    String screenKey = query.getScreenKey();
 
     // 1. 스크린들에 맞는 데이터 가져오기
-    List<MediaEntity> mediaList = this.mediaRepository.getMediaListsByScreenKey(screenKey[0]);
-    if (mediaList.isEmpty()) {
+    MediaEntity media = this.mediaRepository.getMediasByScreenKey(screenKey);
+    if (media.getScreenKey() == null) {
       throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
     }
-
-    MediaEntity media = mediaList.get(0);
-    MediaEntity[] mediaArray = new MediaEntity[]{media};
-
-    return this.mediaMapper.getMediasByScreenKey(mediaArray);
-
+    return this.mediaMapper.getMediasByScreenKey(media);
   }
 }
 

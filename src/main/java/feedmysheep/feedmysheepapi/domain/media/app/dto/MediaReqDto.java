@@ -12,7 +12,7 @@ public class MediaReqDto {
   public static class getMediasByScreenKey {
 
     @NotEmpty(message = "스크린 키 값이 존재하지 않아요.")
-    private String[] sreenKey;
+    private String screenKey;
 
   }
 }

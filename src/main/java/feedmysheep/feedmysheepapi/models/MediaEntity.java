@@ -22,7 +22,7 @@ public class MediaEntity extends CreatedUpdated {
     @Column(name = "media_id", nullable = false, columnDefinition = "bigint COMMENT '미디어 아이디'")
     private Long mediaId;
 
-    @Column(name = "screen_key", length = 50, nullable = false)
+    @Column(name = "screen_key", length = 50, nullable = false, unique = false)
     private String screenKey;
 
     @Setter

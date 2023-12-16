@@ -9,9 +9,9 @@ public class MediaResDto {
   @Getter
   @Setter
   @RequiredArgsConstructor
-  public static class getMediaListByScreenKey {
+  public static class getMediaByScreenKey {
 
-    private String medias;
+    private String mediaUrl;
   }
 }
 

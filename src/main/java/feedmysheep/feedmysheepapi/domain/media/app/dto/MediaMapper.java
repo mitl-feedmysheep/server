@@ -6,5 +6,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface MediaMapper {
 
-  MediaResDto.getMediaListByScreenKey[] getMediasByScreenKey(MediaEntity[] media);
+  MediaResDto.getMediaByScreenKey getMediasByScreenKey(MediaEntity mediaUrl);
 }
