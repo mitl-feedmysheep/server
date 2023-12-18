@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MediaRepository extends JpaRepository<MediaEntity, Long> {
 
-  @Query("SELECT m FROM MediaEntity m WHERE m.isValid = true and m.mediaUrl =: mediaUrl and m.screenKey = :screenKey")
-  List<MediaEntity> getMediasByScreenKey(@Param("screenKey") List<String> screenKey);
+  //테스트 코드 작성 필요.
+  @Query("SELECT m FROM MediaEntity m WHERE m.isValid = true and m.screenKey = :screenKey")
+  List<MediaEntity> getMediasByScreenKey(@Param("screenKey") String screenKey);
 }

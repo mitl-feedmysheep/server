@@ -24,9 +24,9 @@ public class MediaService {
     this.mediaMapper = mediaMapper;
   }
 
-  public List<MediaResDto.getMediasByScreenKey> getMediasByScreenKey(
+  public List<MediaResDto.getMediaByScreenKey> getMediasByScreenKey(
       MediaReqDto.getMediasByScreenKey query) {
-    List<String> screenKey = query.getScreenKey();
+    String screenKey = query.getScreenKey();
 
     // 1. 스크린들에 맞는 데이터 가져오기
     List<MediaEntity> mediaList = this.mediaRepository.getMediasByScreenKey(screenKey);

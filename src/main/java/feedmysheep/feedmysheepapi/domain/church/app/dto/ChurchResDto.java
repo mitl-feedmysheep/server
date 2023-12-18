@@ -27,4 +27,11 @@ public class ChurchResDto {
     private Long bodyId;
     private String bodyName;
   }
+
+  @Getter
+  @Setter
+  @RequiredArgsConstructor
+  public static class getDetailsByBodyId {
+    private Long bodyId;
+  }
 }

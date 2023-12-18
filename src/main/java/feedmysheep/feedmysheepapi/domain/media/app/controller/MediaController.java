@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/app/medias")
+@RequestMapping("/app")
 public class MediaController {
 
   private final MediaService mediaService;
@@ -21,8 +21,8 @@ public class MediaController {
     this.mediaService = mediaService;
   }
 
-  @GetMapping
-  public List<MediaResDto.getMediasByScreenKey> getMediasByScreenKey(
+  @GetMapping("/medias")
+  public List<MediaResDto.getMediaByScreenKey> getMediasByScreenKey(
       @Valid MediaReqDto.getMediasByScreenKey query) {
     return this.mediaService.getMediasByScreenKey(query);
   }
