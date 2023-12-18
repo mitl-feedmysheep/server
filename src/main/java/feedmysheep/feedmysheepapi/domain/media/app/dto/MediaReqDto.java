@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.media.app.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,7 +13,7 @@ public class MediaReqDto {
   public static class getMediasByScreenKey {
 
     @NotEmpty(message = "스크린 키 값이 존재하지 않아요.")
-    private String screenKey;
+    private List<String> screenKey;
 
   }
 }

@@ -22,12 +22,12 @@ public class MediaEntity extends CreatedUpdated {
     @Column(name = "media_id", nullable = false, columnDefinition = "bigint COMMENT '미디어 아이디'")
     private Long mediaId;
 
-    @Column(name = "screen_key", length = 50, nullable = false, unique = false)
+    @Column(name = "screen_key", length = 50, nullable = false)
     private String screenKey;
 
     @Setter
     @Column(name = "is_valid", nullable = false)
-    private boolean isValid;
+    private boolean isValid = true;
 
     @Column(name = "sort", nullable = false)
     private int sort;
@@ -39,6 +39,6 @@ public class MediaEntity extends CreatedUpdated {
     public MediaEntity(String screenKey, int sort, String mediaUrl) {
       this.screenKey = screenKey;
       this.sort = sort;
-      this.mediaUrl = mediaUrl;
+      this.mediaUrl =  mediaUrl;
     }
 }

@@ -1,10 +1,11 @@
 package feedmysheep.feedmysheepapi.domain.media.app.dto;
 
 import feedmysheep.feedmysheepapi.models.MediaEntity;
+import java.util.List;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface MediaMapper {
 
-  MediaResDto.getMediaByScreenKey getMediasByScreenKey(MediaEntity mediaUrl);
+  List<MediaResDto.getMediasByScreenKey> getMediaByScreenKey(List<MediaEntity> mediaList);
 }
