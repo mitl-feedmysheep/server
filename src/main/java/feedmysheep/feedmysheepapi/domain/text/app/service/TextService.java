@@ -28,7 +28,7 @@ public class TextService {
 
     // 1. 스크린들에 맞는 데이터 가져오기.
     TextEntity text = this.textRepository.getTextByScreenKey(screenKey);
-    if (text.getScreenKey() == null) {
+    if (text.getScreenKey().isEmpty()) {
       throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
     }
 

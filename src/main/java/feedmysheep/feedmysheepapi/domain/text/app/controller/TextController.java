@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/app/text")
+@RequestMapping("/app")
 public class TextController {
 
   private final TextService textService;
@@ -20,7 +20,7 @@ public class TextController {
     this.textService = textService;
   }
 
-  @GetMapping
+  @GetMapping("/text")
   public TextResDto.getTextByScreenKey getTextByScreenKey(
       @Valid TextReqDto.getTextByScreenKey query) {
     return textService.getTextByScreenKey(query);
