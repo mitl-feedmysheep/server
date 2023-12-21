@@ -27,12 +27,10 @@ public class TextService {
     String screenKey = query.getScreenKey();
 
     // 1. 스크린들에 맞는 데이터 가져오기.
-    TextEntity text = this.textRepository.getTextByScreenKey(screenKey);
-    if (text.getScreenKey().isEmpty()) {
-      throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
-    }
+    TextEntity text = this.textRepository.getTextByScreenKey(screenKey)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS));
 
-    // 2. 반환
+// 2. 반환
     return this.textMapper.getTextByScreenKey(text);
   }
 }
