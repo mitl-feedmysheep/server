@@ -19,6 +19,6 @@ public class ErrorMessage {
   public static final String WRONG_PASSWORD = "비밀번호가 틀렸어요. 다시 시도해주세요.";
   public static final String NO_WORD_FOR_SCREENS = "해당 스크린에 말씀이 존재하지 않아요. 다시 시도해주세요.";
   public static final String NO_BODY= "부서가 존재하지 않아요. 관리자에게 문의해주세요.";
-  public static final String NO_MEDIALIST_FOR_SCREENS = "해당 미디어의 스크린키가 존재하지 않아요. 다시 시도해주세요.";
+  public static final String NO_MEDIALIST_FOR_SCREENS = "해당 스크린에 미디어가 존재하지 않아요. 다시 시도해주세요.";
 
 }
