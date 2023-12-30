@@ -26,6 +26,4 @@ public class ChurchResDto {
     private Long bodyId;
     private String bodyName;
   }
-
-
 }

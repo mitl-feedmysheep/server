@@ -27,7 +27,7 @@ public class MediaEntity extends CreatedUpdated {
 
     @Setter
     @Column(name = "is_valid", nullable = false)
-    private boolean isValid;
+    private boolean isValid = true;
 
     @Column(name = "sort", nullable = false)
     private int sort;
@@ -39,6 +39,6 @@ public class MediaEntity extends CreatedUpdated {
     public MediaEntity(String screenKey, int sort, String mediaUrl) {
       this.screenKey = screenKey;
       this.sort = sort;
-      this.mediaUrl = mediaUrl;
+      this.mediaUrl =  mediaUrl;
     }
 }

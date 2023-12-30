@@ -1,12 +1,11 @@
-//package feedmysheep.feedmysheepapi.domain.media.app.dto;
-//
-//import feedmysheep.feedmysheepapi.models.MediaEntity;
-//import jakarta.persistence.Column;
-//import org.mapstruct.Mapper;
-//
-//@Mapper(componentModel = "spring")
-//public interface MediaMapper {
-//
-//  MediaResDto.getMediaListByScreenKey getMediasByScreenKey(MediaEntity media);
-//}
-//
+package feedmysheep.feedmysheepapi.domain.media.app.dto;
+
+import feedmysheep.feedmysheepapi.models.MediaEntity;
+import java.util.List;
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface MediaMapper {
+
+  List<MediaResDto.getMediaByScreenKey> getMediaByScreenKey(List<MediaEntity> mediaList);
+}
