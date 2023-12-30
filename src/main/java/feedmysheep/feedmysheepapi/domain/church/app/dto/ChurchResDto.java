@@ -16,22 +16,14 @@ public class ChurchResDto {
     private Long churchId;
     private String churchName;
     private String churchLocation;
-    // TODO mapStruct 한번 보기!!!
   }
 
   @Getter
   @Setter
   @RequiredArgsConstructor
-  public static class getBodyListByChurchId {
+  public static class getBodyByChurchId {
 
     private Long bodyId;
     private String bodyName;
-  }
-
-  @Getter
-  @Setter
-  @RequiredArgsConstructor
-  public static class getDetailsByBodyId {
-    private Long bodyId;
   }
 }

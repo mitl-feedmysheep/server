@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -67,5 +68,32 @@ class ChurchRepositoryTest {
     assertThat(validChurchList.size()).isEqualTo(1);
     assertThat(validChurchList.get(0).getChurchName()).isEqualTo(validChurch1.getChurchName());
     assertThat(invalidChurchList.size()).isEqualTo(0);
+  }
+
+  @Test
+  @DisplayName("교회아이디로 유효한 교회 조회 성공")
+  void test3() {
+    // given
+
+    // when
+    Optional<ChurchEntity> validChurch = this.churchRepository.getChurchByChurchId(
+        validChurch1.getChurchId());
+
+    // then
+    assertThat(validChurch).isPresent();
+
+  }
+
+  @Test
+  @DisplayName("교회아이디로 유효한 교회 조회 실패")
+  void test4() {
+    // given
+
+    // when
+    Optional<ChurchEntity> validChurch = this.churchRepository.getChurchByChurchId(
+        invalidChurch1.getChurchId());
+
+    // then
+    assertThat(validChurch).isNotPresent();
   }
 }
