@@ -75,6 +75,4 @@ class JwtTokenProviderTest {
     // then
     assertThatThrownBy(() -> this.jwtTokenProvider.validateToken(invalidToken)).hasMessageContaining(ErrorMessage.INVALID_JWT);
   }
-
-  // TODO expiredToken은 어떻게 검증하지?
 }

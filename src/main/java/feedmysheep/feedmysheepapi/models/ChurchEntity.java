@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +47,10 @@ public class ChurchEntity extends CreatedUpdated {
   @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
   private boolean isValid = false;
 
+  @Transient
+  @Setter
+  List<BodyEntity> bodyList;
+
   @Builder
   public ChurchEntity(String churchName, String churchLogoUrl, String churchLocation,
       String churchNumber, String homepageUrl, String churchDescription) {
@@ -55,4 +61,6 @@ public class ChurchEntity extends CreatedUpdated {
     this.homepageUrl = homepageUrl;
     this.churchDescription = churchDescription;
   }
+
+
 }

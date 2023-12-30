@@ -5,9 +5,11 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +56,25 @@ public class MemberController {
   public MemberResDto.checkChurchMember checkChurchMember(@AuthenticationPrincipal
   CustomUserDetails customUserDetails) {
     return this.memberService.checkChurchMember(customUserDetails);
+  }
+
+  @GetMapping("/churches-with-bodies")
+  public List<MemberResDto.getChurchWithBody> getMemberChurchesWithBodies(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    return this.memberService.getMemberChurchesWithBodies(customUserDetails);
+  }
+
+  @GetMapping("/info")
+  public MemberResDto.getMemberInfo getMemberInfo(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    return this.memberService.getMemberInfo(customUserDetails);
+  }
+
+  @GetMapping("/body/{bodyId}/cells")
+  public List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
+      @Valid @AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @PathVariable Long bodyId) {
+    return this.memberService.getCellListByBodyIdAndMemberId(customUserDetails, bodyId);
   }
 }
 

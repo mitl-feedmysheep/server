@@ -1,7 +1,14 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
+import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellMemberMapRepository;
+import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyMemberMapRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchMemberMapRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.OrganMemberMapRepository;
+import feedmysheep.feedmysheepapi.domain.church.app.repository.OrganRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberMapper;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
@@ -17,14 +24,23 @@ import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
+import feedmysheep.feedmysheepapi.models.BodyEntity;
+import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
+import feedmysheep.feedmysheepapi.models.CellEntity;
+import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
+import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import feedmysheep.feedmysheepapi.models.OrganEntity;
+import feedmysheep.feedmysheepapi.models.OrganMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,21 +57,27 @@ public class MemberService {
   private final TwilioService twilioService;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
-
   private final ChurchMemberMapRepository churchMemberMapRepository;
   private final MemberMapper memberMapper;
+  private final ChurchRepository churchRepository;
+  private final BodyRepository bodyRepository;
+  private final BodyMemberMapRepository bodyMemberMapRepository;
+  private final OrganRepository organRepository;
+  private final OrganMemberMapRepository organMemberMapRepository;
+  private final CellRepository cellRepository;
+  private final CellMemberMapRepository cellMemberMapRepository;
 
   @Autowired
-  public MemberService(
-      MemberRepository memberRepository,
+  public MemberService(MemberRepository memberRepository,
       VerificationRepository verificationRepository,
       VerificationFailLogRepository verificationFailLogRepository,
       AuthorizationRepository authorizationRepository,
-      ChurchMemberMapRepository churchMemberMapRepository,
-      TwilioService twilioService,
-      PasswordEncoder passwordEncoder,
-      JwtTokenProvider jwtTokenProvider,
-      MemberMapper memberMapper) {
+      ChurchMemberMapRepository churchMemberMapRepository, TwilioService twilioService,
+      PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, MemberMapper memberMapper,
+      ChurchRepository churchRepository, BodyRepository bodyRepository,
+      BodyMemberMapRepository bodyMemberMapRepository, OrganRepository organRepository,
+      OrganMemberMapRepository organMemberMapRepository, CellRepository cellRepository,
+      CellMemberMapRepository cellMemberMapRepository) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
     this.verificationFailLogRepository = verificationFailLogRepository;
@@ -65,6 +87,13 @@ public class MemberService {
     this.passwordEncoder = passwordEncoder;
     this.jwtTokenProvider = jwtTokenProvider;
     this.memberMapper = memberMapper;
+    this.churchRepository = churchRepository;
+    this.bodyRepository = bodyRepository;
+    this.bodyMemberMapRepository = bodyMemberMapRepository;
+    this.organRepository = organRepository;
+    this.organMemberMapRepository = organMemberMapRepository;
+    this.cellRepository = cellRepository;
+    this.cellMemberMapRepository = cellMemberMapRepository;
   }
 
   ;
@@ -76,10 +105,9 @@ public class MemberService {
     LocalDateTime endOfToday = today.atTime(LocalTime.MAX);
 
     // 1. 휴대폰 사용 여부 체크
-    this.memberRepository.getMemberByPhone(phone)
-        .ifPresent((member -> {
-          throw new CustomException(ErrorMessage.PHONE_IN_USE);
-        }));
+    this.memberRepository.getMemberByPhone(phone).ifPresent((member -> {
+      throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    }));
 
     // 2. FailLog 5회 이상 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone,
@@ -114,10 +142,8 @@ public class MemberService {
     }
 
     // 6. 인증코드 DB 저장
-    VerificationEntity verification = VerificationEntity.builder()
-        .phone(phone)
-        .verificationCode(verificationCode)
-        .build();
+    VerificationEntity verification = VerificationEntity.builder().phone(phone)
+        .verificationCode(verificationCode).build();
 
     this.verificationRepository.save(verification);
   }
@@ -129,10 +155,9 @@ public class MemberService {
     LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
 
     // 1. 휴대폰 사용 여부 체크
-    this.memberRepository.getMemberByPhone(phone)
-        .ifPresent(member -> {
-          throw new CustomException(ErrorMessage.PHONE_IN_USE);
-        });
+    this.memberRepository.getMemberByPhone(phone).ifPresent(member -> {
+      throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    });
 
     // 2. 금일 인증실패 5회 여부 체크
     int failCount = this.verificationFailLogRepository.countByPhoneAndCreatedAtBetween(phone,
@@ -148,10 +173,8 @@ public class MemberService {
     LocalDateTime threeMinLater = verification.getCreatedAt().plusMinutes(3);
     // - 존재하지 않는다면, 인증실패 저장 후 재시도 요청
     if (now.isAfter(threeMinLater)) {
-      VerificationFailLogEntity failLog = VerificationFailLogEntity.builder()
-          .phone(phone)
-          .verificationCode(code)
-          .build();
+      VerificationFailLogEntity failLog = VerificationFailLogEntity.builder().phone(phone)
+          .verificationCode(code).build();
       this.verificationFailLogRepository.save(failLog);
       throw new CustomException(ErrorMessage.OVER_3_MIN_THEN_EXPIRED);
     }
@@ -160,10 +183,9 @@ public class MemberService {
   public void checkEmailDuplication(MemberReqDto.checkEmailDuplication query) {
     String email = query.getEmail();
 
-    this.memberRepository.getMemberByEmail(email)
-        .ifPresent(member -> {
-          throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
-        });
+    this.memberRepository.getMemberByEmail(email).ifPresent(member -> {
+      throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+    });
   }
 
   @Transactional
@@ -172,14 +194,12 @@ public class MemberService {
     body.setPassword(this.passwordEncoder.encode(body.getPassword()));
 
     // 2. Validation - 방어로직
-    this.memberRepository.getMemberByPhone(body.getPhone())
-        .ifPresent(member -> {
-          throw new CustomException(ErrorMessage.PHONE_IN_USE);
-        });
-    this.memberRepository.getMemberByEmail(body.getEmail())
-        .ifPresent(member -> {
-          throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
-        });
+    this.memberRepository.getMemberByPhone(body.getPhone()).ifPresent(member -> {
+      throw new CustomException(ErrorMessage.PHONE_IN_USE);
+    });
+    this.memberRepository.getMemberByEmail(body.getEmail()).ifPresent(member -> {
+      throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
+    });
 
     // 3. 기본 authroization 가져오기
     AuthorizationEntity authorization = this.authorizationRepository.findById(1L)
@@ -187,15 +207,9 @@ public class MemberService {
 
     // 4. 멤버 저장
     MemberEntity memberToSave = MemberEntity.builder()
-        .authorizationId(authorization.getAuthorizationId())
-        .memberName(body.getMemberName())
-        .sex(body.getSex())
-        .birthday(body.getBirthday())
-        .phone(body.getPhone())
-        .address(body.getAddress())
-        .email(body.getEmail())
-        .password(body.getPassword())
-        .build();
+        .authorizationId(authorization.getAuthorizationId()).memberName(body.getMemberName())
+        .sex(body.getSex()).birthday(body.getBirthday()).phone(body.getPhone())
+        .address(body.getAddress()).email(body.getEmail()).password(body.getPassword()).build();
     MemberEntity member = this.memberRepository.save(memberToSave);
 
     // 5. access / refresh 토큰 만들기
@@ -211,8 +225,8 @@ public class MemberService {
 
   public MemberResDto.signIn signIn(MemberReqDto.signIn body) {
     // 1. 이메일 유저 여부 체크
-    MemberEntity member = this.memberRepository.getMemberByEmail(body.getEmail()).orElseThrow(
-        () -> new CustomException(ErrorMessage.NO_EMAIL_MEMBER_FOUND));
+    MemberEntity member = this.memberRepository.getMemberByEmail(body.getEmail())
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_EMAIL_MEMBER_FOUND));
     AuthorizationEntity authorization = this.authorizationRepository.findById(
             member.getAuthorizationId())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_AUTHORIZATION));
@@ -234,11 +248,97 @@ public class MemberService {
   }
 
   public MemberResDto.checkChurchMember checkChurchMember(CustomUserDetails customUserDetails) {
-    List<ChurchMemberMapEntity> churchMemberMapList =
-        this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
-            customUserDetails.getMemberId());
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
+        customUserDetails.getMemberId());
     boolean isChurchMember = churchMemberMapList.size() > 0;
 
     return new MemberResDto.checkChurchMember(isChurchMember);
+  }
+
+  public List<MemberResDto.getChurchWithBody> getMemberChurchesWithBodies(
+      CustomUserDetails customUserDetails) {
+    // 1. 유저 아이디로 교회 조회
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
+        customUserDetails.getMemberId());
+
+    // 2. 유저가 다니는 교회별 부서 매핑
+    List<ChurchEntity> churchList = new ArrayList<>();
+    for (ChurchMemberMapEntity churchMemberMap : churchMemberMapList) {
+      // 2-1. 유저가 다니는 교회 조회
+      ChurchEntity church = this.churchRepository.getChurchByChurchId(churchMemberMap.getChurchId())
+          .orElseThrow(() -> new CustomException(ErrorMessage.CHURCH_INVALIDATED));
+      // 2-2. 교회별 부서 조회
+      List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church.getChurchId());
+      // 2-3. 교회별 부서 중, 유저가 속한 부서 필터링
+      List<BodyEntity> validBodyList = new ArrayList<>();
+      for (BodyEntity body : bodyList) {
+        Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(
+            body.getBodyId(), customUserDetails.getMemberId());
+        // 2-4. 유저가 속한 부서만 add
+        if (bodyMemberMap.isPresent()) {
+          validBodyList.add(body);
+        }
+      }
+      church.setBodyList(validBodyList);
+      churchList.add(church);
+    }
+
+    // 3. 리턴
+    return this.memberMapper.getMemberChurchesWithBodies(churchList);
+  }
+
+  public MemberResDto.getMemberInfo getMemberInfo(CustomUserDetails customUserDetails) {
+    // 1. 유저 정보 검색
+    MemberEntity member = this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+
+    // 2. 리턴
+    return this.memberMapper.getMemberInfo(member);
+  }
+
+  public List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
+      CustomUserDetails customUserDetails, Long bodyId) {
+    // TODO 나중에 캐싱처리하면 좋을 듯
+    // 1. 유저가 속한 바디인가?
+    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId,
+            customUserDetails.getMemberId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
+
+    // 2. 바디 밑에 속한 올건 리스트 조회
+    List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
+    List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
+        .toList();
+
+    // 3. 유저가 속한 올건 조회 및 필터링
+    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
+        organIdListByBodyId, customUserDetails.getMemberId());
+    List<Long> organIdListByMemberId = organMemberMapList.stream()
+        .map(OrganMemberMapEntity::getOrganId).toList();
+
+    // 5. 유저가 속한 올건 중 셀 리스트 조회
+    List<CellEntity> cellListByBodyId = this.cellRepository.getCellListByOrganIdList(
+        organIdListByMemberId);
+    List<Long> cellIdListByBodyId = cellListByBodyId.stream().map(CellEntity::getCellId).toList();
+
+    // 6. 유저가 속한 셀 리스트 조회
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
+        cellIdListByBodyId, customUserDetails.getMemberId());
+    List<Long> cellIdListByMemberId = cellMemberMapList.stream().map(CellMemberMapEntity::getCellId)
+        .toList();
+
+    // 7. 유저가 속한 셀 리스트 필터링
+    List<CellEntity> cellListByMemberId = cellListByBodyId.stream()
+        .filter(cell -> cellIdListByMemberId.contains(cell.getCellId())).toList();
+
+    // 8. 셀 인원 조회 및 매핑
+    List<CellEntity> cellList = cellListByMemberId.stream().map(cell -> {
+      List<CellMemberMapEntity> cellMemberMapListByCellId = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+          cell.getCellId());
+      cell.setCellMemberCount(cellMemberMapListByCellId.size());
+      return cell;
+    }).toList();
+
+    // 5. DTO 매핑
+    return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
   }
 }
