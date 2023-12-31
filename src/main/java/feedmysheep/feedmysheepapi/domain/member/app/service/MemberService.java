@@ -15,8 +15,8 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
+import feedmysheep.feedmysheepapi.global.policy.CONSTANT.SOLAPI;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.VERIFICATION;
-import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
@@ -42,6 +42,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,7 +58,7 @@ public class MemberService {
   private final VerificationRepository verificationRepository;
   private final VerificationFailLogRepository verificationFailLogRepository;
   private final AuthorizationRepository authorizationRepository;
-  private final TwilioService twilioService;
+  private final DefaultMessageService messageService;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
   private final ChurchMemberMapRepository churchMemberMapRepository;
@@ -72,8 +76,8 @@ public class MemberService {
       VerificationRepository verificationRepository,
       VerificationFailLogRepository verificationFailLogRepository,
       AuthorizationRepository authorizationRepository,
-      ChurchMemberMapRepository churchMemberMapRepository, TwilioService twilioService,
-      PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, MemberMapper memberMapper,
+      ChurchMemberMapRepository churchMemberMapRepository, PasswordEncoder passwordEncoder,
+      JwtTokenProvider jwtTokenProvider, MemberMapper memberMapper,
       ChurchRepository churchRepository, BodyRepository bodyRepository,
       BodyMemberMapRepository bodyMemberMapRepository, OrganRepository organRepository,
       OrganMemberMapRepository organMemberMapRepository, CellRepository cellRepository,
@@ -83,7 +87,6 @@ public class MemberService {
     this.verificationFailLogRepository = verificationFailLogRepository;
     this.authorizationRepository = authorizationRepository;
     this.churchMemberMapRepository = churchMemberMapRepository;
-    this.twilioService = twilioService;
     this.passwordEncoder = passwordEncoder;
     this.jwtTokenProvider = jwtTokenProvider;
     this.memberMapper = memberMapper;
@@ -94,6 +97,8 @@ public class MemberService {
     this.organMemberMapRepository = organMemberMapRepository;
     this.cellRepository = cellRepository;
     this.cellMemberMapRepository = cellMemberMapRepository;
+    this.messageService = NurigoApp.INSTANCE.initialize(SOLAPI.API_KEY, SOLAPI.API_SECRET_KEY,
+        SOLAPI.DOMAIN);
   }
 
   ;
@@ -129,10 +134,14 @@ public class MemberService {
     String verificationCode = Integer.toString(random.nextInt(max - min + 1) + min);
 
     // 5. 인증코드 전송
-    String phoneWithCountry = "+" + "82" + phone;
     String messageBody = "[피마쉽(FeedMySheep)] 인증번호는 " + verificationCode + "입니다.";
     try {
-      this.twilioService.sendSMS(phoneWithCountry, messageBody);
+      Message message = new Message();
+      message.setFrom(SOLAPI.FROM_PHONE_NUMBER);
+      message.setTo(phone);
+      message.setText(messageBody);
+
+      this.messageService.sendOne(new SingleMessageSendingRequest(message));
     } catch (Exception e) {
       System.out.println(e);
       // TODO 슬랙 메시지

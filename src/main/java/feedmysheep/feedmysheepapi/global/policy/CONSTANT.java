@@ -9,11 +9,12 @@ public class CONSTANT {
     public final static Long ACCESS_EXPIRY = 604800000L;
   }
 
-  public static class TWILIO {
+  public static class SOLAPI {
 
-    public final static String ACCOUNT_SID = "AC8edd3e64ee51444b1a3ea11d5268edee";
-    public final static String AUTH_TOKEN = "7acfe04253c7da54812b9796cbad2d2f";
-    public final static String FROM_PHONE_NUMBER = "+17067703741";
+    public final static String API_KEY = "NCSJNJO5I8MV8UJU";
+    public final static String API_SECRET_KEY = "2MUNKK1COFQ9HGWE5LBD58XQ2JQAU6EM";
+    public final static String DOMAIN = "https://api.solapi.com";
+    public final static String FROM_PHONE_NUMBER = "01088831954";
   }
 
   public static class VERIFICATION {

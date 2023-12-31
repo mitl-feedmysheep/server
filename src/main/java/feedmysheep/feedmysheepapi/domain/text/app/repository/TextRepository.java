@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-// TODO 테스트코드
 @Repository
 public interface TextRepository extends JpaRepository<TextEntity, Long> {
 
+  //TODO 테스트코드
   @Query("SELECT t FROM TextEntity t WHERE t.isValid = true and t.screenKey = :screenKey")
   Optional<TextEntity> getTextByScreenKey(@Param("screenKey") String screenKey);
 }
