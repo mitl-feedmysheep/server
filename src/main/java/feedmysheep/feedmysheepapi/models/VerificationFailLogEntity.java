@@ -31,7 +31,7 @@ public class VerificationFailLogEntity extends CreatedUpdated {
   private String verificationCode;
 
   @Setter
-  @Column(name = "is_failed", nullable = false)
+  @Column(name = "is_failed", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
   private boolean isFailed = true;
 
   @Builder

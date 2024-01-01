@@ -32,7 +32,7 @@ public class BodyEntity extends CreatedUpdated {
   @Column(name = "body_logo_url", length = 200, columnDefinition = "varchar(200) COMMENT '바디 로고 URL'")
   private String bodyLogoUrl;
 
-  @Column(name = "body_location", nullable = false, length = 200, columnDefinition = "varchar(200) COMMENT '바디 위치'")
+  @Column(name = "body_location", length = 200, columnDefinition = "varchar(200) COMMENT '바디 위치'")
   private String bodyLocation;
 
   @Column(name = "body_number", length = 20, columnDefinition = "varchar(20) COMMENT '바디 전화번호'")
@@ -42,7 +42,7 @@ public class BodyEntity extends CreatedUpdated {
   private String bodyDescription;
 
   @Setter
-  @Column(name = "is_valid", nullable = false)
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
   private boolean isValid = true;
 
   @Column(name = "youtube_url", length = 100, columnDefinition = "varchar(100) COMMENT '유투브 주소'")

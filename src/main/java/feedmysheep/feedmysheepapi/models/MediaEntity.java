@@ -26,7 +26,7 @@ public class MediaEntity extends CreatedUpdated {
     private String screenKey;
 
     @Setter
-    @Column(name = "is_valid", nullable = false)
+    @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
     private boolean isValid = true;
 
     @Column(name = "sort", nullable = false)

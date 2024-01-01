@@ -23,7 +23,7 @@ public class ReasonEntity extends CreatedUpdated {
   @Column(name = "sub_screen", length = 50)
   private String subScreen;
 
-  @Column(name = "is_valid", nullable = false)
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
   private boolean isValid = true;
 
   @Column(name = "reason", length = 50, nullable = false)

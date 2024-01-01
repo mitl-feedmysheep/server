@@ -1,0 +1,20 @@
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+  datasource:
+    driver-class-name: "com.mysql.cj.jdbc.Driver"
+    url: "jdbc:mysql://into-the-heaven-mysql.cz2ey8eqint0.ap-northeast-2.rds.amazonaws.com:3306/into_the_heaven"
+    username: "admin"
+    password: "!mitl1991"
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+    hibernate:
+      #      db 변경 사항 적용 -> 향후 none
+      ddl-auto: none

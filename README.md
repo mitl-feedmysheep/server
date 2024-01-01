@@ -18,13 +18,13 @@
 2. 서버 구동
     1. profile 분리하여 실행 (intelliJ)
        ```
-       // application-local.yml 파일을 읽게 설정합니다.   
-       active profiles >> local
+       // application-devel.yml 파일을 읽게 설정합니다.   
+       active profiles >> devel
        ```
 3. 초기 Data seeding
-    - 기본 데이터가 셋팅 초기작업을 위해서 API call로 간단하게 구현했습니다.
-    - /data-seeding **"한번"** 만 호출하시면 됩니다. (자세한 내용은 swagger에 나와있습니다.)
-
+    - ~~기본 데이터가 셋팅 초기작업을 위해서 API call로 간단하게 구현했습니다.~~
+    - ~~/data-seeding **"한번"** 만 호출하시면 됩니다. (자세한 내용은 swagger에 나와있습니다.)~~
+    - 시드 데이터를 넣어놓았습니다. 데이터 초기화가 필요하면 말씀해주세요.
 ---
 
 ## 협업툴

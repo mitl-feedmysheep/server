@@ -32,11 +32,11 @@ public class OrganMemberMapEntity extends CreatedUpdated {
   private Long memberId;
 
   @Setter
-  @Column(name = "is_leader", nullable = false)
+  @Column(name = "is_leader", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '리더여부'")
   private boolean isLeader = false;
 
   @Setter
-  @Column(name = "is_valid", nullable = false)
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
   private boolean isValid = true;
 
   @Setter
