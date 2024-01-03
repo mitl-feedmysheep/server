@@ -10,6 +10,7 @@ import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.OrganEntity;
 import feedmysheep.feedmysheepapi.models.OrganMemberMapEntity;
+import feedmysheep.feedmysheepapi.models.TextEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import feedmysheep.feedmysheepapi.models.WordEntity;
@@ -91,5 +92,9 @@ public class DataFactory {
   // 올건 생성
   public static OrganEntity createOrganByBodyId(Long bodyId) {
     return OrganEntity.builder().bodyId(bodyId).organName(TestUtil.getRandomString()).build();
+  }
+
+  public static TextEntity createTextByScreenKey(String screenKey) {
+    return TextEntity.builder().screenKey(screenKey).text(TestUtil.getRandomString()).build();
   }
 }
