@@ -7,6 +7,7 @@ import feedmysheep.feedmysheepapi.models.CellEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
+import feedmysheep.feedmysheepapi.models.MediaEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import feedmysheep.feedmysheepapi.models.OrganEntity;
 import feedmysheep.feedmysheepapi.models.OrganMemberMapEntity;
@@ -94,7 +95,13 @@ public class DataFactory {
     return OrganEntity.builder().bodyId(bodyId).organName(TestUtil.getRandomString()).build();
   }
 
+  // 텍스트 생성
   public static TextEntity createTextByScreenKey(String screenKey) {
     return TextEntity.builder().screenKey(screenKey).text(TestUtil.getRandomString()).build();
+  }
+
+  // 미디어 생성
+  public static MediaEntity createMediaByScreenKey(String screenKey) {
+    return MediaEntity.builder().screenKey(screenKey).mediaUrl(TestUtil.getRandomString()).build();
   }
 }
