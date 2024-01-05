@@ -32,9 +32,16 @@ public class ChurchResDto {
   @Setter
   @RequiredArgsConstructor
   public static class getMemberEventByMemberId {
-
-    private LocalDate birthday;
     private Long memberId;
+    private String memberName;
+    private String sex;
+    private LocalDate birthday;
+    private String dayOfWeek;
+    private Long bodyId;
+    private String phone;
+    private String profileImageUrl;
+    private String eventName;
+
   }
 
 }

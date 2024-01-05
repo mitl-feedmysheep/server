@@ -5,6 +5,8 @@ import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
 import feedmysheep.feedmysheepapi.domain.church.app.service.ChurchService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -51,7 +53,7 @@ public class ChurchController {
   @GetMapping("/church/body/{bodyId}/member-events")
   public List<ChurchResDto.getMemberEventByMemberId> getMemberEventsByBodyId(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
-      @Valid ChurchReqDto.getMemberEventsByBodyId query, @PathVariable Long bodyId) {
+      @RequestParam @NotNull ChurchReqDto.getMemberEventsByBodyId query, @PathVariable Long bodyId) {
     return this.churchService.getMemberEventsByBodyId(customUserDetails, query, bodyId);
   }
 

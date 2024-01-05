@@ -14,6 +14,7 @@ import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -80,21 +81,17 @@ public class ChurchService {
     this.churchRepository.save(church);
   }
 
-  //bodyMemberMapRepository사용하기
-//  1. 유효한 멤버인지 검사하고(member에서 검사-> memberid 가져올 수 있음)
-//  2. churchId를 가져와서 bodyId를 찾아서 body_member_map_id를 생성하기
   public List<ChurchResDto.getMemberEventByMemberId> getMemberEventsByBodyId(
       CustomUserDetails customUserDetails, ChurchReqDto.getMemberEventsByBodyId query,
       Long bodyId) {
 
     // 1. 유효한 멤버인지 검사
-    // memberId는 customUserDetails를 통하여, 필수값임
     this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     System.out.println("111");
 
-    //2. bodyId로 멤버 id들을 조회하기
+    //2. body(부서)에 해당하는 멤버들 bodyId 통해 가져오기
     List<BodyMemberMapEntity> memberListByBodyId = this.bodyMemberMapRepository.getMemberListByBodyId(
         bodyId);
 
@@ -107,14 +104,13 @@ public class ChurchService {
 
     System.out.println("memberIdList = " + memberIdList);
 
-    int birthday = query.getBirthday().getMonthValue();
-
+    int monthOfBirthday = query.getBirthday().getMonthValue();
+    System.out.println("monthOfBirthday = " + monthOfBirthday);
 
     List<MemberEntity> EventMemberByMemberIdList = this.memberRepository.getMemberListByMemberIdList(
-        memberIdList, birthday);
+        memberIdList, monthOfBirthday);
 
     System.out.println("EventMemberByMemberIdList = " + EventMemberByMemberIdList);
-
 
     // 3. DTO 매핑
     return this.churchMapper.getMemberEventsByBodyId(EventMemberByMemberIdList);
