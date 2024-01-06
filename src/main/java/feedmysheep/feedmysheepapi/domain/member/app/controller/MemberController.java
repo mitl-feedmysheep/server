@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.member.app.controller;
 
+
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
@@ -53,8 +54,8 @@ public class MemberController {
   }
 
   @GetMapping("/check-church-member")
-  public MemberResDto.checkChurchMember checkChurchMember(@AuthenticationPrincipal
-  CustomUserDetails customUserDetails) {
+  public MemberResDto.checkChurchMember checkChurchMember(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.memberService.checkChurchMember(customUserDetails);
   }
 

@@ -1,5 +1,7 @@
 package feedmysheep.feedmysheepapi.global.utils.jwt;
 
+import static feedmysheep.feedmysheepapi.global.policy.CONSTANT.JWT.TOKEN;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
@@ -52,7 +54,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
       }
 
       // 토큰 여부 검증
-      String accessToken = request.getHeader("fms-token");
+      String accessToken = request.getHeader(TOKEN);
       if (accessToken == null || accessToken.isEmpty()) {
         throw new CustomException(ErrorMessage.NO_TOKEN);
       }
