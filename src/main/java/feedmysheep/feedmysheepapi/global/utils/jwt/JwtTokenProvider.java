@@ -27,15 +27,10 @@ public class JwtTokenProvider {
     // Private Claims
     Map<String, Object> privateClaims = new HashMap<>();
     privateClaims.put("memberId", memberInfo.getMemberId());
-    privateClaims.put("level", memberInfo.getLevel());
     privateClaims.put("memberName", memberInfo.getMemberName());
 
-    return Jwts.builder()
-        .setClaims(privateClaims)
-        .setIssuedAt(now)
-        .setExpiration(expiryDate)
-        .signWith(SignatureAlgorithm.HS256, this.secretKey)
-        .compact();
+    return Jwts.builder().setClaims(privateClaims).setIssuedAt(now).setExpiration(expiryDate)
+        .signWith(SignatureAlgorithm.HS256, this.secretKey).compact();
   }
 
   // REFRESH 토큰 생성
@@ -46,30 +41,20 @@ public class JwtTokenProvider {
     // Private Claims
     Map<String, Object> privateClaims = new HashMap<>();
     privateClaims.put("memberId", memberInfo.getMemberId());
-    privateClaims.put("level", memberInfo.getLevel());
     privateClaims.put("memberName", memberInfo.getMemberName());
 
-    return Jwts.builder()
-        .setClaims(privateClaims)
-        .setIssuedAt(now)
-        .setExpiration(expiryDate)
-        .signWith(SignatureAlgorithm.HS256, this.secretKey)
-        .compact();
+    return Jwts.builder().setClaims(privateClaims).setIssuedAt(now).setExpiration(expiryDate)
+        .signWith(SignatureAlgorithm.HS256, this.secretKey).compact();
   }
 
   // 토큰 검증
   public JwtDto.memberInfo validateToken(String token) {
     try {
-      Claims claims = Jwts
-          .parserBuilder()
-          .setSigningKey(this.secretKey)
-          .build()
-          .parseClaimsJws(token)
-          .getBody();
+      Claims claims = Jwts.parserBuilder().setSigningKey(this.secretKey).build()
+          .parseClaimsJws(token).getBody();
 
       JwtDto.memberInfo memberInfo = new memberInfo();
       memberInfo.setMemberId(claims.get("memberId", Long.class));
-      memberInfo.setLevel(claims.get("level", Integer.class));
       memberInfo.setMemberName(claims.get("memberName", String.class));
 
       return memberInfo;

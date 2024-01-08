@@ -64,27 +64,14 @@ public class ChurchService {
     return this.churchMapper.getBodyListByChurchId(bodyList);
   }
 
-  public void register(ChurchReqDto.register body) {
+  public void register(ChurchReqDto.register body, CustomUserDetails customUserDetails) {
     ChurchEntity church = ChurchEntity.builder().churchName(body.getChurchName())
         .churchLocation(body.getChurchLocation()).churchLogoUrl(body.getChurchLogoUrl())
         .churchNumber(body.getChurchNumber()).churchDescription(body.getChurchDescription())
-        .churchNumber(body.getChurchNumber()).build();
+        .churchNumber(body.getChurchNumber()).createdBy(customUserDetails.getMemberId()).build();
 
     this.churchRepository.save(church);
   }
-
-//  public List<ChurchResDto.getDetailsByBodyId> getDetailsByBodyIds(
-//      CustomUserDetails customUserDetails, Long bodyId) {
-
-//    // 1. 유효한 멤버인지 검사
-//    this.bodyRepository.getMemberByMemberId(customUserDetails.getMemberId())
-//        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
-//
-//    // 2. 바디 리스트 반환
-//    List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(churchId);
-//
-//    // 3. DTO 매핑
-//    return this.churchMapper.getBodyListByChurchId(bodyList);
 
 
 };

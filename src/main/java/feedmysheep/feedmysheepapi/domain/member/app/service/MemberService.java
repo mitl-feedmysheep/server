@@ -224,7 +224,6 @@ public class MemberService {
     // 5. access / refresh 토큰 만들기
     JwtDto.memberInfo memberInfo = new memberInfo();
     memberInfo.setMemberId(member.getMemberId());
-    memberInfo.setLevel(authorization.getLevel());
     memberInfo.setMemberName(member.getMemberName());
     String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
@@ -248,7 +247,6 @@ public class MemberService {
     // 3. access / refresh 토큰 만들기
     JwtDto.memberInfo memberInfo = new memberInfo();
     memberInfo.setMemberId(member.getMemberId());
-    memberInfo.setLevel(authorization.getLevel());
     memberInfo.setMemberName(member.getMemberName());
     String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);

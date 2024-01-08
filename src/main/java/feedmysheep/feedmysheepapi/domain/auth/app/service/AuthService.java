@@ -17,31 +17,17 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
   private final JwtTokenProvider jwtTokenProvider;
-  private final MemberRepository memberRepository;
-  private final AuthorizationRepository authorizationRepository;
-
 
   @Autowired
-  public AuthService(MemberRepository memberRepository,
-      AuthorizationRepository authorizationRepository) {
+  public AuthService() {
     this.jwtTokenProvider = new JwtTokenProvider();
-    this.memberRepository = memberRepository;
-    this.authorizationRepository = authorizationRepository;
   }
 
   public AuthResDto.createToken createToken(AuthReqDto.createToken body) {
     // 1. 유효한 리프레시 토큰인지 검사
     JwtDto.memberInfo memberInfo = this.jwtTokenProvider.validateToken(body.getRefreshToken());
 
-    // 2. 권한 업데이트
-    MemberEntity member = this.memberRepository.getMemberByMemberId(memberInfo.getMemberId())
-        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
-    AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
-            member.getAuthorizationId())
-        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_AUTHORIZATION));
-    memberInfo.setLevel(authorization.getLevel());
-
-    // 3. 토큰 재발급
+    // 2. 토큰 재발급
     String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
 

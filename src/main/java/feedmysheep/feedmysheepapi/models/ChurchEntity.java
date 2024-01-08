@@ -53,13 +53,14 @@ public class ChurchEntity extends CreatedUpdated {
 
   @Builder
   public ChurchEntity(String churchName, String churchLogoUrl, String churchLocation,
-      String churchNumber, String homepageUrl, String churchDescription) {
+      String churchNumber, String homepageUrl, String churchDescription, Long createdBy) {
     this.churchName = churchName;
     this.churchLogoUrl = churchLogoUrl;
     this.churchLocation = churchLocation;
     this.churchNumber = churchNumber;
     this.homepageUrl = homepageUrl;
     this.churchDescription = churchDescription;
+    this.setCreatedBy(createdBy);
   }
 
 
