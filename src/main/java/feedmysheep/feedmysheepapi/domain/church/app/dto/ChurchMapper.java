@@ -5,6 +5,7 @@ import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.List;
 import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring")
 public interface ChurchMapper {
@@ -15,6 +16,6 @@ public interface ChurchMapper {
   List<ChurchResDto.getBodyByChurchId> getBodyListByChurchId(List<BodyEntity> bodyList);
 
   List<ChurchResDto.getMemberEventByMemberId> getMemberEventsByBodyId(
-      List<MemberEntity> EventMemberByMemberIdList);
+      Page<MemberEntity> EventMemberByMemberIdList);
 
 }

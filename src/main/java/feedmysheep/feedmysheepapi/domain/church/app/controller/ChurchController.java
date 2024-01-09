@@ -9,6 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,12 +51,11 @@ public class ChurchController {
     this.churchService.register(body);
   }
 
-  //  bodyMemberMapRepository사용하기
   @GetMapping("/church/body/{bodyId}/member-events")
   public List<ChurchResDto.getMemberEventByMemberId> getMemberEventsByBodyId(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
-      @RequestParam @NotNull ChurchReqDto.getMemberEventsByBodyId query, @PathVariable Long bodyId) {
+      @Valid ChurchReqDto.getMemberEventsByBodyId query,
+      @PathVariable Long bodyId) {
     return this.churchService.getMemberEventsByBodyId(customUserDetails, query, bodyId);
   }
-
 }

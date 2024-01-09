@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 @Data
@@ -44,10 +45,10 @@ public class ChurchReqDto {
 
   @RequiredArgsConstructor
   @Getter
+  @Setter
   public static class getMemberEventsByBodyId {
 
-    @NotNull
-    public LocalDate birthday;
+    private LocalDate birthday;
 
   }
 

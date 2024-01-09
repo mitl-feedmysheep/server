@@ -14,9 +14,11 @@ import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -89,28 +91,21 @@ public class ChurchService {
     this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
-    System.out.println("111");
-
     //2. body(부서)에 해당하는 멤버들 bodyId 통해 가져오기
     List<BodyMemberMapEntity> memberListByBodyId = this.bodyMemberMapRepository.getMemberListByBodyId(
         bodyId);
-
-    System.out.println(memberListByBodyId);
 
     //3. Body(부서)id로 검색한 존재하는 memberId들을 List로 가져오기
     List<Long> memberIdList = memberListByBodyId.stream()
         .map(BodyMemberMapEntity::getMemberId)
         .toList();
 
-    System.out.println("memberIdList = " + memberIdList);
+        int targetMonthOfBirthday = query.getBirthday().getMonthValue();
 
-    int monthOfBirthday = query.getBirthday().getMonthValue();
-    System.out.println("monthOfBirthday = " + monthOfBirthday);
+    Pageable pageable = PageRequest.of(1, 5);
+    Page<MemberEntity> EventMemberByMemberIdList = memberRepository.getMemberListByMemberIdListAndBirthday(memberIdList, targetMonthOfBirthday, pageable);
 
-    List<MemberEntity> EventMemberByMemberIdList = this.memberRepository.getMemberListByMemberIdList(
-        memberIdList, monthOfBirthday);
 
-    System.out.println("EventMemberByMemberIdList = " + EventMemberByMemberIdList);
 
     // 3. DTO 매핑
     return this.churchMapper.getMemberEventsByBodyId(EventMemberByMemberIdList);
