@@ -23,7 +23,7 @@ public class AuthorizationEntity extends CreatedUpdated {
   private Long authorizationId;
 
   @Column(name = "level", nullable = false)
-  private int level = 100;
+  private int level = 0;
 
   @Column(name = "level_name", length = 20, nullable = false)
   private String levelName;

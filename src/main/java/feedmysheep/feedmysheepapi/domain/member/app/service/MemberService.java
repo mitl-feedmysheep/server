@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
+import feedmysheep.feedmysheepapi.domain.auth.app.service.AuthService;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyMemberMapRepository;
@@ -15,6 +16,7 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
+import feedmysheep.feedmysheepapi.global.interceptor.auth.MemberAuth;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.SOLAPI;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.VERIFICATION;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
@@ -211,7 +213,8 @@ public class MemberService {
     });
 
     // 3. 기본 authroization 가져오기
-    AuthorizationEntity authorization = this.authorizationRepository.findById(1L)
+    AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByLevel(
+            MemberAuth.MEMBER.getValue())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
     // 4. 멤버 저장
@@ -235,9 +238,6 @@ public class MemberService {
     // 1. 이메일 유저 여부 체크
     MemberEntity member = this.memberRepository.getMemberByEmail(body.getEmail())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_EMAIL_MEMBER_FOUND));
-    AuthorizationEntity authorization = this.authorizationRepository.findById(
-            member.getAuthorizationId())
-        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_AUTHORIZATION));
 
     // 2. 유저 비밀번호 체크
     if (!this.passwordEncoder.matches(body.getPassword(), member.getPassword())) {
@@ -262,6 +262,9 @@ public class MemberService {
     return new MemberResDto.checkChurchMember(isChurchMember);
   }
 
+  /**
+   * POLICY: 부목사님은 해당 부서의 organList만 조회가능하지, 다른 부서는 볼 수 있어서는 안된다. 담임 목사님은 모든 부서를 조회할 수 있다.
+   */
   public List<MemberResDto.getChurchWithBody> getMemberChurchesWithBodies(
       CustomUserDetails customUserDetails) {
     // 1. 유저 아이디로 교회 조회
@@ -276,12 +279,20 @@ public class MemberService {
           .orElseThrow(() -> new CustomException(ErrorMessage.CHURCH_INVALIDATED));
       // 2-2. 교회별 부서 조회
       List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church.getChurchId());
-      // 2-3. 교회별 부서 중, 유저가 속한 부서 필터링
+
+      // 2-3. 최고 권한이면 모든 부서 리턴 (담임 목사)
+      if (churchMemberMap.isLeader()) {
+        church.setBodyList(bodyList);
+        churchList.add(church);
+        continue;
+      }
+
+      // 2-4. 교회별 부서 중, 유저가 속한 부서 필터링
       List<BodyEntity> validBodyList = new ArrayList<>();
       for (BodyEntity body : bodyList) {
         Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(
             body.getBodyId(), customUserDetails.getMemberId());
-        // 2-4. 유저가 속한 부서만 add
+        // 2-5. 유저가 속한 부서만 add
         if (bodyMemberMap.isPresent()) {
           validBodyList.add(body);
         }
@@ -303,12 +314,32 @@ public class MemberService {
     return this.memberMapper.getMemberInfo(member);
   }
 
+  /**
+   * POLICY: 셀 조회 권한
+   *
+   * @churchLeader --> 모든 부서 밑의 모든 셀이 보여야 함 (담임 목사님)
+   * @bodyLeader --> 해당 부서 밑의 모든 셀이 보여야 함 (부서 목사님)
+   * @organLeader --> 해당 올건 셀만 보여야 함 (팀장)
+   * @cellLeader & member --> 해당 셀만 보여야 함 (셀장 & 셀원)
+   */
   public List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
       CustomUserDetails customUserDetails, Long bodyId) {
-    // TODO 나중에 캐싱처리하면 좋을 듯
+
+    Long memberId = customUserDetails.getMemberId();
+
+    List<CellEntity> cellList;
+    cellList = this.getCellListForCellLeaderAndMember(memberId, bodyId);
+    cellList = this.getCellListForOrganLeader(memberId, bodyId);
+    cellList = this.getCellListForBodyLeader(memberId, bodyId);
+    cellList = this.getCellListForChurchLeader(memberId, bodyId);
+
+    // 5. DTO 매핑
+    return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
+  }
+
+  private List<CellEntity> getCellListForCellLeaderAndMember(Long memberId, Long bodyId) {
     // 1. 유저가 속한 바디인가?
-    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId,
-            customUserDetails.getMemberId())
+    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId, memberId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
 
     // 2. 바디 밑에 속한 올건 리스트 조회
@@ -318,7 +349,7 @@ public class MemberService {
 
     // 3. 유저가 속한 올건 조회 및 필터링
     List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
-        organIdListByBodyId, customUserDetails.getMemberId());
+        organIdListByBodyId, memberId);
     List<Long> organIdListByMemberId = organMemberMapList.stream()
         .map(OrganMemberMapEntity::getOrganId).toList();
 
@@ -329,7 +360,7 @@ public class MemberService {
 
     // 6. 유저가 속한 셀 리스트 조회
     List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
-        cellIdListByBodyId, customUserDetails.getMemberId());
+        cellIdListByBodyId, memberId);
     List<Long> cellIdListByMemberId = cellMemberMapList.stream().map(CellMemberMapEntity::getCellId)
         .toList();
 
@@ -338,14 +369,49 @@ public class MemberService {
         .filter(cell -> cellIdListByMemberId.contains(cell.getCellId())).toList();
 
     // 8. 셀 인원 조회 및 매핑
-    List<CellEntity> cellList = cellListByMemberId.stream().map(cell -> {
+    return cellListByMemberId.stream().map(cell -> {
       List<CellMemberMapEntity> cellMemberMapListByCellId = this.cellMemberMapRepository.getCellMemberMapListByCellId(
           cell.getCellId());
       cell.setCellMemberCount(cellMemberMapListByCellId.size());
       return cell;
     }).toList();
+  }
 
-    // 5. DTO 매핑
-    return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
+  private List<CellEntity> getCellListForOrganLeader(Long memberId, Long bodyId) {
+    // 1. 유저가 속한 바디인가?
+    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId, memberId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
+
+    // 2. 바디 밑에 속한 올건 리스트 조회
+    List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
+    List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
+        .toList();
+
+    // 3. 유저가 속한 올건 조회 및 필터링
+    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
+        organIdListByBodyId, memberId);
+    List<Long> organIdListByMemberId = organMemberMapList.stream()
+        .map(OrganMemberMapEntity::getOrganId).toList();
+
+    // 5. 유저가 속한 올건 중 셀 리스트 조회
+    return this.cellRepository.getCellListByOrganIdList(organIdListByMemberId);
+  }
+
+  private List<CellEntity> getCellListForBodyLeader(Long memberId, Long bodyId) {
+    // 1. 유저가 속한 바디인가?
+    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId, memberId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
+
+    // 2. 바디 밑에 속한 올건 리스트 조회
+    List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
+    List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getBodyId)
+        .toList();
+
+    // 3. 올건 밑에 속한 셀 리스트 조회
+    return this.cellRepository.getCellListByOrganIdList(organIdListByBodyId);
+  }
+
+  private List<CellEntity> getCellListForChurchLeader(Long memberId, Long bodyId) {
+    //TODO 담임목사님이 모든 셀 리스트 가져오기
   }
 }
