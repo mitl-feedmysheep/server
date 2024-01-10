@@ -24,4 +24,6 @@ public class ErrorMessage {
   public static final String NO_MEDIALIST_FOR_SCREENS = "해당 스크린에 미디어가 존재하지 않아요. 다시 시도해주세요.";
   public static final String NO_USER_UNDER_BODY = "해당 부서에 유저가 존재하지 않아요. 관리자에게 문의해주세요.";
   public static final String CHURCH_INVALIDATED = "교회가 비활성화 되었어요. 고객센터에 문의해주세요.";
+  public static final String NO_CHURCH = "등록된 교회가 존재하지 않아요. 고객센터에 문의해주세요.";
+  public static final String NOT_CHURCH_MEMBER = "해당 교회의 멤버가 아니에요. 고객센터에 문의해주세요.";
 }

@@ -319,29 +319,60 @@ public class MemberService {
    *
    * @churchLeader --> 모든 부서 밑의 모든 셀이 보여야 함 (담임 목사님)
    * @bodyLeader --> 해당 부서 밑의 모든 셀이 보여야 함 (부서 목사님)
-   * @organLeader --> 해당 올건 셀만 보여야 함 (팀장)
+   * @organLeader --> 해당 올건 셀 전체 + 본인이 속한 셀이 보여야 함 (팀장)
    * @cellLeader & member --> 해당 셀만 보여야 함 (셀장 & 셀원)
+   * <p>
+   * 상위부터 권한을 조회하는 이유는, 상위에 계신 목사님도 하위 셀에 속할 수 있기 때문이에요.
    */
   public List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
       CustomUserDetails customUserDetails, Long bodyId) {
 
+    // 1. 멤버가 속한 교회가져오기
     Long memberId = customUserDetails.getMemberId();
+    BodyEntity body = this.bodyRepository.getBodyByBodyId(bodyId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_BODY));
+    ChurchEntity church = this.churchRepository.getChurchByChurchId(body.getChurchId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_CHURCH));
 
+    // 2. churchLeader OR bodyLeader OR organLeader OR cellLeader & member 검사
     List<CellEntity> cellList;
-    cellList = this.getCellListForCellLeaderAndMember(memberId, bodyId);
-    cellList = this.getCellListForOrganLeader(memberId, bodyId);
-    cellList = this.getCellListForBodyLeader(memberId, bodyId);
-    cellList = this.getCellListForChurchLeader(memberId, bodyId);
+    ChurchMemberMapEntity churchMemberMap = this.churchMemberMapRepository.getChurchMemberMapByChurchIdAndMemberId(
+            church.getChurchId(), memberId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NOT_CHURCH_MEMBER));
+    boolean isChurchLeader = churchMemberMap.isLeader();
+    BodyMemberMapEntity bodyMemberMap = this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(
+        bodyId, memberId).orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
+    boolean isBodyLeader = bodyMemberMap.isLeader();
+
+    // 3.1 담임목사님이거나 부목사님일 경우
+    if (isChurchLeader | isBodyLeader) {
+      cellList = this.getCellListForChurchLeaderAndBodyLeader(bodyId);
+    }
+    // 3.2 올건리더 혹은 셀리더 혹은 셀원일 경우
+    else {
+      // 유저가 속한 올건을 가져온다.
+      // 올건 리더면 전체 다 가져오고 | 올건리더가 아니면 본인이 속한 셀만 가져온다.
+      OrganMemberMapEntity organMemberMap = this.organMemberMapRepository.getOrganMemberMapByOrganIdAndMemberId(
+          bodyId, memberId).orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
+      boolean isOrganLeader = organMemberMap.isLeader();
+      if (isOrganLeader) {
+        cellList = this.getCellListForOrganLeader(memberId, bodyId);
+      } else {
+        cellList = this.getCellListForCellLeaderAndMember(memberId, bodyId);
+      }
+    }
+
+//    cellList = this.getCellListForOrganLeader(memberId, bodyId);
+//    cellList = this.getCellListForBodyLeader(memberId, bodyId);
+//    cellList = this.getCellListForChurchLeader(memberId, bodyId);
 
     // 5. DTO 매핑
     return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
   }
 
+  //TODO 여기 다시 작성하기
+  // 양육팀리더가 선교팀 탄자니아셀리더인 경우 --> 처리해보기
   private List<CellEntity> getCellListForCellLeaderAndMember(Long memberId, Long bodyId) {
-    // 1. 유저가 속한 바디인가?
-    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId, memberId)
-        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
-
     // 2. 바디 밑에 속한 올건 리스트 조회
     List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
     List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
@@ -377,31 +408,7 @@ public class MemberService {
     }).toList();
   }
 
-  private List<CellEntity> getCellListForOrganLeader(Long memberId, Long bodyId) {
-    // 1. 유저가 속한 바디인가?
-    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId, memberId)
-        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
-
-    // 2. 바디 밑에 속한 올건 리스트 조회
-    List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
-    List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
-        .toList();
-
-    // 3. 유저가 속한 올건 조회 및 필터링
-    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
-        organIdListByBodyId, memberId);
-    List<Long> organIdListByMemberId = organMemberMapList.stream()
-        .map(OrganMemberMapEntity::getOrganId).toList();
-
-    // 5. 유저가 속한 올건 중 셀 리스트 조회
-    return this.cellRepository.getCellListByOrganIdList(organIdListByMemberId);
-  }
-
-  private List<CellEntity> getCellListForBodyLeader(Long memberId, Long bodyId) {
-    // 1. 유저가 속한 바디인가?
-    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId, memberId)
-        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
-
+  private List<CellEntity> getCellListForChurchLeaderAndBodyLeader(Long bodyId) {
     // 2. 바디 밑에 속한 올건 리스트 조회
     List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
     List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getBodyId)
@@ -409,9 +416,5 @@ public class MemberService {
 
     // 3. 올건 밑에 속한 셀 리스트 조회
     return this.cellRepository.getCellListByOrganIdList(organIdListByBodyId);
-  }
-
-  private List<CellEntity> getCellListForChurchLeader(Long memberId, Long bodyId) {
-    //TODO 담임목사님이 모든 셀 리스트 가져오기
   }
 }
