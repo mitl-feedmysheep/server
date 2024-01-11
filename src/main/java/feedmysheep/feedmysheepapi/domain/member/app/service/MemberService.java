@@ -350,62 +350,11 @@ public class MemberService {
     }
     // 3.2 올건리더 혹은 셀리더 혹은 셀원일 경우
     else {
-      // 유저가 속한 올건을 가져온다.
-      // 올건 리더면 전체 다 가져오고 | 올건리더가 아니면 본인이 속한 셀만 가져온다.
-      OrganMemberMapEntity organMemberMap = this.organMemberMapRepository.getOrganMemberMapByOrganIdAndMemberId(
-          bodyId, memberId).orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
-      boolean isOrganLeader = organMemberMap.isLeader();
-      if (isOrganLeader) {
-        cellList = this.getCellListForOrganLeader(memberId, bodyId);
-      } else {
-        cellList = this.getCellListForCellLeaderAndMember(memberId, bodyId);
-      }
+      cellList = this.getCellListForOrganLeaderAndCellLeaderAndMember(memberId, bodyId);
     }
-
-//    cellList = this.getCellListForOrganLeader(memberId, bodyId);
-//    cellList = this.getCellListForBodyLeader(memberId, bodyId);
-//    cellList = this.getCellListForChurchLeader(memberId, bodyId);
 
     // 5. DTO 매핑
     return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
-  }
-
-  //TODO 여기 다시 작성하기
-  // 양육팀리더가 선교팀 탄자니아셀리더인 경우 --> 처리해보기
-  private List<CellEntity> getCellListForCellLeaderAndMember(Long memberId, Long bodyId) {
-    // 2. 바디 밑에 속한 올건 리스트 조회
-    List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
-    List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
-        .toList();
-
-    // 3. 유저가 속한 올건 조회 및 필터링
-    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
-        organIdListByBodyId, memberId);
-    List<Long> organIdListByMemberId = organMemberMapList.stream()
-        .map(OrganMemberMapEntity::getOrganId).toList();
-
-    // 5. 유저가 속한 올건 중 셀 리스트 조회
-    List<CellEntity> cellListByBodyId = this.cellRepository.getCellListByOrganIdList(
-        organIdListByMemberId);
-    List<Long> cellIdListByBodyId = cellListByBodyId.stream().map(CellEntity::getCellId).toList();
-
-    // 6. 유저가 속한 셀 리스트 조회
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
-        cellIdListByBodyId, memberId);
-    List<Long> cellIdListByMemberId = cellMemberMapList.stream().map(CellMemberMapEntity::getCellId)
-        .toList();
-
-    // 7. 유저가 속한 셀 리스트 필터링
-    List<CellEntity> cellListByMemberId = cellListByBodyId.stream()
-        .filter(cell -> cellIdListByMemberId.contains(cell.getCellId())).toList();
-
-    // 8. 셀 인원 조회 및 매핑
-    return cellListByMemberId.stream().map(cell -> {
-      List<CellMemberMapEntity> cellMemberMapListByCellId = this.cellMemberMapRepository.getCellMemberMapListByCellId(
-          cell.getCellId());
-      cell.setCellMemberCount(cellMemberMapListByCellId.size());
-      return cell;
-    }).toList();
   }
 
   private List<CellEntity> getCellListForChurchLeaderAndBodyLeader(Long bodyId) {
@@ -416,5 +365,61 @@ public class MemberService {
 
     // 3. 올건 밑에 속한 셀 리스트 조회
     return this.cellRepository.getCellListByOrganIdList(organIdListByBodyId);
+  }
+
+  private List<CellEntity> getCellListForOrganLeaderAndCellLeaderAndMember(Long memberId,
+      Long bodyId) {
+    // 1. 바디 밑에 속한 올건 리스트 조회
+    List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
+    List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
+        .toList();
+
+    // 2. 유저가 속한 올건 조회 및 필터링
+    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
+        organIdListByBodyId, memberId);
+    List<Long> organLeaderIdListByMemberId = new ArrayList<>();
+    List<Long> organIdListByMemberId = new ArrayList<>();
+    organMemberMapList.forEach(organMemberMap -> {
+      if (organMemberMap.isLeader()) {
+        organLeaderIdListByMemberId.add(organMemberMap.getOrganId());
+      } else {
+        organIdListByMemberId.add(organMemberMap.getOrganId());
+      }
+    });
+
+    // 3. 유저가 속한 올건 중 셀 리스트 조회
+    List<CellEntity> cellListByBodyId = this.cellRepository.getCellListByOrganIdList(
+        organIdListByMemberId);
+    List<Long> cellIdListByBodyId = cellListByBodyId.stream().map(CellEntity::getCellId).toList();
+
+    // 4. 유저가 속한 셀 리스트 조회
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
+        cellIdListByBodyId, memberId);
+    List<Long> cellIdListByMemberId = cellMemberMapList.stream().map(CellMemberMapEntity::getCellId)
+        .toList();
+
+    // 5. 유저가 속한 셀 리스트 필터링
+    List<CellEntity> cellListByMemberId = cellListByBodyId.stream()
+        .filter(cell -> cellIdListByMemberId.contains(cell.getCellId())).toList();
+
+    // 6. 셀 인원 조회 및 매핑
+    List<CellEntity> cellList = new ArrayList<>();
+    List<CellEntity> memberCellList = cellListByMemberId.stream().map(cell -> {
+      List<CellMemberMapEntity> cellMemberMapListByCellId = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+          cell.getCellId());
+      cell.setCellMemberCount(cellMemberMapListByCellId.size());
+      return cell;
+    }).toList();
+
+    // 7. 올건리더로서 올건이 존재할 경우, 올건 밑에 속한 셀 리스트 조회 및 추가
+    if (organLeaderIdListByMemberId.size() > 0) {
+      List<CellEntity> cellListAsOrganLeader = this.cellRepository.getCellListByOrganIdList(
+          organLeaderIdListByMemberId);
+      cellList.addAll(cellListAsOrganLeader);
+    }
+
+    cellList.addAll(memberCellList);
+
+    return cellList;
   }
 }
