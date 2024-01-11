@@ -201,6 +201,13 @@ public class MemberService {
 
   @Transactional
   public MemberResDto.signUp signUp(MemberReqDto.signUp body) {
+    // 0. 만 14세 이상 검증
+    LocalDate today = LocalDate.now();
+    boolean isUnder14 = body.getBirthday().plusYears(14).isAfter(today);
+    if (isUnder14) {
+      throw new CustomException(ErrorMessage.UNDER_14);
+    }
+
     // 1. 비밀번호 암호화
     body.setPassword(this.passwordEncoder.encode(body.getPassword()));
 
