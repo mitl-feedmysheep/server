@@ -27,4 +27,8 @@ public class ErrorMessage {
   public static final String NO_CHURCH = "등록된 교회가 존재하지 않아요." + CS;
   public static final String NOT_CHURCH_MEMBER = "해당 교회의 멤버가 아니에요." + CS;
   public static final String UNDER_14 = "만 14세 미만의 유저는 가입할 수 없어요." + CS;
+  public static final String ALREADY_JOINED_CHURCH = "이미 해당 교회에 가입되어 있어요." + CS;
+  public static final String ALREADY_ASKED_TO_JOIN_CHURCH = "이미 해당 교회에 가입요청이 진행중이에요.";
+  public static final String ALREADY_JOINED_BODY = "이미 해당 교회의 부서에 가입되어 있어요." + CS;
+  public static final String ALREADY_ASKED_TO_JOIN_BODY = "이미 해당 교회의 부서에 가입요청이 진행중이에요.";
 }

@@ -77,6 +77,15 @@ public class MemberController {
       @PathVariable Long bodyId) {
     return this.memberService.getCellListByBodyIdAndMemberId(customUserDetails, bodyId);
   }
+
+  /**
+   * POLICY: 최초로 한번만 호출되어야 합니다. 한명의 유저가 여러개의 부서의 가입을 원할경우, 부서만 요청을 따로 해야합니다.
+   */
+  @PostMapping("/church/{churchId}/body/{bodyId}")
+  public void askToJoinChurchAndBody(@PathVariable Long churchId, @PathVariable Long bodyId,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.memberService.askToJoinChurchAndBody(churchId, bodyId, customUserDetails);
+  }
 }
 
 

@@ -68,7 +68,8 @@ public class ChurchService {
     ChurchEntity church = ChurchEntity.builder().churchName(body.getChurchName())
         .churchLocation(body.getChurchLocation()).churchLogoUrl(body.getChurchLogoUrl())
         .churchNumber(body.getChurchNumber()).churchDescription(body.getChurchDescription())
-        .churchNumber(body.getChurchNumber()).createdBy(customUserDetails.getMemberId()).build();
+        .churchNumber(body.getChurchNumber()).build();
+    church.setCreatedBy(customUserDetails.getMemberId());
 
     this.churchRepository.save(church);
   }

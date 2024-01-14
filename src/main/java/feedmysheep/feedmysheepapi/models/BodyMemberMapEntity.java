@@ -35,8 +35,8 @@ public class BodyMemberMapEntity extends CreatedUpdated {
   private boolean isLeader = false;
 
   @Setter
-  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
-  private boolean isValid = true;
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
+  private boolean isValid = false;
 
   @Setter
   @Column(name = "invalid_reason", length = 50, nullable = true)
@@ -47,9 +47,10 @@ public class BodyMemberMapEntity extends CreatedUpdated {
   private LocalDateTime invalidAt;
 
   @Builder
-  public BodyMemberMapEntity(Long bodyId, Long memberId, boolean isLeader) {
+  public BodyMemberMapEntity(Long bodyId, Long memberId, boolean isLeader, boolean isValid) {
     this.bodyId = bodyId;
     this.memberId = memberId;
     this.isLeader = isLeader;
+    this.isValid = isValid;
   }
 }

@@ -42,8 +42,8 @@ public class BodyEntity extends CreatedUpdated {
   private String bodyDescription;
 
   @Setter
-  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
-  private boolean isValid = true;
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
+  private boolean isValid = false;
 
   @Column(name = "youtube_url", length = 100, columnDefinition = "varchar(100) COMMENT '유투브 주소'")
   private String youtubeUrl;
@@ -56,8 +56,8 @@ public class BodyEntity extends CreatedUpdated {
 
   @Builder
   public BodyEntity(Long churchId, String bodyName, String bodyLogoUrl, String bodyLocation,
-      String bodyNumber,
-      String bodyDescription, String youtubeUrl, String instagramUrl, String facebookUrl) {
+      String bodyNumber, String bodyDescription, String youtubeUrl, String instagramUrl,
+      String facebookUrl, boolean isValid) {
     this.churchId = churchId;
     this.bodyName = bodyName;
     this.bodyLogoUrl = bodyLogoUrl;
@@ -67,5 +67,6 @@ public class BodyEntity extends CreatedUpdated {
     this.youtubeUrl = youtubeUrl;
     this.instagramUrl = instagramUrl;
     this.facebookUrl = facebookUrl;
+    this.isValid = isValid;
   }
 }

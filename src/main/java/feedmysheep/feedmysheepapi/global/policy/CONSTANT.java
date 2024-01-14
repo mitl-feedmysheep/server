@@ -3,6 +3,7 @@ package feedmysheep.feedmysheepapi.global.policy;
 public class CONSTANT {
 
   public static class JWT {
+
     public final static String TOKEN = "fms-token";
     public final static String SECRET_KEY = "RejoiceAlwaysPrayContinuallyGiveThanksInAllCircumstancesForThisIsGodsWillForYouInChristJesus";
     public final static Long REFRESH_EXPIRY = 31536000000L;

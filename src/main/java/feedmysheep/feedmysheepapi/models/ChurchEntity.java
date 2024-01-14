@@ -44,7 +44,7 @@ public class ChurchEntity extends CreatedUpdated {
   private String churchDescription;
 
   @Setter
-  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
   private boolean isValid = false;
 
   @Transient
@@ -53,14 +53,14 @@ public class ChurchEntity extends CreatedUpdated {
 
   @Builder
   public ChurchEntity(String churchName, String churchLogoUrl, String churchLocation,
-      String churchNumber, String homepageUrl, String churchDescription, Long createdBy) {
+      String churchNumber, String homepageUrl, String churchDescription, boolean isValid) {
     this.churchName = churchName;
     this.churchLogoUrl = churchLogoUrl;
     this.churchLocation = churchLocation;
     this.churchNumber = churchNumber;
     this.homepageUrl = homepageUrl;
     this.churchDescription = churchDescription;
-    this.setCreatedBy(createdBy);
+    this.isValid = isValid;
   }
 
 
