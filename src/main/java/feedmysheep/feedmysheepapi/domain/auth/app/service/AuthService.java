@@ -3,6 +3,7 @@ package feedmysheep.feedmysheepapi.domain.auth.app.service;
 import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthReqDto;
 import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthResDto;
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
+import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationScreenRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.global.interceptor.auth.MemberAuth;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
@@ -11,6 +12,7 @@ import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
+import feedmysheep.feedmysheepapi.models.AuthorizationScreenEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,14 +23,16 @@ public class AuthService {
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberRepository memberRepository;
   private final AuthorizationRepository authorizationRepository;
-  ;
+  private final AuthorizationScreenRepository authorizationScreenRepository;
 
   @Autowired
   public AuthService(MemberRepository memberRepository,
-      AuthorizationRepository authorizationRepository) {
+      AuthorizationRepository authorizationRepository,
+      AuthorizationScreenRepository authorizationScreenRepository) {
     this.jwtTokenProvider = new JwtTokenProvider();
     this.memberRepository = memberRepository;
     this.authorizationRepository = authorizationRepository;
+    this.authorizationScreenRepository = authorizationScreenRepository;
   }
 
   public AuthResDto.createToken createToken(AuthReqDto.createToken body) {
@@ -42,20 +46,27 @@ public class AuthService {
     return new AuthResDto.createToken(refreshToken, accessToken);
   }
 
-  /**
-   * 멤버의 아이디로 권한 레벨을 조회합니다.
-   */
-  public MemberAuth getMemberAuth(CustomUserDetails customUserDetails) {
-    // 1. 멤버의 아이디로 멤버를 조회합니다.
+  public AuthResDto.getMemberAuthByScreenKey getMemberAuthByScreenKey(
+      AuthReqDto.getMemberAuthByScreenKey query, CustomUserDetails customUserDetails) {
+    String screenKey = query.getScreenKey();
+
+    // 1. 멤버의 아이디로 멤버의 권한을 조회합니다.
     MemberEntity member = this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+    AuthorizationEntity memberAuthorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
+            member.getAuthorizationId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
-    // 2. 멤버의 아이디로 권한을 조회합니다.
-    AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
-            member.getMemberId())
-        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_AUTHORIZATION));
+    // 2. 해당 스크린의 권한을 조회합니다.
+    AuthorizationScreenEntity authorizationScreen = this.authorizationScreenRepository.getAuthorizationScreenByScreenKey(
+        screenKey).orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION_SCREEN));
+    AuthorizationEntity screenAuthorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
+            authorizationScreen.getAuthorizationId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
-    // 3. 권한 레벨을 반환합니다.
-    return MemberAuth.valueOf(authorization.getLevel());
+    // 3. 멤버의 권한레벨과 스크린의 권한을 비교합니다.
+    boolean isAccessible = screenAuthorization.getLevel() <= memberAuthorization.getLevel();
+
+    return new AuthResDto.getMemberAuthByScreenKey(isAccessible);
   }
 }

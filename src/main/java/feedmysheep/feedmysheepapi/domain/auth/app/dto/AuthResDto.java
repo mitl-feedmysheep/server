@@ -16,4 +16,12 @@ public class AuthResDto {
     private String refreshToken;
     private String accessToken;
   }
+
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  public static class getMemberAuthByScreenKey {
+
+    private boolean isAccessible;
+  }
 }

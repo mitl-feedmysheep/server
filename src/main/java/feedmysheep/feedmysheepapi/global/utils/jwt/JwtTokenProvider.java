@@ -5,6 +5,7 @@ import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -62,7 +63,8 @@ public class JwtTokenProvider {
       throw new CustomException(ErrorMessage.INVALID_JWT);
     } catch (IllegalArgumentException e) {
       throw new CustomException(ErrorMessage.NO_TOKEN);
+    } catch (ExpiredJwtException e) {
+      throw new CustomException(ErrorMessage.JWT_EXPIRED);
     }
-    // ExpiredJwtException 은 AOP에서 잡기 위해서 처리를 하지 않음!!
   }
 }
