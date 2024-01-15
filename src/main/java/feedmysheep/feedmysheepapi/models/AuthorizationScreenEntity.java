@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,10 @@ public class AuthorizationScreenEntity extends CreatedUpdated {
 
   @Column(name = "screen_key", nullable = false, length = 50)
   private String screenKey;
+
+  @Builder
+  public AuthorizationScreenEntity(Long authorizationId, String screenKey) {
+    this.authorizationId = authorizationId;
+    this.screenKey = screenKey;
+  }
 }

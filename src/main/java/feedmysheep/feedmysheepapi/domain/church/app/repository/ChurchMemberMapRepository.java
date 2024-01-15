@@ -14,12 +14,10 @@ public interface ChurchMemberMapRepository extends JpaRepository<ChurchMemberMap
   @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.isValid = true and cmm.memberId = :memberId")
   List<ChurchMemberMapEntity> getChurchMemberMapListByMemberId(@Param("memberId") Long memberId);
 
-  //TODO 테스트코드
   @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.isValid = true and cmm.churchId = :churchId and cmm.memberId = :memberId")
   Optional<ChurchMemberMapEntity> getValidChurchMemberMapByChurchIdAndMemberId(
       @Param("churchId") Long churchId, @Param("memberId") Long memberId);
 
-  //TODO 테스트코드
   @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.isValid = false and cmm.churchId = :churchId and cmm.memberId = :memberId")
   Optional<ChurchMemberMapEntity> getInvalidChurchMemberMapByChurchIdAndMemberId(
       @Param("churchId") Long churchId, @Param("memberId") Long memberId);

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface AuthorizationScreenRepository extends
     JpaRepository<AuthorizationScreenEntity, Long> {
 
-  // TODO 테스트 코드 작성
   @Query("SELECT a FROM AuthorizationScreenEntity a WHERE a.screenKey = :screenKey")
   Optional<AuthorizationScreenEntity> getAuthorizationScreenByScreenKey(
       @Param("screenKey") String screenKey);

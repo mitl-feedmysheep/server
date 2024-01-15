@@ -13,7 +13,6 @@ public interface AuthorizationRepository extends JpaRepository<AuthorizationEnti
   @Query("SELECT a FROM AuthorizationEntity a WHERE a.authorizationId = :authorizationId")
   Optional<AuthorizationEntity> getAuthorizationByAuthorizationId(@Param("authorizationId") Long authorizationId);
 
-  //TODO 테스트코드 작성
   @Query("SELECT a FROM AuthorizationEntity a WHERE a.level = :level")
   Optional<AuthorizationEntity> getAuthorizationByLevel(@Param("level") int level);
 }

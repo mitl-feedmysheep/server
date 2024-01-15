@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain;
 
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
+import feedmysheep.feedmysheepapi.models.AuthorizationScreenEntity;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.CellEntity;
@@ -106,5 +107,11 @@ public class DataFactory {
   // 미디어 생성
   public static MediaEntity createMediaByScreenKey(String screenKey) {
     return MediaEntity.builder().screenKey(screenKey).mediaUrl(TestUtil.getRandomString()).build();
+  }
+
+  // 권한 스크린 생성
+  public static AuthorizationScreenEntity createAuthorizationScreen() {
+    return AuthorizationScreenEntity.builder().authorizationId(TestUtil.getRandomLong())
+        .screenKey(TestUtil.getRandomString()).build();
   }
 }

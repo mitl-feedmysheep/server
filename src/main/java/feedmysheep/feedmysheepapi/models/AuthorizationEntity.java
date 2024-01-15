@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "authorization")
@@ -22,6 +23,7 @@ public class AuthorizationEntity extends CreatedUpdated {
   @Column(name = "authorization_id")
   private Long authorizationId;
 
+  @Setter
   @Column(name = "level", nullable = false)
   private int level = 0;
 
