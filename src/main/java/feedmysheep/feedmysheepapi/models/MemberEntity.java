@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -21,8 +22,6 @@ import lombok.ToString;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberEntity extends CreatedUpdated {
 
-
-  //  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "member_id", nullable = false, columnDefinition = "bigint COMMENT '멤버 아이디'")
@@ -72,10 +71,17 @@ public class MemberEntity extends CreatedUpdated {
   @Column(name = "registered_at", nullable = false, columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP COMMENT '멤버 가입일시'")
   private LocalDateTime registeredAt = LocalDateTime.now();
 
+  @Transient
+  @Setter
+  boolean isLeader = false;
+
+  @Transient
+  @Setter
+  boolean isBirthdayThisMonth = false;
+
   @Builder
   public MemberEntity(Long authorizationId, String memberName, String sex, LocalDate birthday,
-      String phone,
-      String address, String email, String password) {
+      String phone, String address, String email, String password) {
     this.authorizationId = authorizationId;
     this.memberName = memberName;
     this.sex = sex;

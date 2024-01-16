@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.member.app.repository;
 
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.phone = :phone")
   Optional<MemberEntity> getMemberByPhone(@Param("phone") String phone);
+
+  // TODO 테스트코드
+  @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.memberId IN (:memberIdList)")
+  List<MemberEntity> getMemberListByMemberIdList(List<Long> memberIdList);
 }
