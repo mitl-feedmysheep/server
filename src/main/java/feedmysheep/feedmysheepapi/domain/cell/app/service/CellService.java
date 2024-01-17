@@ -3,6 +3,10 @@ package feedmysheep.feedmysheepapi.domain.cell.app.service;
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellMapper;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getGatheringsAndPrayersCount;
+import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberPrayerRepository;
+import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberRepository;
+import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
@@ -11,6 +15,9 @@ import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
+import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
+import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
+import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
@@ -22,6 +29,9 @@ import org.springframework.stereotype.Service;
 public class CellService {
 
   private final CellRepository cellRepository;
+  private final CellGatheringRepository cellGatheringRepository;
+  private final CellGatheringMemberRepository cellGatheringMemberRepository;
+  private final CellGatheringMemberPrayerRepository cellGatheringMemberPrayerRepository;
   private final CellMemberMapRepository cellMemberMapRepository;
   private final MemberRepository memberRepository;
   private final AuthorizationRepository authorizationRepository;
@@ -29,10 +39,16 @@ public class CellService {
   private final CellProcessor cellProcessor;
 
   @Autowired
-  public CellService(CellRepository cellRepository, CellMemberMapRepository cellMemberMapRepository,
-      MemberRepository memberRepository, AuthorizationRepository authorizationRepository,
-      CellProcessor cellProcessor, CellMapper cellMapper) {
+  public CellService(CellRepository cellRepository, CellGatheringRepository cellGatheringRepository,
+      CellGatheringMemberRepository cellGatheringMemberRepository,
+      CellGatheringMemberPrayerRepository cellGatheringMemberPrayerRepository,
+      CellMemberMapRepository cellMemberMapRepository, MemberRepository memberRepository,
+      AuthorizationRepository authorizationRepository, CellProcessor cellProcessor,
+      CellMapper cellMapper) {
     this.cellRepository = cellRepository;
+    this.cellGatheringRepository = cellGatheringRepository;
+    this.cellGatheringMemberRepository = cellGatheringMemberRepository;
+    this.cellGatheringMemberPrayerRepository = cellGatheringMemberPrayerRepository;
     this.cellMemberMapRepository = cellMemberMapRepository;
     this.memberRepository = memberRepository;
     this.authorizationRepository = authorizationRepository;
@@ -67,14 +83,40 @@ public class CellService {
     List<MemberEntity> memberList = this.memberRepository.getMemberListByMemberIdList(memberIdList);
 
     // 3. 멤버에 isLeader 추가
-    List<MemberEntity> memberListWithIsLeader = this.cellProcessor.addIsLeaderToMemberList(memberList, cellMemberMapList);
+    List<MemberEntity> memberListWithIsLeader = this.cellProcessor.addIsLeaderToMemberList(
+        memberList, cellMemberMapList);
 
     // 4. 멤버에 isBirthdayThisMonth 추가
-    List<MemberEntity> memberListWithIsBirthdayThisMonth = this.cellProcessor.addIsBirthdayThisMonthToMemberList(memberListWithIsLeader);
+    List<MemberEntity> memberListWithIsBirthdayThisMonth = this.cellProcessor.addIsBirthdayThisMonthToMemberList(
+        memberListWithIsLeader);
 
     // 4. 정렬 - 셀리더가 맨 앞으로 && 생일자가 그 뒤로 && 이름으로 정렬
-    List<MemberEntity> sortedMemberList = this.cellProcessor.sortCellMemberList(memberListWithIsBirthdayThisMonth);
+    List<MemberEntity> sortedMemberList = this.cellProcessor.sortCellMemberList(
+        memberListWithIsBirthdayThisMonth);
 
     return this.cellMapper.getCellMemberListByCellId(sortedMemberList);
+  }
+
+  public CellResDto.getGatheringsAndPrayersCount getGatheringsAndPrayersCountByCellId(Long cellId) {
+    // 1. 셀 아이디로 셀모임 조회
+    List<CellGatheringEntity> cellGatheringList = this.cellGatheringRepository.getCellGatheringListByCellId(
+        cellId);
+    List<Long> cellGatheringIdList = cellGatheringList.stream()
+        .map(CellGatheringEntity::getCellGatheringId).toList();
+
+    // 2. 셀모임으로 셀모임멤버 조회
+    List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.getCellGatheringMemberListByCellGatheringIdList(
+        cellGatheringIdList);
+    List<Long> cellGatheringMemberIdList = cellGatheringMemberList.stream()
+        .map(CellGatheringMemberEntity::getCellGatheringMemberId).toList();
+
+    // 3. 셀모임멤버로 멤버당 셀모임멤버기도제목 조회
+    List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.getCellGatheringMemberPrayerListByCellGatheringMemberIdList(
+        cellGatheringMemberIdList);
+
+    int totalGatheringCount = cellGatheringList.size();
+    int totalPrayerRequestCount = cellGatheringMemberPrayerList.size();
+    return this.cellMapper.getGatheringsAndPrayersCount(totalGatheringCount,
+        totalPrayerRequestCount);
   }
 }

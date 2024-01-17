@@ -8,4 +8,7 @@ import org.mapstruct.Mapper;
 public interface CellMapper {
 
   List<CellResDto.getCellMemberByCellId> getCellMemberListByCellId(List<MemberEntity> memberList);
+
+  CellResDto.getGatheringsAndPrayersCount getGatheringsAndPrayersCount(int totalGatheringCount,
+      int totalPrayerRequestCount);
 }

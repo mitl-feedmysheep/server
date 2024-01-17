@@ -35,4 +35,10 @@ public class CellController {
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.cellService.getCellMemberListByCellId(cellId, customUserDetails);
   }
+
+  @GetMapping("/{cellId}/gatherings-and-prayers-count")
+  public CellResDto.getGatheringsAndPrayersCount getGatheringsAndPrayersCountByCellId(
+      @PathVariable Long cellId) {
+    return this.cellService.getGatheringsAndPrayersCountByCellId(cellId);
+  }
 }

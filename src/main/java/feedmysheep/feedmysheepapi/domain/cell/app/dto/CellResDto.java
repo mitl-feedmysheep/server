@@ -19,4 +19,13 @@ public class CellResDto {
     private String birthday;
     private String profileImageUrl;
   }
+
+  @Getter
+  @Setter
+  @RequiredArgsConstructor
+  public static class getGatheringsAndPrayersCount {
+
+    private int totalGatheringCount;
+    private int totalPrayerRequestCount;
+  }
 }
