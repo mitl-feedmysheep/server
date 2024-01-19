@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -75,6 +76,11 @@ public class MemberEntity extends CreatedUpdated {
 
   @Column(name = "registered_at", nullable = false, columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP COMMENT '멤버 가입일시'")
   private LocalDateTime registeredAt = LocalDateTime.now();
+
+  //   DTO
+  @Transient
+  @Setter
+  int eventMemberCount;
 
   @Builder
   public MemberEntity(Long authorizationId, String memberName, String sex, LocalDate birthday,

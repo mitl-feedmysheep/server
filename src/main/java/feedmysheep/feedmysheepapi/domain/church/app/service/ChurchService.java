@@ -2,7 +2,9 @@ package feedmysheep.feedmysheepapi.domain.church.app.service;
 
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchMapper;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto.getMemberEventsByBodyId;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto.getMemberEventByMemberId;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.ChurchRepository;
@@ -15,6 +17,8 @@ import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -83,8 +87,8 @@ public class ChurchService {
     this.churchRepository.save(church);
   }
 
-  public List<ChurchResDto.getMemberEventByMemberId> getMemberEventsByBodyId(
-      CustomUserDetails customUserDetails, ChurchReqDto.getMemberEventsByBodyId query,
+  public List<getMemberEventByMemberId> getMemberEventsByBodyId(
+      CustomUserDetails customUserDetails, getMemberEventsByBodyId query,
       Long bodyId) {
 
     // 1. 유효한 멤버인지 검사
@@ -94,23 +98,34 @@ public class ChurchService {
     //2. body(부서)에 해당하는 멤버들 bodyId 통해 가져오기
     List<BodyMemberMapEntity> memberListByBodyId = this.bodyMemberMapRepository.getMemberListByBodyId(
         bodyId);
+    //bodyId를 넣어서 BodyMemberMap에 있는 정보들을 전부 가져옴
+    System.out.println("memberListByBodyId = " + memberListByBodyId);
 
-    //3. Body(부서)id로 검색한 존재하는 memberId들을 List로 가져오기
-    List<Long> memberIdList = memberListByBodyId.stream()
-        .map(BodyMemberMapEntity::getMemberId)
-        .toList();
+    //BodyMemberMap에 있는 모든 정보들 중에서, memberId에 대한 정보들만 가져와서 List형식으로 만듦.
+    List<Long> memberIdListByBodyId = memberListByBodyId.stream()
+        .map(BodyMemberMapEntity -> BodyMemberMapEntity.getMemberId()).toList();
+    System.out.println("memberIdListByBodyId = " + memberIdListByBodyId);
 
-        int targetMonthOfBirthday = query.getBirthday().getMonthValue();
+    //3. 이벤트 월에 해당하는 날짜(2000-01-01)에서 월(month)값만 가져오기
+    int targetMonthOfBirthday = query.getBirthday().getMonthValue();
 
-    Pageable pageable = PageRequest.of(1, 5);
-    Page<MemberEntity> EventMemberByMemberIdList = memberRepository.getMemberListByMemberIdListAndBirthday(memberIdList, targetMonthOfBirthday, pageable);
+    //4. 이벤트 멤버 들을 1페이지에 5명씩만 보여주도록 만들기 = OFFSET 0, LIMIT 5 (=LIMIT 0,5)
+    Pageable pageable = PageRequest.of(0, 5);
+    Page<MemberEntity> eventMemberPage = this.memberRepository.getMemberListByMemberIdListAndBirthday(
+        memberIdListByBodyId, targetMonthOfBirthday, pageable);
 
+    //5. 이벤트 멤버 리스트 필터링 // eventMemberPage에서 찾은 멤버들의 수 찾기
+    long totalMemberEventCount = eventMemberPage.getTotalElements();
+    System.out.println("totalMemberEventCount = " + totalMemberEventCount);
 
+    // 6. 이벤트 멤버 조회 및 DTO 매핑
+    List<MemberEntity> eventMember = eventMemberPage.getContent();
+    System.out.println("eventMember = " + eventMember);
 
-    // 3. DTO 매핑
-    return this.churchMapper.getMemberEventsByBodyId(EventMemberByMemberIdList);
+    return this.churchMapper.getMemberEventsByBodyId(eventMember);
   }
-}
+};
+
 
 
 

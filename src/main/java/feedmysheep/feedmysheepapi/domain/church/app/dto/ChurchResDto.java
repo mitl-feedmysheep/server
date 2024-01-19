@@ -33,7 +33,7 @@ public class ChurchResDto {
   @Setter
   @RequiredArgsConstructor
   public static class getMemberEventByMemberId {
-
+//    private int eventMemberCount;
     private Long memberId;
     private String memberName;
     private String sex;

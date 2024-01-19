@@ -1,6 +1,8 @@
 package feedmysheep.feedmysheepapi.domain.church.app.repository;
 
+import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
+import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +20,8 @@ public interface BodyMemberMapRepository extends JpaRepository<BodyMemberMapEnti
   //TODO 테스트코드
   @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.isValid = true and bmm.bodyId = :bodyId")
   List<BodyMemberMapEntity> getMemberListByBodyId(@Param("bodyId") Long bodyId);
+
+  //TODO 테스트코드
+  @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.isValid = true and bmm.bodyId = :bodyId")
+  List<BodyMemberMapEntity> getEventMemberListByBodyId(@Param("bodyId") Long bodyId);
 }
