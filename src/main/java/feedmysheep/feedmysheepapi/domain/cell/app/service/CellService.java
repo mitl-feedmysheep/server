@@ -2,6 +2,7 @@ package feedmysheep.feedmysheepapi.domain.cell.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellMapper;
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getGatheringsAndPrayersCount;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberPrayerRepository;
@@ -21,6 +22,7 @@ import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -114,9 +116,40 @@ public class CellService {
     List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.getCellGatheringMemberPrayerListByCellGatheringMemberIdList(
         cellGatheringMemberIdList);
 
+    // 4. 셀모임개수와 기도제목개수
     int totalGatheringCount = cellGatheringList.size();
     int totalPrayerRequestCount = cellGatheringMemberPrayerList.size();
-    return this.cellMapper.getGatheringsAndPrayersCount(totalGatheringCount,
-        totalPrayerRequestCount);
+
+    return new CellResDto.getGatheringsAndPrayersCount(totalGatheringCount, totalPrayerRequestCount);
+  }
+
+  public List<CellResDto.getCellGathering> getCellGatheringListByCellId(Long cellId,
+      CellReqDto.getCellGatheringListByCellId query) {
+    int month = query.getMonth();
+
+    // 1. 셀 아이디로 셀모임 전체 횟수 조회 (over-fetching)
+    List<CellGatheringEntity> cellGatheringList = this.cellGatheringRepository.getCellGatheringListByCellId(
+        cellId);
+
+    // 2. N번째 모임 붙이기 & 요일 붙이기 & 내림차순 정렬
+    List<CellGatheringEntity> cellGatheringListProcessed = this.cellProcessor.addNumberAndDayToCellGatheringList(
+        cellGatheringList);
+
+    // 3. month 여부에 따라 데이터 필터링
+    List<CellGatheringEntity> cellGatheringListByMonth = this.cellProcessor.filterCellGatheringListByMonth(
+        cellGatheringListProcessed, month);
+
+    // 4 totalWorshipAttendanceCount & totalCellGatheringAttendanceCount 넣기
+    List<CellGatheringEntity> cellGatheringListToReturn = cellGatheringListByMonth.stream()
+        .map(cellGathering -> {
+          // 4.1 셀모임 아이디로 셀모임멤버 조회
+          List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.getCellGatheringMemberListByCellGatheringId(
+              cellGathering.getCellGatheringId());
+          // 4.2 셀모임멤버로 출석자수 조회 & 출석자수 넣기
+          return this.cellProcessor.addAttendanceCountToCellGathering(cellGathering,
+              cellGatheringMemberList);
+        }).toList();
+
+    return this.cellMapper.getCellGatheringListByCellId(cellGatheringListToReturn);
   }
 }

@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.controller;
 
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCellMemberByCellId;
 import feedmysheep.feedmysheepapi.domain.cell.app.service.CellService;
@@ -40,5 +41,10 @@ public class CellController {
   public CellResDto.getGatheringsAndPrayersCount getGatheringsAndPrayersCountByCellId(
       @PathVariable Long cellId) {
     return this.cellService.getGatheringsAndPrayersCountByCellId(cellId);
+  }
+
+  @GetMapping("/{cellId}/cell-gatherings")
+  public List<CellResDto.getCellGathering> getCellGatheringListByCellId(@PathVariable Long cellId, CellReqDto.getCellGatheringListByCellId query) {
+    return this.cellService.getCellGatheringListByCellId(cellId, query);
   }
 }

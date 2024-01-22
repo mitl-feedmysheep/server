@@ -3,6 +3,7 @@ package feedmysheep.feedmysheepapi.models;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -79,6 +80,22 @@ public class CellGatheringEntity extends CreatedUpdated {
     this.leaderComment = leaderComment;
     this.pastorComment = pastorComment;
   }
+
+  @Transient
+  @Setter
+  int numberOfGathering;
+
+  @Transient
+  @Setter
+  String dayOfWeek;
+
+  @Transient
+  @Setter
+  int totalWorshipAttendanceCount;
+
+  @Transient
+  @Setter
+  int totalCellGatheringAttendanceCount;
 }
 
 
