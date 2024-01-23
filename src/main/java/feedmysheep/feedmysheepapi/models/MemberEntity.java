@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.models;
 
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto.Event;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -80,7 +81,7 @@ public class MemberEntity extends CreatedUpdated {
   //   DTO
   @Transient
   @Setter
-  int eventMemberCount;
+  List<MemberEntity> memberList;
 
   @Builder
   public MemberEntity(Long authorizationId, String memberName, String sex, LocalDate birthday,

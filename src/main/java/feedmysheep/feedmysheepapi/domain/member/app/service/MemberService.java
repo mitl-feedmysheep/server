@@ -269,6 +269,7 @@ public class MemberService {
           .orElseThrow(() -> new CustomException(ErrorMessage.CHURCH_INVALIDATED));
       // 2-2. 교회별 부서 조회
       List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church.getChurchId());
+
       // 2-3. 교회별 부서 중, 유저가 속한 부서 필터링
       List<BodyEntity> validBodyList = new ArrayList<>();
       for (BodyEntity body : bodyList) {

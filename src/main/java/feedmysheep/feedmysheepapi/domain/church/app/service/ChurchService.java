@@ -4,6 +4,7 @@ import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchMapper;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto.getMemberEventsByBodyId;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto.getBodyByChurchId;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto.getMemberEventByMemberId;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyRepository;
@@ -16,8 +17,10 @@ import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -103,7 +106,7 @@ public class ChurchService {
 
     //BodyMemberMap에 있는 모든 정보들 중에서, memberId에 대한 정보들만 가져와서 List형식으로 만듦.
     List<Long> memberIdListByBodyId = memberListByBodyId.stream()
-        .map(BodyMemberMapEntity -> BodyMemberMapEntity.getMemberId()).toList();
+        .map(BodyMemberMapEntity::getMemberId).toList();
     System.out.println("memberIdListByBodyId = " + memberIdListByBodyId);
 
     //3. 이벤트 월에 해당하는 날짜(2000-01-01)에서 월(month)값만 가져오기
@@ -125,10 +128,3 @@ public class ChurchService {
     return this.churchMapper.getMemberEventsByBodyId(eventMember);
   }
 };
-
-
-
-
-
-
-

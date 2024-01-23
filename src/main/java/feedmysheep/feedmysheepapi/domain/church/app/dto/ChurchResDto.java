@@ -1,7 +1,10 @@
 package feedmysheep.feedmysheepapi.domain.church.app.dto;
 
+import feedmysheep.feedmysheepapi.models.BodyEntity;
+import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +33,14 @@ public class ChurchResDto {
   }
 
   @Getter
-  @Setter
-  @RequiredArgsConstructor
+  @AllArgsConstructor
   public static class getMemberEventByMemberId {
-//    private int eventMemberCount;
+
+    private List<Event> memberList;
+  }
+  @AllArgsConstructor
+  @Getter
+  public static class Event {
     private Long memberId;
     private String memberName;
     private String sex;
@@ -42,6 +49,7 @@ public class ChurchResDto {
     private String phone;
     private String profileImageUrl;
     private String eventName;
-  }
 
+
+  }
 }
