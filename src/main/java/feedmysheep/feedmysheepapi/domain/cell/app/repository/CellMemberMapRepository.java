@@ -16,4 +16,7 @@ public interface CellMemberMapRepository extends JpaRepository<CellMemberMapEnti
 
   @Query("SELECT cmm FROM CellMemberMapEntity cmm WHERE cmm.cellId = :cellId and cmm.isValid = true and CURDATE() BETWEEN cmm.startDate and cmm.endDate")
   List<CellMemberMapEntity> getCellMemberMapListByCellId(@Param("cellId") Long cellId);
+
+  @Query("SELECT cmm FROM CellMemberMapEntity cmm WHERE cmm.memberId = :memberId and cmm.isValid = true and CURDATE() BETWEEN cmm.startDate and cmm.endDate")
+  List<CellMemberMapEntity> getCellMemberMapListByMemberId(@Param("memberId") Long memberId);
 }

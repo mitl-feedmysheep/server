@@ -21,5 +21,6 @@ public class ErrorMessage {
   public static final String NO_BODY= "부서가 존재하지 않아요. 관리자에게 문의해주세요.";
   public static final String NO_USER_UNDER_BODY = "해당 부서에 유저가 존재하지 않아요. 관리자에게 문의해주세요.";
   public static final String CHURCH_INVALIDATED = "교회가 비활성화 되었어요. 고객센터에 문의해주세요.";
-  public static final String NO_MEMBER_IN_BODY = "해당 바디에 속하는 멤버가 없습니다. 관리자에게 문의 해주세요.";
+  public static final String NO_CELL_FOUND = "해당 셀이 존재하지 않아요. 관리자에게 문의해주세요.";
+
 }
