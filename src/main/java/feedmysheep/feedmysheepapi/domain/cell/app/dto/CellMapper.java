@@ -1,5 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCell;
+import feedmysheep.feedmysheepapi.models.CellEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
@@ -23,4 +25,8 @@ public interface CellMapper {
 
   List<CellServiceDto.cellGatheringMemberPrayer> setCellGatheringMemberPrayerList(
       List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList);
+
+  List<getCell> getCellList(List<CellEntity> cellList);
+
+
 }

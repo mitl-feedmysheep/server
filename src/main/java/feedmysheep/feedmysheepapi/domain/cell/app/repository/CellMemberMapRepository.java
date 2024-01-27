@@ -22,4 +22,12 @@ public interface CellMemberMapRepository extends JpaRepository<CellMemberMapEnti
   @Query("SELECT cmm FROM CellMemberMapEntity cmm WHERE cmm.cellMemberMapId = :cellMemberMapId and cmm.isValid = true")
   Optional<CellMemberMapEntity> getCellMemberMapByCellMemberMapId(
       @Param("cellMemberMapId") Long cellMemberMapId);
+
+  // TODO 테스트코드 작성
+  @Query("SELECT cmm FROM CellMemberMapEntity cmm WHERE cmm.cellMemberMapId = :cellMemberMapId and cmm.isValid = true")
+  List<CellMemberMapEntity> getCellMemberMapListByMemberId(
+      @Param("cellMemberMapId") Long cellMemberMapId);
+
+
+
 }
