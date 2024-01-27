@@ -191,4 +191,19 @@ public class CellService {
 
     return cellGatheringDto;
   }
+
+  public void updateCellGatheringMemberByCellGatheringMemberId(Long cellGatheringMemberId,
+      CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
+      CustomUserDetails customUserDetails) {
+    // 1. Data-destructuring
+    Boolean worshipAttendance = body.getWorshipAttendance();
+    Boolean cellGatheringAttendance = body.getWorshipAttendance();
+    String story = body.getStory();
+    Long memberId = customUserDetails.getMemberId();
+    CellServiceDto.updateAttendancesAndStoryWhenExisting repoDto = new CellServiceDto.updateAttendancesAndStoryWhenExisting(
+        cellGatheringMemberId, worshipAttendance, cellGatheringAttendance, story, memberId);
+
+    // 2. 업데이트
+    this.cellGatheringMemberRepository.updateAttendancesAndStoryWhenExisting(repoDto);
+  }
 }

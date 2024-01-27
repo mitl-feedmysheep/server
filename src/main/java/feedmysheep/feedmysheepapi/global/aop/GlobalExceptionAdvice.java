@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @RestControllerAdvice
@@ -46,5 +47,10 @@ public class GlobalExceptionAdvice {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ErrorEntity handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
     return new ErrorEntity("fail", "RequestBody가 주어지지 않았어요. Swagger 문서를 확인해주세요.");
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ErrorEntity handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+    return new ErrorEntity("fail", "Parameter 정보가 잘못되었어요. Swagger 문서를 확인해주세요.");
   }
 }

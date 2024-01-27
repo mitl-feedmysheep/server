@@ -6,6 +6,7 @@ import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,17 @@ public class CellServiceDto {
     private Long cellGatheringMemberId;
     private String prayerRequest;
     private boolean isAnswered;
+  }
+
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  public static class updateAttendancesAndStoryWhenExisting {
+
+    private Long cellGatheringMemberId;
+    private Boolean worshipAttendance;
+    private Boolean cellGatheringAttendance;
+    private String story;
+    private Long memberId;
   }
 }
