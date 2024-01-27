@@ -53,10 +53,8 @@ public class ChurchController {
   }
 
   @GetMapping("/church/body/{bodyId}/member-events")
-  public List<ChurchResDto.getMemberEventByMemberId> getMemberEventsByBodyId(
-      @AuthenticationPrincipal CustomUserDetails customUserDetails,
-      @Valid ChurchReqDto.getMemberEventsByBodyId query,
-      @PathVariable Long bodyId) {
-    return this.churchService.getMemberEventsByBodyId(customUserDetails, query, bodyId);
+  public ChurchResDto.getMemberEventListByMemberId getMemberEventsByBodyId(
+      @Valid ChurchReqDto.getMemberEventsByBodyId query, @PathVariable Long bodyId) {
+    return this.churchService.getMemberEventsByBodyId(query, bodyId);
   }
 }

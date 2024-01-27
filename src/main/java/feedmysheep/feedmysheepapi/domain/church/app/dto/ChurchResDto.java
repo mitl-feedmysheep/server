@@ -33,23 +33,11 @@ public class ChurchResDto {
   }
 
   @Getter
-  @AllArgsConstructor
-  public static class getMemberEventByMemberId {
+  @Setter
+  @RequiredArgsConstructor
+  public static class getMemberEventListByMemberId {
 
-    private List<Event> memberList;
-  }
-  @AllArgsConstructor
-  @Getter
-  public static class Event {
-    private Long memberId;
-    private String memberName;
-    private String sex;
-    private LocalDate birthday;
-    private String dayOfWeek;
-    private String phone;
-    private String profileImageUrl;
-    private String eventName;
-
-
+    private int totalMemberEventCount;
+    private List<ChurchServiceDto.memberEvent> memberList;
   }
 }

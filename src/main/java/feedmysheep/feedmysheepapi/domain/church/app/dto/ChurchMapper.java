@@ -12,9 +12,11 @@ public interface ChurchMapper {
 
 
   List<ChurchResDto.getChurch> getChurchList(List<ChurchEntity> churchList);
+
   List<ChurchResDto.getBodyByChurchId> getBodyListByChurchId(List<BodyEntity> bodyList);
 
-  List<ChurchResDto.getMemberEventByMemberId> getMemberEventsByBodyId(
-      List<MemberEntity> memberList);
+  List<ChurchServiceDto.memberEvent> setMemberEventList(List<MemberEntity> memberList);
 
+  ChurchResDto.getMemberEventListByMemberId getMemberEventsByBodyId(int totalMemberEventCount,
+      List<ChurchServiceDto.memberEvent> memberList);
 }
