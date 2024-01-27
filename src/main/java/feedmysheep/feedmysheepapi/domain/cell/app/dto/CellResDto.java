@@ -65,4 +65,13 @@ public class CellResDto {
     private String description;
     private List<CellServiceDto.cellGatheringMember> cellGatheringMemberList;
   }
+
+  @Getter
+  @Setter
+  public static class cellGatheringMemberPrayer {
+
+    private Long cellGatheringMemberId;
+    private String prayerRequest;
+    private boolean isAnswered;
+  }
 }

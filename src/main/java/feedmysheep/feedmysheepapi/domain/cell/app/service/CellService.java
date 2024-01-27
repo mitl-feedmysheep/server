@@ -192,6 +192,17 @@ public class CellService {
     return cellGatheringDto;
   }
 
+  public List<CellResDto.cellGatheringMemberPrayer> getCellGatheringMemberPrayerListByCellGatheringMemberId(
+      Long cellGatheringMemberId) {
+    // 1. 셀모임 멤버별 기도제목 리스트 조회
+    List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.getCellGatheringMemberPrayerListByCellGatheringMemberId(
+        cellGatheringMemberId);
+
+    // 2. 리턴
+    return this.cellMapper.getCellGatheringMemberPrayerListByCellGatheringMemberId(
+        cellGatheringMemberPrayerList);
+  }
+
   public void updateCellGatheringMemberByCellGatheringMemberId(Long cellGatheringMemberId,
       CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
       CustomUserDetails customUserDetails) {

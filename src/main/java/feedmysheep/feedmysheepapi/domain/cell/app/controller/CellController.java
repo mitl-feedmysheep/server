@@ -69,6 +69,13 @@ public class CellController {
         customUserDetails);
   }
 
+  @GetMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
+  public List<CellResDto.cellGatheringMemberPrayer> getCellGatheringMemberPrayerListByCellGatheringMemberId(
+      @PathVariable Long cellGatheringMemberId) {
+    return this.cellService.getCellGatheringMemberPrayerListByCellGatheringMemberId(
+        cellGatheringMemberId);
+  }
+
   @PostMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
   public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(
       @PathVariable Long cellGatheringMemberId, @Valid @RequestBody List<String> prayerRequestList,
