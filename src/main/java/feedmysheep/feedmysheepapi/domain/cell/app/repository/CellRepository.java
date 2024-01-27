@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.repository;
 
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.models.CellEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +13,7 @@ public interface CellRepository extends JpaRepository<CellEntity, Long> {
 
   @Query("SELECT c FROM CellEntity c WHERE c.organId IN (:organIdList) and c.isValid = true and CURDATE() BETWEEN c.startDate and c.endDate")
   List<CellEntity> getCellListByOrganIdList(@Param("organIdList") List<Long> organIdList);
+
+  @Query("SELECT c FROM CellEntity c WHERE c.cellId = :cellId and c.isValid = true and CURDATE() BETWEEN c.startDate and c.endDate")
+  List<CellEntity> getCellByCellId(@Param("cellId") Long cellId);
 }

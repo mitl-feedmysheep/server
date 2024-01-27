@@ -49,4 +49,13 @@ public class CellResDto {
     private String gatheringPhotoUrl;
     private String description;
   }
+
+  @Getter
+  @Setter
+  @RequiredArgsConstructor
+  public static class createCell {
+
+    private Long cellGatheringId;
+  }
+
 }

@@ -4,7 +4,7 @@ import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationReposi
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellMapper;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
-import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getGatheringsAndPrayersCount;
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.createCell;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberPrayerRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringRepository;
@@ -16,13 +16,12 @@ import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
+import feedmysheep.feedmysheepapi.models.CellEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
-import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -120,7 +119,8 @@ public class CellService {
     int totalGatheringCount = cellGatheringList.size();
     int totalPrayerRequestCount = cellGatheringMemberPrayerList.size();
 
-    return new CellResDto.getGatheringsAndPrayersCount(totalGatheringCount, totalPrayerRequestCount);
+    return new CellResDto.getGatheringsAndPrayersCount(totalGatheringCount,
+        totalPrayerRequestCount);
   }
 
   public List<CellResDto.getCellGathering> getCellGatheringListByCellId(Long cellId,
@@ -152,4 +152,49 @@ public class CellService {
 
     return this.cellMapper.getCellGatheringListByCellId(cellGatheringListToReturn);
   }
-}
+
+
+  //소모임 생성
+  public List<CellResDto.createCell> createCellGathering(Long cellId,
+      CellReqDto.createCellGathering body) {
+
+    //@질문 : cellId를 cellRepository에서 가져올 때, 그냥 아래에 "단일 셀 조회"처럼 찾으면 안되는 거 아닌가?
+    // 왜냐면, 어떤 교회의 어떤 부서의 어떤 조직에 속하는 셀인지를 알아야 된다고 생각이 되는데?
+    //개발 순서
+    //** cell-gathering-member-id를 구하려면, cell-gathering-id랑 cell-member-map-id가 필요함
+    //1) cell-gathering-repository에서 cellId를 넣어서 cell-gathering(셀모임)값들을 가져오기
+    //1-1) 가져온 cell-gathering-id를 **에서 사용하기
+    //2) cell-id 와 member-id를 가지고 cell-member-map-id를 구하기 -> **에서 사용하기
+    //3) 1-1)와 2)에서 가져온 cell-gathering-id와 cell-member-map-id를 가지고 cell-gathering-member-id를 구하기
+    //!!모임 생성 시, 해당 셀의 모든 멤버가 전부 추가가 되어야만, 조회가 가능하도록 설정하기
+    //!!위와 같은 내용인데, 셀 모임 생성 시, 셀 모임 사람들도 같이 넣어준 후 값 가져오도록
+    // -> 셀에 추가된 멤버의 숫자가, 셀의 전체 멤버의 수와 같을 때만 참이 되도록.
+    //4)
+
+    //단일 셀 조회
+    List<CellEntity> cell = this.cellRepository.getCellByCellId(cellId);
+    System.out.println("cell = " + cell);
+
+    // 2-1 전체 셀 리스트 조회
+    List<CellEntity> cellList = this.cellRepository.findAll();
+    System.out.println("cellList = " + cellList);
+
+    // 2-2 전체 셀 리스트에서 cellId값만 List로 만들기
+    List<Long> cellIdList = cellList.stream().map(CellEntity::getCellId).toList();
+
+    //cell_member_Map 통하여 MemberIdList구하기
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+        cellId);
+    System.out.println("cellMemberMapList = " + cellMemberMapList);
+
+    Long memberIdList = cellMemberMapList.stream().map(CellMemberMapEntity::getMemberId);
+    System.out.println("memberIdList = " + memberIdList);
+
+    List<CellMemberMapEntity> cellMemberMapId = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
+        cellIdList, memberIdList);
+    System.out.println("cellMemberMapId = " + cellMemberMapId);
+
+    return this.cellMapper.getCellListByCellId(cell);
+  }
+};
+
