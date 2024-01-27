@@ -12,7 +12,6 @@ public interface ChurchMapper {
 
 
   List<ChurchResDto.getChurch> getChurchList(List<ChurchEntity> churchList);
-
   List<ChurchResDto.getBodyByChurchId> getBodyListByChurchId(List<BodyEntity> bodyList);
 
   List<ChurchResDto.getMemberEventByMemberId> getMemberEventsByBodyId(

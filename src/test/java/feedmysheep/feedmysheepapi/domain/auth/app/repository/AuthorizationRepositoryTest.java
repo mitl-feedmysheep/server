@@ -25,7 +25,9 @@ class AuthorizationRepositoryTest {
 
   @BeforeAll
   public static void setup(@Autowired AuthorizationRepository authorizationRepository) {
-    authorization1 = authorizationRepository.save(DataFactory.createAuthorization());
+    authorization1 = DataFactory.createAuthorization();
+    authorization1.setLevel(1);
+    authorizationRepository.save(authorization1);
   }
 
   @AfterAll
@@ -54,6 +56,32 @@ class AuthorizationRepositoryTest {
 
     // when
     Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(randomLong);
+
+    // then
+    assertThat(authorization).isNotPresent();
+  }
+
+  @Test
+  @DisplayName("레벨로 권한 엔티티 찾기 '성공'")
+  void test3() {
+    // given
+    int levelToFind = 1;
+
+    // when
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByLevel(levelToFind);
+
+    // then
+    assertThat(authorization).isPresent();
+  }
+
+  @Test
+  @DisplayName("레벨로 권한 엔티티 찾기 '실패'")
+  void test4() {
+    // given
+    int levelToFind = 9999;
+
+    // when
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByLevel(levelToFind);
 
     // then
     assertThat(authorization).isNotPresent();

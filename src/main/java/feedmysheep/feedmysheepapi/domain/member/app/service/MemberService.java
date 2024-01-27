@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
+import feedmysheep.feedmysheepapi.domain.auth.app.service.AuthService;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyMemberMapRepository;
@@ -15,8 +16,9 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationFailLogRepository;
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
+import feedmysheep.feedmysheepapi.global.interceptor.auth.MemberAuth;
+import feedmysheep.feedmysheepapi.global.policy.CONSTANT.SOLAPI;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.VERIFICATION;
-import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
@@ -42,6 +44,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import net.nurigo.sdk.NurigoApp;
+import net.nurigo.sdk.message.model.Message;
+import net.nurigo.sdk.message.request.SingleMessageSendingRequest;
+import net.nurigo.sdk.message.service.DefaultMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,7 +60,7 @@ public class MemberService {
   private final VerificationRepository verificationRepository;
   private final VerificationFailLogRepository verificationFailLogRepository;
   private final AuthorizationRepository authorizationRepository;
-  private final TwilioService twilioService;
+  private final DefaultMessageService messageService;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
   private final ChurchMemberMapRepository churchMemberMapRepository;
@@ -72,8 +78,8 @@ public class MemberService {
       VerificationRepository verificationRepository,
       VerificationFailLogRepository verificationFailLogRepository,
       AuthorizationRepository authorizationRepository,
-      ChurchMemberMapRepository churchMemberMapRepository, TwilioService twilioService,
-      PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider, MemberMapper memberMapper,
+      ChurchMemberMapRepository churchMemberMapRepository, PasswordEncoder passwordEncoder,
+      JwtTokenProvider jwtTokenProvider, MemberMapper memberMapper,
       ChurchRepository churchRepository, BodyRepository bodyRepository,
       BodyMemberMapRepository bodyMemberMapRepository, OrganRepository organRepository,
       OrganMemberMapRepository organMemberMapRepository, CellRepository cellRepository,
@@ -83,7 +89,6 @@ public class MemberService {
     this.verificationFailLogRepository = verificationFailLogRepository;
     this.authorizationRepository = authorizationRepository;
     this.churchMemberMapRepository = churchMemberMapRepository;
-    this.twilioService = twilioService;
     this.passwordEncoder = passwordEncoder;
     this.jwtTokenProvider = jwtTokenProvider;
     this.memberMapper = memberMapper;
@@ -94,6 +99,8 @@ public class MemberService {
     this.organMemberMapRepository = organMemberMapRepository;
     this.cellRepository = cellRepository;
     this.cellMemberMapRepository = cellMemberMapRepository;
+    this.messageService = NurigoApp.INSTANCE.initialize(SOLAPI.API_KEY, SOLAPI.API_SECRET_KEY,
+        SOLAPI.DOMAIN);
   }
 
   ;
@@ -129,10 +136,14 @@ public class MemberService {
     String verificationCode = Integer.toString(random.nextInt(max - min + 1) + min);
 
     // 5. 인증코드 전송
-    String phoneWithCountry = "+" + "82" + phone;
     String messageBody = "[피마쉽(FeedMySheep)] 인증번호는 " + verificationCode + "입니다.";
     try {
-      this.twilioService.sendSMS(phoneWithCountry, messageBody);
+      Message message = new Message();
+      message.setFrom(SOLAPI.FROM_PHONE_NUMBER);
+      message.setTo(phone);
+      message.setText(messageBody);
+
+      this.messageService.sendOne(new SingleMessageSendingRequest(message));
     } catch (Exception e) {
       System.out.println(e);
       // TODO 슬랙 메시지
@@ -190,6 +201,13 @@ public class MemberService {
 
   @Transactional
   public MemberResDto.signUp signUp(MemberReqDto.signUp body) {
+    // 0. 만 14세 이상 검증
+    LocalDate today = LocalDate.now();
+    boolean isUnder14 = body.getBirthday().plusYears(14).isAfter(today);
+    if (isUnder14) {
+      throw new CustomException(ErrorMessage.UNDER_14);
+    }
+
     // 1. 비밀번호 암호화
     body.setPassword(this.passwordEncoder.encode(body.getPassword()));
 
@@ -202,7 +220,8 @@ public class MemberService {
     });
 
     // 3. 기본 authroization 가져오기
-    AuthorizationEntity authorization = this.authorizationRepository.findById(1L)
+    AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByLevel(
+            MemberAuth.MEMBER.getValue())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
     // 4. 멤버 저장
@@ -215,7 +234,6 @@ public class MemberService {
     // 5. access / refresh 토큰 만들기
     JwtDto.memberInfo memberInfo = new memberInfo();
     memberInfo.setMemberId(member.getMemberId());
-    memberInfo.setLevel(authorization.getLevel());
     memberInfo.setMemberName(member.getMemberName());
     String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
@@ -227,9 +245,6 @@ public class MemberService {
     // 1. 이메일 유저 여부 체크
     MemberEntity member = this.memberRepository.getMemberByEmail(body.getEmail())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_EMAIL_MEMBER_FOUND));
-    AuthorizationEntity authorization = this.authorizationRepository.findById(
-            member.getAuthorizationId())
-        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_AUTHORIZATION));
 
     // 2. 유저 비밀번호 체크
     if (!this.passwordEncoder.matches(body.getPassword(), member.getPassword())) {
@@ -239,7 +254,6 @@ public class MemberService {
     // 3. access / refresh 토큰 만들기
     JwtDto.memberInfo memberInfo = new memberInfo();
     memberInfo.setMemberId(member.getMemberId());
-    memberInfo.setLevel(authorization.getLevel());
     memberInfo.setMemberName(member.getMemberName());
     String refreshToken = this.jwtTokenProvider.createRefreshToken(memberInfo);
     String accessToken = this.jwtTokenProvider.createAccessToken(memberInfo);
@@ -255,6 +269,9 @@ public class MemberService {
     return new MemberResDto.checkChurchMember(isChurchMember);
   }
 
+  /**
+   * POLICY: 부목사님은 해당 부서의 organList만 조회가능하지, 다른 부서는 볼 수 있어서는 안된다. 담임 목사님은 모든 부서를 조회할 수 있다.
+   */
   public List<MemberResDto.getChurchWithBody> getMemberChurchesWithBodies(
       CustomUserDetails customUserDetails) {
     // 1. 유저 아이디로 교회 조회
@@ -270,12 +287,19 @@ public class MemberService {
       // 2-2. 교회별 부서 조회
       List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church.getChurchId());
 
-      // 2-3. 교회별 부서 중, 유저가 속한 부서 필터링
+      // 2-3. 최고 권한이면 모든 부서 리턴 (담임 목사)
+      if (churchMemberMap.isLeader()) {
+        church.setBodyList(bodyList);
+        churchList.add(church);
+        continue;
+      }
+
+      // 2-4. 교회별 부서 중, 유저가 속한 부서 필터링
       List<BodyEntity> validBodyList = new ArrayList<>();
       for (BodyEntity body : bodyList) {
-        Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(
+        Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(
             body.getBodyId(), customUserDetails.getMemberId());
-        // 2-4. 유저가 속한 부서만 add
+        // 2-5. 유저가 속한 부서만 add
         if (bodyMemberMap.isPresent()) {
           validBodyList.add(body);
         }
@@ -297,49 +321,150 @@ public class MemberService {
     return this.memberMapper.getMemberInfo(member);
   }
 
+  /**
+   * POLICY: 셀 조회 권한
+   *
+   * @churchLeader --> 모든 부서 밑의 모든 셀이 보여야 함 (담임 목사님)
+   * @bodyLeader --> 해당 부서 밑의 모든 셀이 보여야 함 (부서 목사님)
+   * @organLeader --> 해당 올건 셀 전체 + 본인이 속한 셀이 보여야 함 (팀장)
+   * @cellLeader & member --> 해당 셀만 보여야 함 (셀장 & 셀원)
+   * <p>
+   * 상위부터 권한을 조회하는 이유는, 상위에 계신 목사님도 하위 셀에 속할 수 있기 때문이에요.
+   */
   public List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
       CustomUserDetails customUserDetails, Long bodyId) {
-    // TODO 나중에 캐싱처리하면 좋을 듯
-    // 1. 유저가 속한 바디인가?
-    this.bodyMemberMapRepository.getBodyMemberMapByBodyIdAndMemberId(bodyId,
-            customUserDetails.getMemberId())
-        .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
 
+    // 1. 멤버가 속한 교회가져오기
+    Long memberId = customUserDetails.getMemberId();
+    BodyEntity body = this.bodyRepository.getBodyByBodyId(bodyId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_BODY));
+    ChurchEntity church = this.churchRepository.getChurchByChurchId(body.getChurchId())
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_CHURCH));
+
+    // 2. churchLeader OR bodyLeader OR organLeader OR cellLeader & member 검사
+    List<CellEntity> cellList;
+    ChurchMemberMapEntity churchMemberMap = this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(
+            church.getChurchId(), memberId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NOT_CHURCH_MEMBER));
+    boolean isChurchLeader = churchMemberMap.isLeader();
+    BodyMemberMapEntity bodyMemberMap = this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(
+        bodyId, memberId).orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
+    boolean isBodyLeader = bodyMemberMap.isLeader();
+
+    // 3.1 담임목사님이거나 부목사님일 경우
+    if (isChurchLeader | isBodyLeader) {
+      cellList = this.getCellListForChurchLeaderAndBodyLeader(bodyId);
+    }
+    // 3.2 올건리더 혹은 셀리더 혹은 셀원일 경우
+    else {
+      cellList = this.getCellListForOrganLeaderAndCellLeaderAndMember(memberId, bodyId);
+    }
+
+    // 5. DTO 매핑
+    return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
+  }
+
+  private List<CellEntity> getCellListForChurchLeaderAndBodyLeader(Long bodyId) {
     // 2. 바디 밑에 속한 올건 리스트 조회
+    List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
+    List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getBodyId)
+        .toList();
+
+    // 3. 올건 밑에 속한 셀 리스트 조회
+    return this.cellRepository.getCellListByOrganIdList(organIdListByBodyId);
+  }
+
+  private List<CellEntity> getCellListForOrganLeaderAndCellLeaderAndMember(Long memberId,
+      Long bodyId) {
+    // 1. 바디 밑에 속한 올건 리스트 조회
     List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
     List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
         .toList();
 
-    // 3. 유저가 속한 올건 조회 및 필터링
+    // 2. 유저가 속한 올건 조회 및 필터링
     List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
-        organIdListByBodyId, customUserDetails.getMemberId());
-    List<Long> organIdListByMemberId = organMemberMapList.stream()
-        .map(OrganMemberMapEntity::getOrganId).toList();
+        organIdListByBodyId, memberId);
+    List<Long> organLeaderIdListByMemberId = new ArrayList<>();
+    List<Long> organIdListByMemberId = new ArrayList<>();
+    organMemberMapList.forEach(organMemberMap -> {
+      if (organMemberMap.isLeader()) {
+        organLeaderIdListByMemberId.add(organMemberMap.getOrganId());
+      } else {
+        organIdListByMemberId.add(organMemberMap.getOrganId());
+      }
+    });
 
-    // 5. 유저가 속한 올건 중 셀 리스트 조회
+    // 3. 유저가 속한 올건 중 셀 리스트 조회
     List<CellEntity> cellListByBodyId = this.cellRepository.getCellListByOrganIdList(
         organIdListByMemberId);
     List<Long> cellIdListByBodyId = cellListByBodyId.stream().map(CellEntity::getCellId).toList();
 
-    // 6. 유저가 속한 셀 리스트 조회
+    // 4. 유저가 속한 셀 리스트 조회
     List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
-        cellIdListByBodyId, customUserDetails.getMemberId());
+        cellIdListByBodyId, memberId);
     List<Long> cellIdListByMemberId = cellMemberMapList.stream().map(CellMemberMapEntity::getCellId)
         .toList();
 
-    // 7. 유저가 속한 셀 리스트 필터링
+    // 5. 유저가 속한 셀 리스트 필터링
     List<CellEntity> cellListByMemberId = cellListByBodyId.stream()
         .filter(cell -> cellIdListByMemberId.contains(cell.getCellId())).toList();
 
-    // 8. 셀 인원 조회 및 매핑
-    List<CellEntity> cellList = cellListByMemberId.stream().map(cell -> {
+    // 6. 셀 인원 조회 및 매핑
+    List<CellEntity> cellList = new ArrayList<>();
+    List<CellEntity> memberCellList = cellListByMemberId.stream().map(cell -> {
       List<CellMemberMapEntity> cellMemberMapListByCellId = this.cellMemberMapRepository.getCellMemberMapListByCellId(
           cell.getCellId());
       cell.setCellMemberCount(cellMemberMapListByCellId.size());
       return cell;
     }).toList();
 
-    // 5. DTO 매핑
-    return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
+    // 7. 올건리더로서 올건이 존재할 경우, 올건 밑에 속한 셀 리스트 조회 및 추가
+    if (organLeaderIdListByMemberId.size() > 0) {
+      List<CellEntity> cellListAsOrganLeader = this.cellRepository.getCellListByOrganIdList(
+          organLeaderIdListByMemberId);
+      cellList.addAll(cellListAsOrganLeader);
+    }
+
+    cellList.addAll(memberCellList);
+
+    return cellList;
+  }
+
+  public void askToJoinChurchAndBody(Long churchId, Long bodyId,
+      CustomUserDetails customUserDetails) {
+    // 1. 교회 및 부서 존재 여부 체크
+    this.churchRepository.getChurchByChurchId(churchId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_CHURCH));
+    this.bodyRepository.getBodyByBodyId(bodyId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_BODY));
+
+    // 2. 이미 가입된 교회인지 체크
+    this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(churchId,
+        customUserDetails.getMemberId()).ifPresent(churchMemberMap -> {
+      throw new CustomException(ErrorMessage.ALREADY_JOINED_CHURCH);
+    });
+    this.churchMemberMapRepository.getInvalidChurchMemberMapByChurchIdAndMemberId(churchId,
+        customUserDetails.getMemberId()).ifPresent(churchMemberMap -> {
+      throw new CustomException(ErrorMessage.ALREADY_ASKED_TO_JOIN_CHURCH);
+    });
+
+    // 3. 이미 가입된 부서인지 체크
+    this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(bodyId,
+        customUserDetails.getMemberId()).ifPresent(bodyMemberMap -> {
+      throw new CustomException(ErrorMessage.ALREADY_JOINED_BODY);
+    });
+    this.bodyMemberMapRepository.geInvalidBodyMemberMapByBodyIdAndMemberId(bodyId,
+        customUserDetails.getMemberId()).ifPresent(bodyMemberMap -> {
+      throw new CustomException(ErrorMessage.ALREADY_ASKED_TO_JOIN_BODY);
+    });
+
+    // 4. 교회 및 부서에 가입 요청
+    ChurchMemberMapEntity churchMemberMap = ChurchMemberMapEntity.builder().churchId(churchId)
+        .memberId(customUserDetails.getMemberId()).isValid(false).build();
+    this.churchMemberMapRepository.save(churchMemberMap);
+
+    BodyMemberMapEntity bodyMemberMap = BodyMemberMapEntity.builder().bodyId(bodyId)
+        .memberId(customUserDetails.getMemberId()).isValid(false).build();
+    this.bodyMemberMapRepository.save(bodyMemberMap);
   }
 }

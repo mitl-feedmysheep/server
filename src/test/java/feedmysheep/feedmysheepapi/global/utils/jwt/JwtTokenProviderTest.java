@@ -24,7 +24,6 @@ class JwtTokenProviderTest {
   public void setup() {
     memberInfo = new JwtDto.memberInfo();
     memberInfo.setMemberId(TESTDATA.memberId);
-    memberInfo.setLevel(TESTDATA.level);
     memberInfo.setMemberName(TESTDATA.memberName);
   }
 
@@ -61,7 +60,6 @@ class JwtTokenProviderTest {
 
     // then
     assertThat(tokenInfo.getMemberId()).isEqualTo(TESTDATA.memberId);
-    assertThat(tokenInfo.getLevel()).isEqualTo(TESTDATA.level);
     assertThat(tokenInfo.getMemberName()).isEqualTo(TESTDATA.memberName);
   }
 

@@ -1,5 +1,7 @@
 package feedmysheep.feedmysheepapi.global.utils.jwt;
 
+import static feedmysheep.feedmysheepapi.global.policy.CONSTANT.JWT.TOKEN;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
@@ -24,17 +26,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
-  private static final List<String> BYPASS_URL_PATTERN =
-      List.of(
-          "/data-seeding", // 초기 데이터 셋팅
-          "/app/word", // 말씀 가져오기
-          "/app/member/phone/send-verification-code", // 휴대폰 인증 번호 전송
-          "/app/member/phone/check-verification-code", // 휴대폰 인증 코드 검사
-          "/app/member/email/check-duplication", // 이메일 중복체크
-          "/app/member/sign-up", // 회원가입
-          "/app/member/sign-in", // 로그인
-          "/app/auth/token" // 토큰 재발급
-      );
+  private static final List<String> BYPASS_URL_PATTERN = List.of("/data-seeding", // 초기 데이터 셋팅
+      "/app/word", // 말씀 가져오기
+      "/app/member/phone/send-verification-code", // 휴대폰 인증 번호 전송
+      "/app/member/phone/check-verification-code", // 휴대폰 인증 코드 검사
+      "/app/member/email/check-duplication", // 이메일 중복체크
+      "/app/member/sign-up", // 회원가입
+      "/app/member/sign-in", // 로그인
+      "/app/auth/token" // 토큰 재발급
+  );
 
   private final JwtTokenProvider jwtTokenProvider = new JwtTokenProvider();
   private final GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
@@ -54,7 +54,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
       }
 
       // 토큰 여부 검증
-      String accessToken = request.getHeader("fms-token");
+      String accessToken = request.getHeader(TOKEN);
       if (accessToken == null || accessToken.isEmpty()) {
         throw new CustomException(ErrorMessage.NO_TOKEN);
       }

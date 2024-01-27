@@ -38,8 +38,8 @@ public class CellEntity extends CreatedUpdated {
   private String description;
 
   @Setter
-  @Column(name = "is_valid", nullable = false)
-  private boolean isValid = true;
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
+  private boolean isValid = false;
 
   @Setter
   @Column(name = "start_date", nullable = false)
@@ -56,7 +56,7 @@ public class CellEntity extends CreatedUpdated {
 
   @Builder
   public CellEntity(Long organId, String cellName, String cellLogoUrl,
-      String description, LocalDate startDate, LocalDate endDate) {
+      String description, LocalDate startDate, LocalDate endDate, boolean isValid) {
     this.organId = organId;
     this.cellName = cellName;
     this.cellLogoUrl = cellLogoUrl;
@@ -65,5 +65,6 @@ public class CellEntity extends CreatedUpdated {
     this.startDate = (startDate != null) ? startDate : LocalDate.now().withDayOfYear(1);
     // Default: 이번 해 마지막 날로 지정
     this.endDate = (endDate != null) ? endDate : LocalDate.now().withDayOfYear(365);
+    this.isValid = isValid;
   }
 }

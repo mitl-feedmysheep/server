@@ -10,7 +10,6 @@ public class JwtDto {
   public static class memberInfo {
 
     private Long memberId;
-    private int level;
     private String memberName;
   }
 }

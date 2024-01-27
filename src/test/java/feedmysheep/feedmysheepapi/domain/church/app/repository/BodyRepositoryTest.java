@@ -7,6 +7,7 @@ import feedmysheep.feedmysheepapi.domain.TestUtil;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -87,5 +88,30 @@ class BodyRepositoryTest {
 
     // then
     assertThat(bodyList.size()).isEqualTo(0);
+  }
+
+  @Test
+  @DisplayName("바디아이디가 있을 때 -> 바디 가져오기")
+  void test4() {
+    // given
+
+    // when
+    Optional<BodyEntity> body = this.bodyRepository.getBodyByBodyId(body1.getBodyId());
+
+    // then
+    assertThat(body).isPresent();
+    assertThat(body.get().getBodyId()).isEqualTo(body1.getBodyId());
+  }
+
+  @Test
+  @DisplayName("바디아이디가 있어도 유효하지 않은 바디 가져오기 실패")
+  void test5() {
+    // given
+
+    // when
+    Optional<BodyEntity> body = this.bodyRepository.getBodyByBodyId(invalidBody1.getBodyId());
+
+    // then
+    assertThat(body).isNotPresent();
   }
 }

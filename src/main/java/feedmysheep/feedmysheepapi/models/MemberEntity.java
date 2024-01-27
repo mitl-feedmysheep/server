@@ -1,22 +1,20 @@
 package feedmysheep.feedmysheepapi.models;
 
-import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto.Event;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "member")
@@ -24,15 +22,10 @@ import lombok.Setter;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberEntity extends CreatedUpdated {
 
-
-  //  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "member_id", nullable = false, columnDefinition = "bigint COMMENT '멤버 아이디'")
   private Long memberId;
-
-  @ManyToMany(mappedBy = "members")
-  private List<BodyEntity> bodies;
 
   @Setter
   @Column(name = "authorization_id", nullable = false, columnDefinition = "bigint COMMENT '권한 아이디'")
@@ -78,15 +71,17 @@ public class MemberEntity extends CreatedUpdated {
   @Column(name = "registered_at", nullable = false, columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP COMMENT '멤버 가입일시'")
   private LocalDateTime registeredAt = LocalDateTime.now();
 
-  //   DTO
   @Transient
   @Setter
-  List<MemberEntity> memberList;
+  boolean isLeader = false;
+
+  @Transient
+  @Setter
+  boolean isBirthdayThisMonth = false;
 
   @Builder
   public MemberEntity(Long authorizationId, String memberName, String sex, LocalDate birthday,
-      String phone,
-      String address, String email, String password) {
+      String phone, String address, String email, String password) {
     this.authorizationId = authorizationId;
     this.memberName = memberName;
     this.sex = sex;

@@ -7,6 +7,7 @@ import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationReposi
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,13 @@ class MemberRepositoryTest {
     MemberEntity invalidMember = DataFactory.createMember(authorization1.getAuthorizationId());
     invalidMember.setActive(false);
     invalidMember1 = memberRepository.save(invalidMember);
+  }
+
+  @AfterAll
+  public static void cleanup(@Autowired AuthorizationRepository authorizationRepository,
+      @Autowired MemberRepository memberRepository) {
+    authorizationRepository.deleteAll();
+    memberRepository.deleteAll();
   }
 
 

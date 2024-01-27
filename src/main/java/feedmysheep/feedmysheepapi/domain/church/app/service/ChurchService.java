@@ -81,11 +81,12 @@ public class ChurchService {
     return this.churchMapper.getBodyListByChurchId(bodyList);
   }
 
-  public void register(ChurchReqDto.register body) {
+  public void register(ChurchReqDto.register body, CustomUserDetails customUserDetails) {
     ChurchEntity church = ChurchEntity.builder().churchName(body.getChurchName())
         .churchLocation(body.getChurchLocation()).churchLogoUrl(body.getChurchLogoUrl())
         .churchNumber(body.getChurchNumber()).churchDescription(body.getChurchDescription())
         .churchNumber(body.getChurchNumber()).build();
+    church.setCreatedBy(customUserDetails.getMemberId());
 
     this.churchRepository.save(church);
   }

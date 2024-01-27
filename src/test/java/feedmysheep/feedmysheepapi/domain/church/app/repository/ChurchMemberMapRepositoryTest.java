@@ -11,6 +11,7 @@ import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +38,8 @@ class ChurchMemberMapRepositoryTest {
   static ChurchEntity church1;
   static AuthorizationEntity authorization1;
   static MemberEntity member1;
-  static ChurchMemberMapEntity churchMemberMap1;
+  static ChurchMemberMapEntity validChurchMemberMap1;
+  static ChurchMemberMapEntity invalidChurchMemberMap1;
 
   @BeforeAll
   public static void setup(@Autowired ChurchRepository churchRepository,
@@ -49,9 +51,14 @@ class ChurchMemberMapRepositoryTest {
     church1 = churchRepository.save(church);
     authorization1 = authorizationRepository.save(DataFactory.createAuthorization());
     member1 = memberRepository.save(DataFactory.createMember(authorization1.getAuthorizationId()));
-    churchMemberMap1 = churchMemberMapRepository.save(
-        DataFactory.createChurchMemberMap(church1.getChurchId(),
-            member1.getMemberId()));
+    // 유효한 교회멤버맵
+    validChurchMemberMap1 = churchMemberMapRepository.save(
+        DataFactory.createChurchMemberMap(church1.getChurchId(), member1.getMemberId()));
+    // 유효하지 않은 교회멤버맵
+    invalidChurchMemberMap1 = DataFactory.createChurchMemberMap(TestUtil.getRandomLong(),
+        TestUtil.getRandomLong());
+    invalidChurchMemberMap1.setValid(false);
+    churchMemberMapRepository.save(invalidChurchMemberMap1);
   }
 
   @AfterAll
@@ -102,8 +109,7 @@ class ChurchMemberMapRepositoryTest {
     church.setValid(true);
     ChurchEntity church2 = this.churchRepository.save(church);
     ChurchMemberMapEntity churchMemberMap2 = DataFactory.createChurchMemberMap(
-        church2.getChurchId(),
-        member1.getMemberId());
+        church2.getChurchId(), member1.getMemberId());
     churchMemberMap2.setValid(false);
     churchMemberMap2.setInvalidReason(TestUtil.getRandomString());
     this.churchMemberMapRepository.save(churchMemberMap2);
@@ -115,6 +121,64 @@ class ChurchMemberMapRepositoryTest {
     // then
     assertThat(churchMemberMapList.size()).isEqualTo(1);
     assertThat(churchMemberMapList.get(0).getChurchMemberMapId()).isEqualTo(
-        churchMemberMap1.getChurchMemberMapId());
+        validChurchMemberMap1.getChurchMemberMapId());
+  }
+
+  @Test
+  @DisplayName("교회아이디와 멤버아이디로 유효한 교회멤버맵을 가져온다 -> 성공")
+  void test4() {
+    // given
+
+    // when
+    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(
+        church1.getChurchId(), member1.getMemberId());
+
+    // then
+    assertThat(churchMemberMap).isPresent();
+    assertThat(churchMemberMap.get().getChurchId()).isEqualTo(validChurchMemberMap1.getChurchId());
+    assertThat(churchMemberMap.get().getMemberId()).isEqualTo(validChurchMemberMap1.getMemberId());
+  }
+
+  @Test
+  @DisplayName("교회아이디와 멤버아이디로 유효한 교회멤버맵을 가져온다 -> 실패")
+  void test5() {
+    // given
+
+    // when
+    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(
+        invalidChurchMemberMap1.getChurchId(), invalidChurchMemberMap1.getMemberId());
+
+    // then
+    assertThat(churchMemberMap).isNotPresent();
+  }
+
+  @Test
+  @DisplayName("교회아이디와 멤버아이디로 유효하지 않은 교회멤버맵을 가져온다 -> 성공")
+  void test6() {
+    // given
+
+    // when
+    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.getInvalidChurchMemberMapByChurchIdAndMemberId(
+        invalidChurchMemberMap1.getChurchId(), invalidChurchMemberMap1.getMemberId());
+
+    // then
+    assertThat(churchMemberMap).isPresent();
+    assertThat(churchMemberMap.get().getChurchId()).isEqualTo(
+        invalidChurchMemberMap1.getChurchId());
+    assertThat(churchMemberMap.get().getMemberId()).isEqualTo(
+        invalidChurchMemberMap1.getMemberId());
+  }
+
+  @Test
+  @DisplayName("교회아이디와 멤버아이디로 유효하지 않은 교회멤버맵을 가져온다 -> 실패")
+  void test7() {
+    // given
+
+    // when
+    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.getInvalidChurchMemberMapByChurchIdAndMemberId(
+        validChurchMemberMap1.getChurchId(), validChurchMemberMap1.getMemberId());
+
+    // then
+    assertThat(churchMemberMap).isNotPresent();
   }
 }

@@ -32,12 +32,12 @@ public class CellMemberMapEntity extends CreatedUpdated {
   private Long memberId;
 
   @Setter
-  @Column(name = "is_leader", nullable = false)
+  @Column(name = "is_leader", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '리더여부'")
   private boolean isLeader = false;
 
   @Setter
-  @Column(name = "is_valid", nullable = false)
-  private boolean isValid = true;
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
+  private boolean isValid = false;
 
   @Setter
   @Column(name = "start_date", nullable = false)
@@ -57,7 +57,7 @@ public class CellMemberMapEntity extends CreatedUpdated {
 
   @Builder
   public CellMemberMapEntity(Long cellId, Long memberId, boolean isLeader, LocalDate startDate,
-      LocalDate endDate) {
+      LocalDate endDate, boolean isValid) {
     this.cellId = cellId;
     this.memberId = memberId;
     this.isLeader = isLeader;
@@ -65,5 +65,6 @@ public class CellMemberMapEntity extends CreatedUpdated {
     this.startDate = (startDate != null) ? startDate : LocalDate.now().withDayOfYear(1);
     // Default: 이번 해 마지막 날로 지정
     this.endDate = (endDate != null) ? endDate : LocalDate.now().withDayOfYear(365);
+    this.isValid = isValid;
   }
 }

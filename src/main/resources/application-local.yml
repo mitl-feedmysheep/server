@@ -10,11 +10,22 @@ spring:
     username: "root"
     password: "feedmysheep"
   jpa:
+    show-sql: true
     properties:
       hibernate:
-        show_sql: true
+#        show_sql: true
         format_sql: true
+        highlight_sql: true
         use_sql_comments: true
     hibernate:
-#      db 변경 사항 적용 -> 향후 none
+      #      db 변경 사항 적용 -> 향후 none
       ddl-auto: update
+
+logging:
+  level:
+    org:
+      hibernate:
+        type: trace
+        orm:
+          jdbc:
+            bind: trace

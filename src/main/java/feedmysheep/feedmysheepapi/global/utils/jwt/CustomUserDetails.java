@@ -18,13 +18,11 @@ public class CustomUserDetails implements UserDetails {
 
 
   private final Long memberId;
-  private final int level;
   private final String memberName;
 
   public CustomUserDetails(JwtDto.memberInfo memberInfo) {
     // 추가
     this.memberId = memberInfo.getMemberId();
-    this.level = memberInfo.getLevel();
     this.memberName = memberInfo.getMemberName();
 
   }
@@ -32,11 +30,7 @@ public class CustomUserDetails implements UserDetails {
   public Long getMemerId() {
     return this.memberId;
   }
-
-  public int getLevel() {
-    return this.level;
-  }
-
+  
   public String getMemberName() {
     return this.memberName;
   }

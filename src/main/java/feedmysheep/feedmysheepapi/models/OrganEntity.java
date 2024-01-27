@@ -52,12 +52,12 @@ public class OrganEntity extends CreatedUpdated {
   private String organDescription;
 
   @Setter
-  @Column(name = "is_valid", nullable = false)
-  private boolean isValid = true;
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
+  private boolean isValid = false;
 
   @Builder
   OrganEntity(Long bodyId, String organName, String organLogoUrl, String organRole,
-      String organWords, String organGoal, String organDescription) {
+      String organWords, String organGoal, String organDescription, boolean isValid) {
     this.bodyId = bodyId;
     this.organName = organName;
     this.organLogoUrl = organLogoUrl;
@@ -65,6 +65,7 @@ public class OrganEntity extends CreatedUpdated {
     this.organWords = organWords;
     this.organGoal = organGoal;
     this.organDescription = organDescription;
+    this.isValid = isValid;
   }
 
 }

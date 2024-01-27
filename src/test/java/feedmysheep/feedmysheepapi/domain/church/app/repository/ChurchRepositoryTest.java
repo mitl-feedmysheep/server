@@ -30,7 +30,9 @@ class ChurchRepositoryTest {
     ChurchEntity validChurch = DataFactory.createChurch();
     validChurch.setValid(true);
     validChurch1 = churchRepository.save(validChurch);
-    invalidChurch1 = churchRepository.save(DataFactory.createChurch());
+    invalidChurch1 = DataFactory.createChurch();
+    invalidChurch1.setValid(false);
+    churchRepository.save(invalidChurch1);
   }
 
   @AfterAll
