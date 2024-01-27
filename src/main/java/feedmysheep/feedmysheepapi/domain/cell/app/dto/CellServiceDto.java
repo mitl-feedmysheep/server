@@ -42,7 +42,6 @@ public class CellServiceDto {
   }
 
   @Getter
-  @Setter
   @AllArgsConstructor
   public static class updateAttendancesAndStoryWhenExisting {
 
@@ -51,5 +50,12 @@ public class CellServiceDto {
     private Boolean cellGatheringAttendance;
     private String story;
     private Long memberId;
+  }
+
+  @Getter
+  @AllArgsConstructor
+  public static class insertPrayerRequestListByCellGatheringMemberId {
+    private Long cellGatheringMemberId;
+    private List<String> prayerRequestList;
   }
 }

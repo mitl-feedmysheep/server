@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,7 +65,15 @@ public class CellController {
       @PathVariable Long cellGatheringMemberId,
       @Valid @RequestBody CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-    this.cellService.updateCellGatheringMemberByCellGatheringMemberId(cellGatheringMemberId, body, customUserDetails);
+    this.cellService.updateCellGatheringMemberByCellGatheringMemberId(cellGatheringMemberId, body,
+        customUserDetails);
   }
 
+  @PostMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
+  public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(
+      @PathVariable Long cellGatheringMemberId, @Valid @RequestBody List<String> prayerRequestList,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.insertCellGatheringMemberPrayerListByCellGatheringMemberId(
+        cellGatheringMemberId, prayerRequestList, customUserDetails);
+  }
 }

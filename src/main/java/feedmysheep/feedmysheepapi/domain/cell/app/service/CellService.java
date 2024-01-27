@@ -206,4 +206,23 @@ public class CellService {
     // 2. 업데이트
     this.cellGatheringMemberRepository.updateAttendancesAndStoryWhenExisting(repoDto);
   }
+
+  public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(Long cellGatheringMemberId,
+      List<String> prayerRequestList, CustomUserDetails customUserDetails) {
+    // 1. Data-destructuring
+    Long memberId = customUserDetails.getMemberId();
+
+    // 2. 저장
+    List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = new ArrayList<>();
+    prayerRequestList.forEach(prayerRequest -> {
+      CellGatheringMemberPrayerEntity cellGatheringMemberPrayer = CellGatheringMemberPrayerEntity.builder()
+          .cellGatheringMemberId(cellGatheringMemberId).prayerRequest(prayerRequest).build();
+      cellGatheringMemberPrayer.setCreatedBy(memberId);
+      cellGatheringMemberPrayer.setUpdatedBy(memberId);
+      cellGatheringMemberPrayerList.add(cellGatheringMemberPrayer);
+    });
+    this.cellGatheringMemberPrayerRepository.saveAll(cellGatheringMemberPrayerList);
+  }
+
+  ;
 }
