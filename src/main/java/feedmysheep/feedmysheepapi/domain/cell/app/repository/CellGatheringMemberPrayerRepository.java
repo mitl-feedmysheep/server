@@ -15,4 +15,9 @@ public interface CellGatheringMemberPrayerRepository extends
   @Query("SELECT cgmp FROM CellGatheringMemberPrayerEntity cgmp WHERE cgmp.cellGatheringMemberId In (:cellGatheringMemberIdList)")
   List<CellGatheringMemberPrayerEntity> getCellGatheringMemberPrayerListByCellGatheringMemberIdList(
       @Param("cellGatheringMemberIdList") List<Long> cellGatheringMemberIdList);
+
+  // TODO 테스트 코드 작성
+  @Query("SELECT cgmp FROM CellGatheringMemberPrayerEntity cgmp WHERE cgmp.cellGatheringMemberId = :cellGatheringMemberId")
+  List<CellGatheringMemberPrayerEntity> getCellGatheringMemberPrayerListByCellGatheringMemberId(@Param("cellGatheringMemberId") Long cellGatheringMemberId);
+
 }

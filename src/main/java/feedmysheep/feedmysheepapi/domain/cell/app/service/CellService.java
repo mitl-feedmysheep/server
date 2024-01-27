@@ -4,23 +4,20 @@ import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationReposi
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellMapper;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
-import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getGatheringsAndPrayersCount;
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberPrayerRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
-import feedmysheep.feedmysheepapi.global.interceptor.auth.MemberAuth;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
-import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
-import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,19 +64,20 @@ public class CellService {
         cellId);
     List<Long> memberIdList = cellMemberMapList.stream().map(CellMemberMapEntity::getMemberId)
         .toList();
-    boolean isCellMember = cellMemberMapList.stream()
-        .anyMatch(cellMemberMapEntity -> cellMemberMapEntity.getMemberId().equals(memberId));
-    // 1.1 본인이 속한 셀이 아닌데, 권한이 organLeader 이상인 경우에만 pass
-    if (!isCellMember) {
-      MemberEntity member = this.memberRepository.getMemberByMemberId(memberId)
-          .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
-      AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
-              member.getAuthorizationId())
-          .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
-      if (authorization.getLevel() < MemberAuth.ORGAN_LEADER.getValue()) {
-        throw new CustomException(ErrorMessage.NOT_AUTHORIZED);
-      }
-    }
+    // TODO 이거 나중에 메서드화해서, 어디서든 불러서 쓸 수 있게 하기 (abusing 방지용)
+//    boolean isCellMember = cellMemberMapList.stream()
+//        .anyMatch(cellMemberMapEntity -> cellMemberMapEntity.getMemberId().equals(memberId));
+//    // 1.1 본인이 속한 셀이 아닌데, 권한이 organLeader 이상인 경우에만 pass
+//    if (!isCellMember) {
+//      MemberEntity member = this.memberRepository.getMemberByMemberId(memberId)
+//          .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+//      AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
+//              member.getAuthorizationId())
+//          .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
+//      if (authorization.getLevel() < MemberAuth.ORGAN_LEADER.getValue()) {
+//        throw new CustomException(ErrorMessage.NOT_AUTHORIZED);
+//      }
+//    }
 
     // 2. 셀멤버맵으로 멤버리스트 조회
     List<MemberEntity> memberList = this.memberRepository.getMemberListByMemberIdList(memberIdList);
@@ -120,7 +118,8 @@ public class CellService {
     int totalGatheringCount = cellGatheringList.size();
     int totalPrayerRequestCount = cellGatheringMemberPrayerList.size();
 
-    return new CellResDto.getGatheringsAndPrayersCount(totalGatheringCount, totalPrayerRequestCount);
+    return new CellResDto.getGatheringsAndPrayersCount(totalGatheringCount,
+        totalPrayerRequestCount);
   }
 
   public List<CellResDto.getCellGathering> getCellGatheringListByCellId(Long cellId,
@@ -151,5 +150,45 @@ public class CellService {
         }).toList();
 
     return this.cellMapper.getCellGatheringListByCellId(cellGatheringListToReturn);
+  }
+
+  public CellResDto.getCellGatheringAndMemberListAndPrayerList getCellGatheringAndMemberListAndPrayerList(
+      Long cellGatheringId) {
+    // 1. 셀모임 조회
+    CellGatheringEntity cellGathering = this.cellGatheringRepository.getCellGatheringByCellGatheringId(
+        cellGatheringId);
+    CellResDto.getCellGatheringAndMemberListAndPrayerList cellGatheringDto = this.cellMapper.setCellGathering(
+        cellGathering);
+    // 2. 셀모임멤버 조회
+    List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.getCellGatheringMemberListByCellGatheringId(
+        cellGatheringId);
+    // 3. 셀모임멤버당 리더여부 조회 및 셀모임멤버당 기도제목 조회 & 매퍼처리
+    List<CellServiceDto.cellGatheringMember> cellGatheringMemberListDto = new ArrayList<>();
+    cellGatheringMemberList.forEach(cellGatheringMember -> {
+      CellServiceDto.cellGatheringMember cellGatheringMemberDto = this.cellMapper.setCellGatheringMember(
+          cellGatheringMember);
+      // 3-1. 셀모임멤버당 리더여부
+      CellMemberMapEntity cellMemberMap = this.cellMemberMapRepository.getCellMemberMapByCellMemberMapId(
+              cellGatheringMember.getCellMemberMapId())
+          .orElseThrow(() -> new CustomException(ErrorMessage.NOT_CELL_MEMBER));
+      cellGatheringMemberDto.setLeader(cellMemberMap.isLeader());
+      // 3-2. 셀모임멤버당 멤버정보
+      MemberEntity member = this.memberRepository.getMemberByMemberId(cellMemberMap.getMemberId())
+          .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+      cellGatheringMemberDto.setMemberName(member.getMemberName());
+      cellGatheringMemberDto.setBirthday(member.getBirthday());
+      cellGatheringMemberDto.setProfileImageUrl(member.getProfileImageUrl());
+      // 3-3. 셀모임멤버당 기도제목
+      List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.getCellGatheringMemberPrayerListByCellGatheringMemberId(
+          cellGatheringMember.getCellGatheringMemberId());
+      List<CellServiceDto.cellGatheringMemberPrayer> cellGatheringMemberPrayerListDto = this.cellMapper.setCellGatheringMemberPrayerList(
+          cellGatheringMemberPrayerList);
+      cellGatheringMemberDto.setCellGatheringMemberPrayerList(cellGatheringMemberPrayerListDto);
+      // 3-4. 셀모임멤버리스트에 add
+      cellGatheringMemberListDto.add(cellGatheringMemberDto);
+    });
+    cellGatheringDto.setCellGatheringMemberList(cellGatheringMemberListDto);
+
+    return cellGatheringDto;
   }
 }

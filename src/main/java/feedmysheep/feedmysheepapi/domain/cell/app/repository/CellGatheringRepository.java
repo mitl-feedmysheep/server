@@ -13,4 +13,9 @@ public interface CellGatheringRepository extends JpaRepository<CellGatheringEnti
   // TODO 테스트코드 작성
   @Query("SELECT cg FROM CellGatheringEntity cg WHERE cg.cellId = :cellId and cg.isValid = true")
   List<CellGatheringEntity> getCellGatheringListByCellId(@Param("cellId") Long cellId);
+
+  // TODO 테스트코드 작성
+  @Query("SELECT cg FROM CellGatheringEntity cg WHERE cg.cellGatheringId = :cellGatheringId and cg.isValid = true")
+  CellGatheringEntity getCellGatheringByCellGatheringId(
+      @Param("cellGatheringId") Long cellGatheringId);
 }

@@ -32,4 +32,5 @@ public class ErrorMessage {
   public static final String ALREADY_JOINED_BODY = "이미 해당 교회의 부서에 가입되어 있어요." + CS;
   public static final String ALREADY_ASKED_TO_JOIN_BODY = "이미 해당 교회의 부서에 가입요청이 진행중이에요.";
   public static final String NO_AUTHORIZATION_SCREEN = "해당 스크린의 권한이 존재하지 않아요." + CS;
+  public static final String NOT_CELL_MEMBER = "셀멤버가 아닌 멤버가 존재해요." + CS;
 }

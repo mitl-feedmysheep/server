@@ -6,6 +6,7 @@ import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCellMemberBy
 import feedmysheep.feedmysheepapi.domain.cell.app.service.CellService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,4 +48,10 @@ public class CellController {
   public List<CellResDto.getCellGathering> getCellGatheringListByCellId(@PathVariable Long cellId, CellReqDto.getCellGatheringListByCellId query) {
     return this.cellService.getCellGatheringListByCellId(cellId, query);
   }
+
+  @GetMapping("/cell-gathering/{cellGatheringId}")
+  public CellResDto.getCellGatheringAndMemberListAndPrayerList getCellGatheringAndMemberListAndPrayerList(@PathVariable Long cellGatheringId) {
+    return this.cellService.getCellGatheringAndMemberListAndPrayerList(cellGatheringId);
+  }
+
 }

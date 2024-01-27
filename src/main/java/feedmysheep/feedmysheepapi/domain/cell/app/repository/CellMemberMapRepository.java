@@ -2,6 +2,7 @@ package feedmysheep.feedmysheepapi.domain.cell.app.repository;
 
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,9 @@ public interface CellMemberMapRepository extends JpaRepository<CellMemberMapEnti
 
   @Query("SELECT cmm FROM CellMemberMapEntity cmm WHERE cmm.cellId = :cellId and cmm.isValid = true and CURDATE() BETWEEN cmm.startDate and cmm.endDate")
   List<CellMemberMapEntity> getCellMemberMapListByCellId(@Param("cellId") Long cellId);
+
+  // TODO 테스트코드 작성
+  @Query("SELECT cmm FROM CellMemberMapEntity cmm WHERE cmm.cellMemberMapId = :cellMemberMapId and cmm.isValid = true")
+  Optional<CellMemberMapEntity> getCellMemberMapByCellMemberMapId(
+      @Param("cellMemberMapId") Long cellMemberMapId);
 }

@@ -21,8 +21,8 @@ public class CellGatheringMemberEntity extends CreatedUpdated {
   @Column(name = "cell_gathering_id", nullable = false, columnDefinition = "bigint COMMENT '셀모임 아이디'")
   private Long cellGatheringId;
 
-  @Column(name = "cell_member_id", nullable = false, columnDefinition = "bigint COMMENT '셀멤버 아이디'")
-  private Long cellMemberId;
+  @Column(name = "cell_member_map_id", nullable = false, columnDefinition = "bigint COMMENT '셀멤버 아이디'")
+  private Long cellMemberMapId;
 
   @Setter
   @Column(name = "worship_attendance", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '예배 참석 여부'")
@@ -41,11 +41,11 @@ public class CellGatheringMemberEntity extends CreatedUpdated {
   private String leaderComment;
 
   @Builder
-  public CellGatheringMemberEntity(Long cellGatheringId, Long cellMemberId,
+  public CellGatheringMemberEntity(Long cellGatheringId, Long cellMemberMapId,
       boolean worshipAttendance, boolean cellGatheringAttendance, String story,
       String leaderComment) {
     this.cellGatheringId = cellGatheringId;
-    this.cellMemberId = cellMemberId;
+    this.cellMemberMapId = cellMemberMapId;
     this.worshipAttendance = worshipAttendance;
     this.cellGatheringAttendance = cellGatheringAttendance;
     this.story = story;
