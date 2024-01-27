@@ -9,5 +9,6 @@ import org.mapstruct.Mapper;
 public interface ChurchMapper {
 
   List<ChurchResDto.getChurch> getChurchList(List<ChurchEntity> churchList);
+
   List<ChurchResDto.getBodyByChurchId> getBodyListByChurchId(List<BodyEntity> bodyList);
 }

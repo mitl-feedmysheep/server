@@ -43,8 +43,7 @@ public class ChurchController {
   }
 
   @PostMapping("/church/register")
-  public void register(@Valid @RequestBody ChurchReqDto.register body,
-      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-    this.churchService.register(body, customUserDetails);
+  public void register(@Valid @RequestBody ChurchReqDto.register body) {
+    this.churchService.register(body);
   }
 }
