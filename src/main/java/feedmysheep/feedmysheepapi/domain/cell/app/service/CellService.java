@@ -248,4 +248,13 @@ public class CellService {
       this.cellGatheringMemberPrayerRepository.updatePrayerById(updateDto);
     });
   }
+
+  public void deleteCellGatheringMemberPrayerList(CellReqDto.deleteCellGatheringMemberPrayer body,
+      CustomUserDetails customUserDetails) {
+    List<Integer> cellGatheringMemberPrayerIdList = body.getCellGatheringMemberPrayerIdList();
+    cellGatheringMemberPrayerIdList.forEach(cellGatheringMemberPrayerId -> {
+      this.cellGatheringMemberPrayerRepository.deletePrayerById(customUserDetails.getMemberId(),
+          (long) cellGatheringMemberPrayerId);
+    });
+  }
 }

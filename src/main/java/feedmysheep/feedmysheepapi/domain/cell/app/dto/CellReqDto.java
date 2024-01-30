@@ -2,6 +2,7 @@ package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,10 @@ public class CellReqDto {
   public static class updateCellGatheringMemberPrayer {
     private Long cellGatheringMemberPrayerId;
     private String prayerRequest;
+  }
+
+  @Getter
+  public static class deleteCellGatheringMemberPrayer {
+    private List<Integer> cellGatheringMemberPrayerIdList;
   }
 }

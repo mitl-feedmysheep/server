@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -89,5 +90,12 @@ public class CellController {
       @Valid @RequestBody List<CellReqDto.updateCellGatheringMemberPrayer> body,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     this.cellService.updateCellGatheringMemberPrayerList(body, customUserDetails);
+  }
+
+  @DeleteMapping("/cell-gathering/cell-gathering-member/cell-gathering-member-prayer")
+  public void deleteCellGatheringMemberPrayerList(
+      @Valid @RequestBody CellReqDto.deleteCellGatheringMemberPrayer body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.deleteCellGatheringMemberPrayerList(body, customUserDetails);
   }
 }

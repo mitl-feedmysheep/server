@@ -29,4 +29,10 @@ public interface CellGatheringMemberPrayerRepository extends
   @Modifying
   @Query("UPDATE CellGatheringMemberPrayerEntity cgmp SET cgmp.prayerRequest = :#{#updateDto.prayerRequest}, cgmp.updatedBy = :#{#updateDto.memberId} WHERE cgmp.cellGatheringMemberPrayerId = :#{#updateDto.cellGatheringMemberPrayerId}")
   void updatePrayerById(@Param("updateDto") CellServiceDto.updatePrayerById updateDto);
+
+  // TODO 테스트 코드 작성
+  @Transactional
+  @Modifying
+  @Query("UPDATE CellGatheringMemberPrayerEntity cgmp SET cgmp.isValid = false, cgmp.updatedBy = :memberId WHERE cgmp.cellGatheringMemberPrayerId = :cellGatheringMemberPrayerId")
+  void deletePrayerById(@Param("memberId") Long memberId, @Param("cellGatheringMemberPrayerId") Long cellGatheringMemberPrayerId);
 }

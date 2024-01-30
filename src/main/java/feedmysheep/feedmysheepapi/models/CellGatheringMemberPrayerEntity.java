@@ -34,6 +34,10 @@ public class CellGatheringMemberPrayerEntity extends CreatedUpdated {
   @Column(name = "is_answered", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '기도제목 응답 여부'")
   private boolean isAnswered = false;
 
+  @Setter
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 1 NOT NULL COMMENT '유효여부'")
+  private boolean isValid = true;
+
   @Builder
   public CellGatheringMemberPrayerEntity(Long cellGatheringMemberId, String prayerRequest,
       boolean isAnswered) {
