@@ -24,4 +24,10 @@ public class CellReqDto {
     private Boolean cellGatheringAttendance;
     private String story;
   }
+
+  @Getter
+  public static class updateCellGatheringMemberPrayer {
+    private Long cellGatheringMemberPrayerId;
+    private String prayerRequest;
+  }
 }

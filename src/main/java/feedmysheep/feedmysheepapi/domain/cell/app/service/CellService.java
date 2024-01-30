@@ -5,6 +5,7 @@ import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellMapper;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto;
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto.updatePrayerById;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberPrayerRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringRepository;
@@ -236,4 +237,15 @@ public class CellService {
   }
 
   ;
+
+  public void updateCellGatheringMemberPrayerList(
+      List<CellReqDto.updateCellGatheringMemberPrayer> cellGatheringMemberPrayerList,
+      CustomUserDetails customUserDetails) {
+    cellGatheringMemberPrayerList.forEach(cellGatheringMemberPrayer -> {
+      CellServiceDto.updatePrayerById updateDto = new updatePrayerById(
+          cellGatheringMemberPrayer.getCellGatheringMemberPrayerId(),
+          cellGatheringMemberPrayer.getPrayerRequest(), customUserDetails.getMemberId());
+      this.cellGatheringMemberPrayerRepository.updatePrayerById(updateDto);
+    });
+  }
 }

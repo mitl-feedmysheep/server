@@ -54,8 +54,9 @@ public class CellServiceDto {
 
   @Getter
   @AllArgsConstructor
-  public static class insertPrayerRequestListByCellGatheringMemberId {
-    private Long cellGatheringMemberId;
-    private List<String> prayerRequestList;
+  public static class updatePrayerById {
+    private Long cellGatheringMemberPrayerId;
+    private String prayerRequest;
+    private Long memberId;
   }
 }

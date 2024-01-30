@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface CellGatheringMemberRepository extends
@@ -25,6 +26,7 @@ public interface CellGatheringMemberRepository extends
       @Param("cellGatheringId") Long cellGatheringId);
 
   // TODO 테스트코드 작성
+  @Transactional
   @Modifying
   @Query("UPDATE CellGatheringMemberEntity cgm SET "
       + "cgm.worshipAttendance = CASE WHEN :#{#repoDto.worshipAttendance} IS NOT NULL THEN :#{#repoDto.worshipAttendance} ELSE cgm.worshipAttendance END, "

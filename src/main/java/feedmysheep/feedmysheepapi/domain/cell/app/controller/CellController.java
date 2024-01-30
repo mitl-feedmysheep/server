@@ -60,6 +60,14 @@ public class CellController {
     return this.cellService.getCellGatheringAndMemberListAndPrayerList(cellGatheringId);
   }
 
+  @PostMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
+  public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(
+      @PathVariable Long cellGatheringMemberId, @Valid @RequestBody List<String> prayerRequestList,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.insertCellGatheringMemberPrayerListByCellGatheringMemberId(
+        cellGatheringMemberId, prayerRequestList, customUserDetails);
+  }
+
   @PutMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}")
   public void updateCellGatheringMemberByCellGatheringMemberId(
       @PathVariable Long cellGatheringMemberId,
@@ -76,11 +84,10 @@ public class CellController {
         cellGatheringMemberId);
   }
 
-  @PostMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
-  public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(
-      @PathVariable Long cellGatheringMemberId, @Valid @RequestBody List<String> prayerRequestList,
+  @PutMapping("/cell-gathering/cell-gathering-member/cell-gathering-member-prayer")
+  public void updateCellGatheringMemberPrayerList(
+      @Valid @RequestBody List<CellReqDto.updateCellGatheringMemberPrayer> body,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-    this.cellService.insertCellGatheringMemberPrayerListByCellGatheringMemberId(
-        cellGatheringMemberId, prayerRequestList, customUserDetails);
+    this.cellService.updateCellGatheringMemberPrayerList(body, customUserDetails);
   }
 }

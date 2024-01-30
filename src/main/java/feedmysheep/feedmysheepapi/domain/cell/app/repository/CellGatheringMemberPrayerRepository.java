@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.repository;
 
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,10 @@ public interface CellGatheringMemberPrayerRepository extends
   @Query("SELECT cgmp FROM CellGatheringMemberPrayerEntity cgmp WHERE cgmp.cellGatheringMemberId = :cellGatheringMemberId")
   List<CellGatheringMemberPrayerEntity> getCellGatheringMemberPrayerListByCellGatheringMemberId(
       @Param("cellGatheringMemberId") Long cellGatheringMemberId);
+
+  // TODO 테스트 코드 작성
+  @Transactional
+  @Modifying
+  @Query("UPDATE CellGatheringMemberPrayerEntity cgmp SET cgmp.prayerRequest = :#{#updateDto.prayerRequest}, cgmp.updatedBy = :#{#updateDto.memberId} WHERE cgmp.cellGatheringMemberPrayerId = :#{#updateDto.cellGatheringMemberPrayerId}")
+  void updatePrayerById(@Param("updateDto") CellServiceDto.updatePrayerById updateDto);
 }
