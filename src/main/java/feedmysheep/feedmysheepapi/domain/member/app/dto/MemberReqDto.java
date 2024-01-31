@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.member.app.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
@@ -75,9 +76,33 @@ public class MemberReqDto {
   @Setter
   public static class signIn {
 
-    @NotEmpty(message = "이메일이 존재하지 않아요")
+    @NotEmpty(message = "이메일이 존재하지 않아요.")
     private String email;
     @NotEmpty(message = "비밀번호가 존재하지 않아요.")
     private String password;
+  }
+
+  @Getter
+  @Setter
+  public static class findMemberEmail {
+
+    @NotNull
+    private String memberName;
+    @NotNull
+    private LocalDate birthday;
+  }
+
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Getter
+  @Setter
+  public static class changePassword {
+
+    @NotEmpty
+    private String currentPassword;
+    @NotEmpty
+    private String newPassword;
+    @NotEmpty
+    private String newConfirmPassword;
   }
 }

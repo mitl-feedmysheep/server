@@ -7,14 +7,18 @@ import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.hibernate.query.QueryParameter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import retrofit2.http.Query;
 
 
 @RestController
@@ -85,6 +89,19 @@ public class MemberController {
   public void askToJoinChurchAndBody(@PathVariable Long churchId, @PathVariable Long bodyId,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     this.memberService.askToJoinChurchAndBody(churchId, bodyId, customUserDetails);
+  }
+
+  @GetMapping("/find-email")
+  public MemberResDto.findMemberEmail findMemberEmail(MemberReqDto.findMemberEmail query) {
+    return this.memberService.findMemberEmail(query);
+  };
+
+  // TODO 멤버 임시 비밀번호 요청
+  // @
+
+  @PostMapping("/change-password")
+  public void changePassword(@Valid @RequestBody MemberReqDto.changePassword body, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.memberService.changePassword(body, customUserDetails);
   }
 }
 

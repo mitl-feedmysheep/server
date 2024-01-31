@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import net.nurigo.sdk.NurigoApp;
@@ -466,5 +467,42 @@ public class MemberService {
     BodyMemberMapEntity bodyMemberMap = BodyMemberMapEntity.builder().bodyId(bodyId)
         .memberId(customUserDetails.getMemberId()).isValid(false).build();
     this.bodyMemberMapRepository.save(bodyMemberMap);
+  }
+
+  public MemberResDto.findMemberEmail findMemberEmail(MemberReqDto.findMemberEmail query) {
+    // 1. Data-destructuring
+    String memberName = query.getMemberName();
+    LocalDate birthday = query.getBirthday();
+
+    // 2. 이메일 여부 조회
+    MemberEntity member = this.memberRepository.getMemberByMemberNameAndBirthday(memberName,
+        birthday).orElseThrow(() -> new CustomException(ErrorMessage.CAN_NOT_FIND_EMAIL));
+
+    return new MemberResDto.findMemberEmail(member.getEmail());
+  }
+
+  public void changePassword(MemberReqDto.changePassword body,
+      CustomUserDetails customUserDetails) {
+    // 1. Data-destructuring
+    Long memberId = customUserDetails.getMemberId();
+    String currentPassword = body.getCurrentPassword();
+    String newPassword = body.getNewPassword();
+    String newConfirmPassword = body.getNewConfirmPassword();
+
+    // 2. 새로운 비밀번호와 새로운 확인 비밀번호가 같은지 확인
+    if (!newPassword.equals(newConfirmPassword)) {
+      throw new CustomException(ErrorMessage.NEW_PASSWORDS_NOT_EQUAL);
+    }
+
+    // 2. 현재 비밀번호 확인
+    MemberEntity member = this.memberRepository.getMemberByMemberId(memberId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+    if (!this.passwordEncoder.matches(currentPassword, member.getPassword())) {
+      throw new CustomException(ErrorMessage.WRONG_PASSWORD);
+    }
+
+    // 3. 새로운 비밀번호 셋팅
+    String newPasswordHashed = this.passwordEncoder.encode(newPassword);
+    this.memberRepository.updatePasswordByMemberId(memberId, newPasswordHashed);
   }
 }
