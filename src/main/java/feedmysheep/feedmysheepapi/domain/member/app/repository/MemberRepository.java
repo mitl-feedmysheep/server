@@ -35,7 +35,13 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
   // TODO 테스트코드
   @Transactional
   @Modifying
-  @Query("UPDATE MemberEntity m SET m.password = :newPassword WHERE m.memberId = :memberId")
+  @Query("UPDATE MemberEntity m SET m.password = :newPassword WHERE m.memberId = :memberId and m.updatedBy = :memberId")
   void updatePasswordByMemberId(@Param("memberId") Long memberId,
       @Param("newPassword") String newPassword);
+
+  // TODO 테스트코드
+  @Transactional
+  @Modifying
+  @Query("UPDATE MemberEntity m SET m.isActive = false, m.updatedBy = :memberId WHERE m.memberId = :memberId")
+  void deactivate(@Param("memberId") Long memberId);
 }

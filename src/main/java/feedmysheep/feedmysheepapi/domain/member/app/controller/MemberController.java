@@ -11,6 +11,7 @@ import org.hibernate.query.QueryParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -94,14 +95,25 @@ public class MemberController {
   @GetMapping("/find-email")
   public MemberResDto.findMemberEmail findMemberEmail(MemberReqDto.findMemberEmail query) {
     return this.memberService.findMemberEmail(query);
-  };
+  }
+
+  ;
 
   // TODO 멤버 임시 비밀번호 요청
   // @
 
   @PostMapping("/change-password")
-  public void changePassword(@Valid @RequestBody MemberReqDto.changePassword body, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+  public void changePassword(@Valid @RequestBody MemberReqDto.changePassword body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     this.memberService.changePassword(body, customUserDetails);
+  }
+
+  /**
+   * 회원탈퇴
+   */
+  @DeleteMapping("/deactivate")
+  public void deactivate(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.memberService.deactivate(customUserDetails);
   }
 }
 

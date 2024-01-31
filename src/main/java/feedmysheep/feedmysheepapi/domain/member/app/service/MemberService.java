@@ -505,4 +505,10 @@ public class MemberService {
     String newPasswordHashed = this.passwordEncoder.encode(newPassword);
     this.memberRepository.updatePasswordByMemberId(memberId, newPasswordHashed);
   }
+
+  public void deactivate(CustomUserDetails customUserDetails) {
+    Long memberId = customUserDetails.getMemberId();
+
+    this.memberRepository.deactivate(memberId);
+  }
 }
