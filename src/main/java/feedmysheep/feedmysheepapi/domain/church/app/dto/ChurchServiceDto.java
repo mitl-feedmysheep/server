@@ -12,7 +12,7 @@ public class ChurchServiceDto {
   @AllArgsConstructor
   @Getter
   @Setter
-  public static class memberEvent {
+  public static class memberEventList {
 
     private Long memberId;
     private String memberName;

@@ -2,6 +2,7 @@ package feedmysheep.feedmysheepapi.domain.church.app.controller;
 
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchReqDto;
 import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto;
+import feedmysheep.feedmysheepapi.domain.church.app.dto.ChurchResDto.getMemberEventListByMemberId;
 import feedmysheep.feedmysheepapi.domain.church.app.service.ChurchService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
@@ -9,8 +10,12 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,7 +59,13 @@ public class ChurchController {
 
   @GetMapping("/church/body/{bodyId}/member-events")
   public ChurchResDto.getMemberEventListByMemberId getMemberEventsByBodyId(
-      @Valid ChurchReqDto.getMemberEventsByBodyId query, @PathVariable Long bodyId) {
-    return this.churchService.getMemberEventsByBodyId(query, bodyId);
+      @Valid
+//      @RequestBody
+      ChurchReqDto.getMemberEventsByBodyId query,
+      @PageableDefault(page = 1) Pageable pageable,
+      @PathVariable Long bodyId
+      ) {
+    pageable.getPageNumber();
+    return this.churchService.getMemberEventsByBodyId(query, bodyId, pageable);
   }
 }
