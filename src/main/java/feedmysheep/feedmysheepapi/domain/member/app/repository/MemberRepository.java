@@ -44,4 +44,9 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
   @Modifying
   @Query("UPDATE MemberEntity m SET m.isActive = false, m.updatedBy = :memberId WHERE m.memberId = :memberId")
   void deactivate(@Param("memberId") Long memberId);
+
+  // TODO 테스트코드
+  @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.email = :email and m.memberName = :memberName")
+  Optional<MemberEntity> getMemberByEmailAndMemberName(@Param("email") String email,
+      @Param("memberName") String memberName);
 }

@@ -1,7 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
-import feedmysheep.feedmysheepapi.domain.auth.app.service.AuthService;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyMemberMapRepository;
@@ -19,6 +18,7 @@ import feedmysheep.feedmysheepapi.domain.verification.app.repository.Verificatio
 import feedmysheep.feedmysheepapi.global.interceptor.auth.MemberAuth;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.SOLAPI;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.VERIFICATION;
+import feedmysheep.feedmysheepapi.global.utils.Util;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
@@ -42,7 +42,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import net.nurigo.sdk.NurigoApp;
@@ -479,6 +478,24 @@ public class MemberService {
         birthday).orElseThrow(() -> new CustomException(ErrorMessage.CAN_NOT_FIND_EMAIL));
 
     return new MemberResDto.findMemberEmail(member.getEmail());
+  }
+
+  @Transactional
+  public void requestTemporaryPassword(MemberReqDto.requestTemporaryPassword body) {
+    // 1. Data-destructuring
+    String email = body.getEmail();
+    String memberName = body.getMemberName();
+
+    // 2. 멤버 찾기
+    MemberEntity member = this.memberRepository.getMemberByEmailAndMemberName(email, memberName)
+        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_EMAIL_NOT_MATCHED));
+
+    // 3. 임시 비밀번호 생성 및 비밀번호 업데이트
+    String temporaryPassword = Util.getRandomString(10);
+    this.memberRepository.updatePasswordByMemberId(member.getMemberId(), temporaryPassword);
+
+    // TODO 4. 이메일로 임시 비밀번호 전송
+    throw new CustomException(ErrorMessage.MEMBER_NOT_FOUND);
   }
 
   public void changePassword(MemberReqDto.changePassword body) {

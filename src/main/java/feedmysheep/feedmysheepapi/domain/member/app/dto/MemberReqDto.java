@@ -107,4 +107,16 @@ public class MemberReqDto {
     @NotEmpty
     private String newConfirmPassword;
   }
+
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Getter
+  @Setter
+  public static class requestTemporaryPassword {
+
+    @NotEmpty
+    private String email;
+    @NotEmpty
+    private String memberName;
+  }
 }

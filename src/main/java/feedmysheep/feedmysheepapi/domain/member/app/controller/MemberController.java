@@ -97,10 +97,11 @@ public class MemberController {
     return this.memberService.findMemberEmail(query);
   }
 
-  ;
-
-  // TODO 멤버 임시 비밀번호 요청
-  // @
+  @PostMapping("/request-temporary-password")
+  public void requestTemporaryPassword(
+      @Valid @RequestBody MemberReqDto.requestTemporaryPassword body) {
+    this.memberService.requestTemporaryPassword(body);
+  }
 
   @PostMapping("/change-password")
   public void changePassword(@Valid @RequestBody MemberReqDto.changePassword body) {
