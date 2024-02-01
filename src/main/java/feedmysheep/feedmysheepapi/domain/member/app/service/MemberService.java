@@ -481,10 +481,9 @@ public class MemberService {
     return new MemberResDto.findMemberEmail(member.getEmail());
   }
 
-  public void changePassword(MemberReqDto.changePassword body,
-      CustomUserDetails customUserDetails) {
+  public void changePassword(MemberReqDto.changePassword body) {
     // 1. Data-destructuring
-    Long memberId = customUserDetails.getMemberId();
+    String email = body.getEmail();
     String currentPassword = body.getCurrentPassword();
     String newPassword = body.getNewPassword();
     String newConfirmPassword = body.getNewConfirmPassword();
@@ -495,7 +494,7 @@ public class MemberService {
     }
 
     // 2. 현재 비밀번호 확인
-    MemberEntity member = this.memberRepository.getMemberByMemberId(memberId)
+    MemberEntity member = this.memberRepository.getMemberByEmail(email)
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
     if (!this.passwordEncoder.matches(currentPassword, member.getPassword())) {
       throw new CustomException(ErrorMessage.WRONG_PASSWORD);
@@ -503,7 +502,7 @@ public class MemberService {
 
     // 3. 새로운 비밀번호 셋팅
     String newPasswordHashed = this.passwordEncoder.encode(newPassword);
-    this.memberRepository.updatePasswordByMemberId(memberId, newPasswordHashed);
+    this.memberRepository.updatePasswordByMemberId(member.getMemberId(), newPasswordHashed);
   }
 
   public void deactivate(CustomUserDetails customUserDetails) {

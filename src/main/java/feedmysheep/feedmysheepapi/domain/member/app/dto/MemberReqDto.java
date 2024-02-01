@@ -99,6 +99,8 @@ public class MemberReqDto {
   public static class changePassword {
 
     @NotEmpty
+    private String email;
+    @NotEmpty
     private String currentPassword;
     @NotEmpty
     private String newPassword;

@@ -103,9 +103,8 @@ public class MemberController {
   // @
 
   @PostMapping("/change-password")
-  public void changePassword(@Valid @RequestBody MemberReqDto.changePassword body,
-      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-    this.memberService.changePassword(body, customUserDetails);
+  public void changePassword(@Valid @RequestBody MemberReqDto.changePassword body) {
+    this.memberService.changePassword(body);
   }
 
   /**
