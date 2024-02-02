@@ -26,7 +26,5 @@ public interface CellMapper {
   List<CellServiceDto.cellGatheringMemberPrayer> setCellGatheringMemberPrayerList(
       List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList);
 
-  List<getCell> getCellList(List<CellEntity> cellList);
-
-
+  getCell getCellByCellId(CellEntity getCell);
 }

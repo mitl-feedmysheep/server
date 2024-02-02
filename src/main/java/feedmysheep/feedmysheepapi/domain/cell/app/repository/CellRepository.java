@@ -15,6 +15,6 @@ public interface CellRepository extends JpaRepository<CellEntity, Long> {
   List<CellEntity> getCellListByOrganIdList(@Param("organIdList") List<Long> organIdList);
 
   //TODO 테스트 코드
-  @Query("SELECT c FROM CellEntity c WHERE c.cellId IN (:cellList) and c.isValid = true and CURDATE() BETWEEN c.startDate and c.endDate")
-  List<CellEntity> getCellList(@Param("cellList") List<Long> cellList);
+  @Query("SELECT c FROM CellEntity c WHERE c.cellId = :cellId and c.isValid = true")
+  CellEntity getCellId(@Param("cellId") Long cellId);
 }

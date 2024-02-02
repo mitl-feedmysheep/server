@@ -5,6 +5,7 @@ import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCellMemberByCellId;
 import feedmysheep.feedmysheepapi.domain.cell.app.service.CellService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +58,8 @@ public class CellController {
   }
 
   @GetMapping("/{cellId}/info")
-  public List<CellResDto.getCell> getCellList(
-      @PathVariable Long cellId, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-    return this.cellService.getCellList(cellId, customUserDetails);
+  public CellResDto.getCell getCellByCellId(
+      @PathVariable Long cellId) {
+    return this.cellService.getCellByCellId(cellId);
   }
 }

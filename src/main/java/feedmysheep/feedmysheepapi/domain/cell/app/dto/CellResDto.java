@@ -1,5 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,6 +38,7 @@ public class CellResDto {
   @Setter
   @RequiredArgsConstructor
   public static class getCellGathering {
+
     private Long cellGatheringId;
     private int numberOfGathering;
     private String gatheringTitle;
@@ -55,6 +57,7 @@ public class CellResDto {
   @Setter
   @RequiredArgsConstructor
   public static class getCellGatheringAndMemberListAndPrayerList {
+
     private Long cellGatheringId;
     private String gatheringTitle;
     private LocalDate gatheringDate;
@@ -76,7 +79,7 @@ public class CellResDto {
     private String cellLogoUrl;
     private String cellPlace;
     private String description;
-    private String startDate;
-    private String endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
   }
 }

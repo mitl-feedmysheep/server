@@ -20,9 +20,11 @@ import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
+import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -194,25 +196,16 @@ public class CellService {
     return cellGatheringDto;
   }
 
-  public List<getCell> getCellList(Long cellId, CustomUserDetails customUserDetails) {
+  public getCell getCellByCellId(Long cellId) {
 
-    // 1. cell 조회하기 (memberId를 통하여, cellId 가져오기)
-    List<CellMemberMapEntity> cellListByMemberId = this.cellMemberMapRepository.getCellMemberMapListByMemberId(
-        customUserDetails.getMemberId());
-
-    // 2. 조회한 cellId값들을 List로 만들기
-    List<Long> cellIdListByMemberId = cellListByMemberId.stream().map(CellMemberMapEntity::getMemberId).toList();
-
-    // 3. cellId가 없는 경우 처리
-    if (cellIdListByMemberId.isEmpty()) {
+// 1. Repository에서 cellId 검색
+    CellEntity getCell = cellRepository.getCellId(cellId);
+    if (getCell == null) {
       throw new CustomException(ErrorMessage.NO_CELL_FOUND);
+    } else {
+
+      return this.cellMapper.getCellByCellId(getCell);
+
     }
-
-    // 4. cellId가 있는 경우 처리
-    List<CellEntity> cellList = this.cellRepository.getCellList(cellIdListByMemberId);
-
-    // 5. 반환
-    return this.cellMapper.getCellList(cellList);
-
   }
-}
+};
