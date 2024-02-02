@@ -1,6 +1,5 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

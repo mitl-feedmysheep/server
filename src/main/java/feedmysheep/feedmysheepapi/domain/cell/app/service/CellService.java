@@ -20,11 +20,9 @@ import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
-import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.repository;
 
 import feedmysheep.feedmysheepapi.models.CellEntity;
-import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
