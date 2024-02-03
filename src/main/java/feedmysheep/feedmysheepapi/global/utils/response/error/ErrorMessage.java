@@ -36,4 +36,6 @@ public class ErrorMessage {
   public static final String CAN_NOT_FIND_EMAIL = "가입되어 있지 않은 정보에요.";
   public static final String NEW_PASSWORDS_NOT_EQUAL = "새로 입력한 두 비밀번호가 동일하지 않아요. 다시 입력해주세요.";
   public static final String MEMBER_EMAIL_NOT_MATCHED = "가입되지 않은 계정이에요.";
+  public static final String NO_CELL_FOUND = "해당 셀이 존재하지 않아요.";
+
 }

@@ -36,4 +36,12 @@ public class CellReqDto {
   public static class deleteCellGatheringMemberPrayer {
     private List<Integer> cellGatheringMemberPrayerIdList;
   }
+
+  @AllArgsConstructor
+  @Getter
+  public static class getCell {
+
+    @NotEmpty
+    private Long cellId;
+  }
 }

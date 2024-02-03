@@ -15,6 +15,7 @@ import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.response.error.CustomException;
 import feedmysheep.feedmysheepapi.global.utils.response.error.ErrorMessage;
+import feedmysheep.feedmysheepapi.models.CellEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
@@ -22,6 +23,7 @@ import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -256,5 +258,14 @@ public class CellService {
       this.cellGatheringMemberPrayerRepository.deletePrayerById(customUserDetails.getMemberId(),
           (long) cellGatheringMemberPrayerId);
     });
+  }
+
+  public CellResDto.getCellByCellId getCellByCellId(Long cellId) {
+
+    // 1. Repository에서 cell 검색
+    CellEntity cell = this.cellRepository.getCellByCellId(cellId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_FOUND));
+
+    return this.cellMapper.getCellByCellId(cell);
   }
 }

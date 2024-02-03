@@ -37,6 +37,7 @@ public class CellResDto {
   @Setter
   @RequiredArgsConstructor
   public static class getCellGathering {
+
     private Long cellGatheringId;
     private int numberOfGathering;
     private String gatheringTitle;
@@ -55,6 +56,7 @@ public class CellResDto {
   @Setter
   @RequiredArgsConstructor
   public static class getCellGatheringAndMemberListAndPrayerList {
+
     private Long cellGatheringId;
     private String gatheringTitle;
     private LocalDate gatheringDate;
@@ -73,5 +75,19 @@ public class CellResDto {
     private Long cellGatheringMemberId;
     private String prayerRequest;
     private boolean isAnswered;
+  }
+
+  @Getter
+  @Setter
+  @RequiredArgsConstructor
+  public static class getCellByCellId {
+
+    private Long cellId;
+    private String cellName;
+    private String cellLogoUrl;
+    private String cellPlace;
+    private String description;
+    private LocalDate startDate;
+    private LocalDate endDate;
   }
 }
