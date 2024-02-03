@@ -13,3 +13,4 @@ public interface OrganRepository extends JpaRepository<OrganEntity, Long> {
   @Query("SELECT o FROM OrganEntity o WHERE o.bodyId = :bodyId and o.isValid = true")
   List<OrganEntity> getOrganListByBodyId(@Param("bodyId") Long bodyId);
 }
+

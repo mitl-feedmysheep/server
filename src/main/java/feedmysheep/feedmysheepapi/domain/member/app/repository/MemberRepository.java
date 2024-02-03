@@ -4,6 +4,9 @@ import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,9 +26,15 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.phone = :phone")
   Optional<MemberEntity> getMemberByPhone(@Param("phone") String phone);
 
+  //TODO 테스트 코드
+  @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true AND m.memberId IN (:memberIdList) AND (:month IS NULL OR MONTH(m.birthday) = :month) ORDER BY DAY(m.birthday)")
+  Page<MemberEntity> getMemberListByMemberIdListAndMonth(
+      @Param("memberIdList") List<Long> memberIdList, @Param("month") Integer month, Pageable pageable);
+
   // TODO 테스트코드
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.memberId IN (:memberIdList)")
   List<MemberEntity> getMemberListByMemberIdList(List<Long> memberIdList);
+
 
   // TODO 테스트코드
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.memberName = :memberName and m.birthday = :birthday")

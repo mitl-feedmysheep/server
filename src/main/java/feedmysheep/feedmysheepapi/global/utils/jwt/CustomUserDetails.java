@@ -24,6 +24,7 @@ public class CustomUserDetails implements UserDetails {
     // 추가
     this.memberId = memberInfo.getMemberId();
     this.memberName = memberInfo.getMemberName();
+
   }
 
   public Long getMemerId() {
@@ -33,4 +34,6 @@ public class CustomUserDetails implements UserDetails {
   public String getMemberName() {
     return this.memberName;
   }
+
+
 }
