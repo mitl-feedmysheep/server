@@ -55,8 +55,8 @@ public class CellEntity extends CreatedUpdated {
   int cellMemberCount;
 
   @Builder
-  public CellEntity(Long organId, String cellName, String cellLogoUrl,
-      String description, LocalDate startDate, LocalDate endDate, boolean isValid) {
+  public CellEntity(Long organId, String cellName, String cellLogoUrl, String description,
+      LocalDate startDate, LocalDate endDate, boolean isValid) {
     this.organId = organId;
     this.cellName = cellName;
     this.cellLogoUrl = cellLogoUrl;

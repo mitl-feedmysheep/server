@@ -98,9 +98,9 @@ public class CellController {
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     this.cellService.deleteCellGatheringMemberPrayerList(body, customUserDetails);
   }
+
   @GetMapping("/{cellId}/info")
-  public CellResDto.getCell getCellByCellId(
-      @PathVariable Long cellId) {
+  public CellResDto.getCellByCellId getCellByCellId(@PathVariable Long cellId) {
     return this.cellService.getCellByCellId(cellId);
   }
 }

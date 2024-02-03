@@ -80,7 +80,7 @@ public class CellResDto {
   @Getter
   @Setter
   @RequiredArgsConstructor
-  public static class getCell {
+  public static class getCellByCellId {
 
     private Long cellId;
     private String cellName;

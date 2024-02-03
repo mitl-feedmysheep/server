@@ -4,7 +4,6 @@ import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationReposi
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellMapper;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
-import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCell;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto.updatePrayerById;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberPrayerRepository;
@@ -24,6 +23,7 @@ import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -260,16 +260,12 @@ public class CellService {
     });
   }
 
-  public getCell getCellByCellId(Long cellId) {
+  public CellResDto.getCellByCellId getCellByCellId(Long cellId) {
 
-// 1. Repository에서 cellId 검색
-    CellEntity getCell = cellRepository.getCellId(cellId);
-    if (getCell == null) {
-      throw new CustomException(ErrorMessage.NO_CELL_FOUND);
-    } else {
+    // 1. Repository에서 cell 검색
+    CellEntity cell = this.cellRepository.getCellByCellId(cellId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_FOUND));
 
-      return this.cellMapper.getCellByCellId(getCell);
-
-    }
+    return this.cellMapper.getCellByCellId(cell);
   }
 }
