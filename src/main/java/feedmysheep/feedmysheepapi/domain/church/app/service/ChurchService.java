@@ -95,52 +95,42 @@ public class ChurchService {
   }
 
   public ChurchResDto.getMemberEventListByMemberId getMemberEventsByBodyId(
-      getMemberEventsByBodyId query, Long bodyId, Pageable pageable) {
+      getMemberEventsByBodyId query, Long bodyId) {
+    // 1. Data-destructuring
+    Integer month = query.getMonth();
+    int page = query.getPage();
+    int limit = query.getLimit();
+    int offset = page - 1;
 
-    //1. 보여줄 페이지 설정(보여줄 페이지 위치(=page)와 한 페이지에 보여줄 페이지 개수(=pageLimit)
-    int page = pageable.getPageNumber() - 1; // page는 0부터 시작하기 때문에, -1을 해줘야 함
-    int pageLimit = 10; //한 페이지에 보여줄 페이지 개수
-
-    //2-1. body(부서)에 해당하는 멤버들 bodyId 통해 가져오기
-    List<BodyMemberMapEntity> memberListByBodyId = this.bodyMemberMapRepository.getMemberListByBodyId(
+    // 2. body(부서)에 해당하는 멤버들 bodyId 통해 가져오기
+    List<BodyMemberMapEntity> bodyMemberListByBodyId = this.bodyMemberMapRepository.getBodyMemberListByBodyId(
         bodyId);
 
-    //2-2. BodyMemberMap에 있는 모든 정보들 중에서, memberId에 대한 정보들만 가져와서 List형식으로 만듦.
-    List<Long> memberIdListByBodyId = memberListByBodyId.stream()
+    // 3. BodyMemberMap에 있는 모든 정보들 중에서, memberId에 대한 정보들만 가져와서 List형식으로 만듦.
+    List<Long> memberIdListByBodyId = bodyMemberListByBodyId.stream()
         .map(BodyMemberMapEntity::getMemberId).toList();
 
-    //3. 이벤트 월에 해당하는 날짜(예_2000-01-01)에서 월(month)값만 가져오기
-    int targetMonth = query.getBirthday().getMonthValue();
+    // 4. memberRepository에 설정된 값과 매칭하기
+    Pageable pageRequest = PageRequest.of(offset, limit);
+    Page<MemberEntity> eventMemberPage = this.memberRepository.getMemberListByMemberIdListAndMonth(
+        memberIdListByBodyId, month, pageRequest);
 
-    //4. memberRepository에 설정된 값과 매칭하기
-    Pageable pageRequest = PageRequest.of(page, pageLimit);
-    Page<MemberEntity> eventMemberPage = this.memberRepository.getMemberListByMemberIdListAndBirthday(
-        memberIdListByBodyId, targetMonth, pageRequest);
-
-    //5. 이벤트 멤버 조회 및 DTO 매핑
-    List<MemberEntity> eventMemberList = eventMemberPage.getContent();
-    List<ChurchServiceDto.memberEventList> setMemberList = this.churchMapper.setMemberEventList(
-        eventMemberList);
+    // 5. eventMemberPage에서 찾은 멤버들의 수 찾기 & 이벤트 멤버 조회 및 DTO 매핑
+    int totalMemberEventCount = Long.valueOf(eventMemberPage.getTotalElements()).intValue();
+    List<MemberEntity> memberList = eventMemberPage.getContent();
+    List<ChurchServiceDto.memberEventList> eventMemberList = this.churchMapper.setMemberEventList(
+        memberList);
 
     //6. 멤버 리스트의 이벤트 이름(setEventName)과 한 주의 일(setDayOfWeek) 설정
-    List<ChurchServiceDto.memberEventList> memberList = setMemberList.stream().peek(member -> {
-      member.setEventName("birthday");
+    int currentYear = LocalDate.now().getYear();
+    eventMemberList.forEach((member) -> {
+      // 태어난 연도의 요일 -> 현재 연도의 요일
+      member.setBirthday(member.getBirthday().withYear(currentYear));
       member.setDayOfWeek(
           member.getBirthday().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.KOREAN));
-      member.setMemberId(member.getMemberId());
-      member.setMemberName(member.getMemberName());
-      member.setSex(member.getSex());
-      member.setBirthday(member.getBirthday());
-      member.setDayOfWeek(member.getDayOfWeek());
-      member.setPhone(member.getPhone());
-      member.setProfileImageUrl(member.getProfileImageUrl());
-      member.setEventName(member.getEventName());
-    }).collect(Collectors.toList());
+    });
 
-    //7. eventMemberPage에서 찾은 멤버들의 수 찾기
-    int totalMemberEventCount = Long.valueOf(eventMemberPage.getTotalElements()).intValue();
-
-    return this.churchMapper.getMemberEventsByBodyId(totalMemberEventCount, memberList);
+    return this.churchMapper.getMemberEventsByBodyId(totalMemberEventCount, eventMemberList);
   }
 };
 

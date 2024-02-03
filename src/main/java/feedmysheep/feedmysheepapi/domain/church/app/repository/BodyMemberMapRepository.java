@@ -22,7 +22,7 @@ public interface BodyMemberMapRepository extends JpaRepository<BodyMemberMapEnti
 
   //TODO 테스트코드
   @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.isValid = true and bmm.bodyId = :bodyId")
-  List<BodyMemberMapEntity> getMemberListByBodyId(@Param("bodyId") Long bodyId);
+  List<BodyMemberMapEntity> getBodyMemberListByBodyId(@Param("bodyId") Long bodyId);
 
   //TODO 테스트코드
   @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.isValid = true and bmm.bodyId = :bodyId")

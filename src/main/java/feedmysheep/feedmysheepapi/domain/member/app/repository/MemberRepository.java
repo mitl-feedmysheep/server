@@ -27,10 +27,9 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
   Optional<MemberEntity> getMemberByPhone(@Param("phone") String phone);
 
   //TODO 테스트 코드
-  @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true AND m.memberId IN (:memberIdList) AND MONTH(m.birthday) = :targetMonth ORDER BY MONTH(m.birthday), DAY(m.birthday)")
-  Page<MemberEntity> getMemberListByMemberIdListAndBirthday(
-      @Param("memberIdList") List<Long> memberIdList, @Param("targetMonth") int targetMonth,
-      Pageable pageable);
+  @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true AND m.memberId IN (:memberIdList) AND (:month IS NULL OR MONTH(m.birthday) = :month) ORDER BY DAY(m.birthday)")
+  Page<MemberEntity> getMemberListByMemberIdListAndMonth(
+      @Param("memberIdList") List<Long> memberIdList, @Param("month") Integer month, Pageable pageable);
 
   // TODO 테스트코드
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.memberId IN (:memberIdList)")

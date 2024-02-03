@@ -59,13 +59,7 @@ public class ChurchController {
 
   @GetMapping("/church/body/{bodyId}/member-events")
   public ChurchResDto.getMemberEventListByMemberId getMemberEventsByBodyId(
-      @Valid
-//      @RequestBody
-      ChurchReqDto.getMemberEventsByBodyId query,
-      @PageableDefault(page = 1) Pageable pageable,
-      @PathVariable Long bodyId
-      ) {
-    pageable.getPageNumber();
-    return this.churchService.getMemberEventsByBodyId(query, bodyId, pageable);
+      @Valid ChurchReqDto.getMemberEventsByBodyId query, @PathVariable Long bodyId) {
+    return this.churchService.getMemberEventsByBodyId(query, bodyId);
   }
 }

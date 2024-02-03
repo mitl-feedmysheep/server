@@ -36,9 +36,13 @@ public class ChurchReqDto {
   @RequiredArgsConstructor
   @Getter
   @Setter
-    public static class getMemberEventsByBodyId {
-      @NotNull
-      private LocalDate birthday;
-    }
+  public static class getMemberEventsByBodyId {
 
+    @Nullable
+    private Integer month;
+    @NotNull
+    private int page;
+    @NotNull
+    private int limit;
+  }
 }
