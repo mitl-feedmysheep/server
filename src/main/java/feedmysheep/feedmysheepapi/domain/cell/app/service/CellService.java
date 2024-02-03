@@ -6,6 +6,7 @@ import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCell;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto;
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto.updatePrayerById;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberPrayerRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringRepository;
@@ -194,6 +195,71 @@ public class CellService {
     return cellGatheringDto;
   }
 
+  public List<CellResDto.cellGatheringMemberPrayer> getCellGatheringMemberPrayerListByCellGatheringMemberId(
+      Long cellGatheringMemberId) {
+    // 1. 셀모임 멤버별 기도제목 리스트 조회
+    List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.getCellGatheringMemberPrayerListByCellGatheringMemberId(
+        cellGatheringMemberId);
+
+    // 2. 리턴
+    return this.cellMapper.getCellGatheringMemberPrayerListByCellGatheringMemberId(
+        cellGatheringMemberPrayerList);
+  }
+
+  public void updateCellGatheringMemberByCellGatheringMemberId(Long cellGatheringMemberId,
+      CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
+      CustomUserDetails customUserDetails) {
+    // 1. Data-destructuring
+    Boolean worshipAttendance = body.getWorshipAttendance();
+    Boolean cellGatheringAttendance = body.getWorshipAttendance();
+    String story = body.getStory();
+    Long memberId = customUserDetails.getMemberId();
+    CellServiceDto.updateAttendancesAndStoryWhenExisting repoDto = new CellServiceDto.updateAttendancesAndStoryWhenExisting(
+        cellGatheringMemberId, worshipAttendance, cellGatheringAttendance, story, memberId);
+
+    // 2. 업데이트
+    this.cellGatheringMemberRepository.updateAttendancesAndStoryWhenExisting(repoDto);
+  }
+
+  public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(Long cellGatheringMemberId,
+      List<String> prayerRequestList, CustomUserDetails customUserDetails) {
+    // 1. Data-destructuring
+    Long memberId = customUserDetails.getMemberId();
+
+    // 2. 저장
+    List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = new ArrayList<>();
+    prayerRequestList.forEach(prayerRequest -> {
+      CellGatheringMemberPrayerEntity cellGatheringMemberPrayer = CellGatheringMemberPrayerEntity.builder()
+          .cellGatheringMemberId(cellGatheringMemberId).prayerRequest(prayerRequest).build();
+      cellGatheringMemberPrayer.setCreatedBy(memberId);
+      cellGatheringMemberPrayer.setUpdatedBy(memberId);
+      cellGatheringMemberPrayerList.add(cellGatheringMemberPrayer);
+    });
+    this.cellGatheringMemberPrayerRepository.saveAll(cellGatheringMemberPrayerList);
+  }
+
+  ;
+
+  public void updateCellGatheringMemberPrayerList(
+      List<CellReqDto.updateCellGatheringMemberPrayer> cellGatheringMemberPrayerList,
+      CustomUserDetails customUserDetails) {
+    cellGatheringMemberPrayerList.forEach(cellGatheringMemberPrayer -> {
+      CellServiceDto.updatePrayerById updateDto = new updatePrayerById(
+          cellGatheringMemberPrayer.getCellGatheringMemberPrayerId(),
+          cellGatheringMemberPrayer.getPrayerRequest(), customUserDetails.getMemberId());
+      this.cellGatheringMemberPrayerRepository.updatePrayerById(updateDto);
+    });
+  }
+
+  public void deleteCellGatheringMemberPrayerList(CellReqDto.deleteCellGatheringMemberPrayer body,
+      CustomUserDetails customUserDetails) {
+    List<Integer> cellGatheringMemberPrayerIdList = body.getCellGatheringMemberPrayerIdList();
+    cellGatheringMemberPrayerIdList.forEach(cellGatheringMemberPrayerId -> {
+      this.cellGatheringMemberPrayerRepository.deletePrayerById(customUserDetails.getMemberId(),
+          (long) cellGatheringMemberPrayerId);
+    });
+  }
+
   public getCell getCellByCellId(Long cellId) {
 
 // 1. Repository에서 cellId 검색
@@ -206,4 +272,4 @@ public class CellService {
 
     }
   }
-};
+}

@@ -70,6 +70,15 @@ public class CellResDto {
 
   @Getter
   @Setter
+  public static class cellGatheringMemberPrayer {
+
+    private Long cellGatheringMemberId;
+    private String prayerRequest;
+    private boolean isAnswered;
+  }
+
+  @Getter
+  @Setter
   @RequiredArgsConstructor
   public static class getCell {
 

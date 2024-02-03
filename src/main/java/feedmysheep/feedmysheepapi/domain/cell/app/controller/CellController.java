@@ -5,11 +5,18 @@ import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCellMemberByCellId;
 import feedmysheep.feedmysheepapi.domain.cell.app.service.CellService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
+import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -54,6 +61,43 @@ public class CellController {
     return this.cellService.getCellGatheringAndMemberListAndPrayerList(cellGatheringId);
   }
 
+  @PostMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
+  public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(
+      @PathVariable Long cellGatheringMemberId, @Valid @RequestBody List<String> prayerRequestList,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.insertCellGatheringMemberPrayerListByCellGatheringMemberId(
+        cellGatheringMemberId, prayerRequestList, customUserDetails);
+  }
+
+  @PutMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}")
+  public void updateCellGatheringMemberByCellGatheringMemberId(
+      @PathVariable Long cellGatheringMemberId,
+      @Valid @RequestBody CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.updateCellGatheringMemberByCellGatheringMemberId(cellGatheringMemberId, body,
+        customUserDetails);
+  }
+
+  @GetMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
+  public List<CellResDto.cellGatheringMemberPrayer> getCellGatheringMemberPrayerListByCellGatheringMemberId(
+      @PathVariable Long cellGatheringMemberId) {
+    return this.cellService.getCellGatheringMemberPrayerListByCellGatheringMemberId(
+        cellGatheringMemberId);
+  }
+
+  @PutMapping("/cell-gathering/cell-gathering-member/cell-gathering-member-prayer")
+  public void updateCellGatheringMemberPrayerList(
+      @Valid @RequestBody List<CellReqDto.updateCellGatheringMemberPrayer> body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.updateCellGatheringMemberPrayerList(body, customUserDetails);
+  }
+
+  @DeleteMapping("/cell-gathering/cell-gathering-member/cell-gathering-member-prayer")
+  public void deleteCellGatheringMemberPrayerList(
+      @Valid @RequestBody CellReqDto.deleteCellGatheringMemberPrayer body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.deleteCellGatheringMemberPrayerList(body, customUserDetails);
+  }
   @GetMapping("/{cellId}/info")
   public CellResDto.getCell getCellByCellId(
       @PathVariable Long cellId) {
