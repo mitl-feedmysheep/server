@@ -1,7 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.member.app.service;
 
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
-import feedmysheep.feedmysheepapi.domain.auth.app.service.AuthService;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellMemberMapRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellRepository;
 import feedmysheep.feedmysheepapi.domain.church.app.repository.BodyMemberMapRepository;
@@ -19,6 +18,7 @@ import feedmysheep.feedmysheepapi.domain.verification.app.repository.Verificatio
 import feedmysheep.feedmysheepapi.global.interceptor.auth.MemberAuth;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.SOLAPI;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.VERIFICATION;
+import feedmysheep.feedmysheepapi.global.utils.Util;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto.memberInfo;
@@ -466,5 +466,65 @@ public class MemberService {
     BodyMemberMapEntity bodyMemberMap = BodyMemberMapEntity.builder().bodyId(bodyId)
         .memberId(customUserDetails.getMemberId()).isValid(false).build();
     this.bodyMemberMapRepository.save(bodyMemberMap);
+  }
+
+  public MemberResDto.findMemberEmail findMemberEmail(MemberReqDto.findMemberEmail query) {
+    // 1. Data-destructuring
+    String memberName = query.getMemberName();
+    LocalDate birthday = query.getBirthday();
+
+    // 2. 이메일 여부 조회
+    MemberEntity member = this.memberRepository.getMemberByMemberNameAndBirthday(memberName,
+        birthday).orElseThrow(() -> new CustomException(ErrorMessage.CAN_NOT_FIND_EMAIL));
+
+    return new MemberResDto.findMemberEmail(member.getEmail());
+  }
+
+  @Transactional
+  public void requestTemporaryPassword(MemberReqDto.requestTemporaryPassword body) {
+    // 1. Data-destructuring
+    String email = body.getEmail();
+    String memberName = body.getMemberName();
+
+    // 2. 멤버 찾기
+    MemberEntity member = this.memberRepository.getMemberByEmailAndMemberName(email, memberName)
+        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_EMAIL_NOT_MATCHED));
+
+    // 3. 임시 비밀번호 생성 및 비밀번호 업데이트
+    String temporaryPassword = Util.getRandomString(10);
+    this.memberRepository.updatePasswordByMemberId(member.getMemberId(), temporaryPassword);
+
+    // TODO 4. 이메일로 임시 비밀번호 전송
+    throw new CustomException(ErrorMessage.MEMBER_NOT_FOUND);
+  }
+
+  public void changePassword(MemberReqDto.changePassword body) {
+    // 1. Data-destructuring
+    String email = body.getEmail();
+    String currentPassword = body.getCurrentPassword();
+    String newPassword = body.getNewPassword();
+    String newConfirmPassword = body.getNewConfirmPassword();
+
+    // 2. 새로운 비밀번호와 새로운 확인 비밀번호가 같은지 확인
+    if (!newPassword.equals(newConfirmPassword)) {
+      throw new CustomException(ErrorMessage.NEW_PASSWORDS_NOT_EQUAL);
+    }
+
+    // 2. 현재 비밀번호 확인
+    MemberEntity member = this.memberRepository.getMemberByEmail(email)
+        .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
+    if (!this.passwordEncoder.matches(currentPassword, member.getPassword())) {
+      throw new CustomException(ErrorMessage.WRONG_PASSWORD);
+    }
+
+    // 3. 새로운 비밀번호 셋팅
+    String newPasswordHashed = this.passwordEncoder.encode(newPassword);
+    this.memberRepository.updatePasswordByMemberId(member.getMemberId(), newPasswordHashed);
+  }
+
+  public void deactivate(CustomUserDetails customUserDetails) {
+    Long memberId = customUserDetails.getMemberId();
+
+    this.memberRepository.deactivate(memberId);
   }
 }

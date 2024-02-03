@@ -74,4 +74,10 @@ public class MemberResDto {
     private String cellPlace;
     private String description;
   }
+
+  @AllArgsConstructor
+  @Getter
+  public static class findMemberEmail {
+    private String email;
+  }
 }
