@@ -27,14 +27,6 @@ public class BodyEntity extends CreatedUpdated {
   @Column(name = "body_id", nullable = false, columnDefinition = "bigint COMMENT '바디 아이디'")
   private Long bodyId;
 
-  @ManyToMany
-  @JoinTable(
-      name = "body_member_map",
-      joinColumns = @JoinColumn(name = "body_id"),
-      inverseJoinColumns = @JoinColumn(name = "member_id")
-  )
-  private List<MemberEntity> members;
-
   @Column(name = "church_id", nullable = false)
   private Long churchId;
 

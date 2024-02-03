@@ -100,7 +100,7 @@ public class ChurchService {
     Integer month = query.getMonth();
     int page = query.getPage();
     int limit = query.getLimit();
-    int offset = page - 1;
+    int offset = page - 1; // Pageable에서 limit을 곱해서 설정해놓음
 
     // 2. body(부서)에 해당하는 멤버들 bodyId 통해 가져오기
     List<BodyMemberMapEntity> bodyMemberListByBodyId = this.bodyMemberMapRepository.getBodyMemberListByBodyId(

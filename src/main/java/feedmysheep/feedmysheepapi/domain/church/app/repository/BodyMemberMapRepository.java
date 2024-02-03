@@ -12,19 +12,15 @@ import org.springframework.stereotype.Repository;
 public interface BodyMemberMapRepository extends JpaRepository<BodyMemberMapEntity, Long> {
 
   @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.isValid = true and bmm.bodyId = :bodyId and bmm.memberId = :memberId")
-  Optional<BodyMemberMapEntity> geValidBodyMemberMapByBodyIdAndMemberId(@Param("bodyId") Long bodyId,
-      @Param("memberId") Long memberId);
+  Optional<BodyMemberMapEntity> geValidBodyMemberMapByBodyIdAndMemberId(
+      @Param("bodyId") Long bodyId, @Param("memberId") Long memberId);
 
   // TODO 테스트코드
   @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.isValid = false and bmm.bodyId = :bodyId and bmm.memberId = :memberId")
-  Optional<BodyMemberMapEntity> geInvalidBodyMemberMapByBodyIdAndMemberId(@Param("bodyId") Long bodyId,
-      @Param("memberId") Long memberId);
+  Optional<BodyMemberMapEntity> geInvalidBodyMemberMapByBodyIdAndMemberId(
+      @Param("bodyId") Long bodyId, @Param("memberId") Long memberId);
 
   //TODO 테스트코드
   @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.isValid = true and bmm.bodyId = :bodyId")
   List<BodyMemberMapEntity> getBodyMemberListByBodyId(@Param("bodyId") Long bodyId);
-
-  //TODO 테스트코드
-  @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.isValid = true and bmm.bodyId = :bodyId")
-  List<BodyMemberMapEntity> getEventMemberListByBodyId(@Param("bodyId") Long bodyId);
 }
