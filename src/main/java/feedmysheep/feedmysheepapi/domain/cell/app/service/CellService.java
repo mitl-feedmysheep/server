@@ -169,17 +169,15 @@ public class CellService {
     String gatheringPlace = body.getGatheringPlace();
     String gatheringTitle = body.getGatheringTitle();
 
-// 1-2. 소모임 생성) body에서 가져온 정보들을 가지고, cellGathering 생성하기 및 Mapper 매핑.
+// 1-2. 소모임 생성) body에서 가져온 정보들을 가지고, cellGathering 생성하기 및 매핑.
     CellGatheringEntity buildCellGathering = CellGatheringEntity.builder().cellId(cellId)
         .startedAt(startedAt).endedAt(endedAt).gatheringDate(gatheringDate)
         .gatheringPlace(gatheringPlace).gatheringTitle(gatheringTitle)
         .build();
     this.cellGatheringRepository.save(buildCellGathering);
 
-    //초기화
+//초기화
     Long saveCellGathering = buildCellGathering.getCellGatheringId();
-
-//    List<Long> cellGatheringIdLIst = buildCellGathering.getCellGatheringId()
 
 //  2. 소모임 멤버 구하기(cell-gathering-member)
 //  2-1. 소모임 id(cell-gathering-id) 구하기
@@ -201,7 +199,8 @@ public class CellService {
     List<Long> memberIdList = memberList.stream().map(MemberEntity::getMemberId).toList();
 
     // 2-3 cell-member-Map-Id-List
-    List<CellMemberMapEntity> cellMemberMapIdList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(cellIdList,
+    List<CellMemberMapEntity> cellMemberMapIdList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
+        cellIdList,
         customUserDetails.getMemberId());
 
     //(2) cellGahteringIdLIst
@@ -217,5 +216,6 @@ public class CellService {
     }
 
     return null;
-}};
+  }
+};
 
