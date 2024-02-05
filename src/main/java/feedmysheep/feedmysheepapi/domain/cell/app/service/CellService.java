@@ -4,7 +4,7 @@ import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationReposi
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellMapper;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
-import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.createCell;
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.createCellGathering;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberPrayerRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringRepository;
@@ -22,7 +22,10 @@ import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -155,46 +158,64 @@ public class CellService {
 
 
   //소모임 생성
-  public List<CellResDto.createCell> createCellGathering(Long cellId,
-      CellReqDto.createCellGathering body) {
+  //!!코드 작성 다 하고, 변수명 등 지켜야 할 조건들 확인하기(this붙이기 등)
+  public createCellGathering createCellGathering(Long cellId,
+      CellReqDto.createCellGathering body, CustomUserDetails customUserDetails) {
 
-    //@질문 : cellId를 cellRepository에서 가져올 때, 그냥 아래에 "단일 셀 조회"처럼 찾으면 안되는 거 아닌가?
-    // 왜냐면, 어떤 교회의 어떤 부서의 어떤 조직에 속하는 셀인지를 알아야 된다고 생각이 되는데?
-    //개발 순서
-    //** cell-gathering-member-id를 구하려면, cell-gathering-id랑 cell-member-map-id가 필요함
-    //1) cell-gathering-repository에서 cellId를 넣어서 cell-gathering(셀모임)값들을 가져오기
-    //1-1) 가져온 cell-gathering-id를 **에서 사용하기
-    //2) cell-id 와 member-id를 가지고 cell-member-map-id를 구하기 -> **에서 사용하기
-    //3) 1-1)와 2)에서 가져온 cell-gathering-id와 cell-member-map-id를 가지고 cell-gathering-member-id를 구하기
-    //!!모임 생성 시, 해당 셀의 모든 멤버가 전부 추가가 되어야만, 조회가 가능하도록 설정하기
-    //!!위와 같은 내용인데, 셀 모임 생성 시, 셀 모임 사람들도 같이 넣어준 후 값 가져오도록
-    // -> 셀에 추가된 멤버의 숫자가, 셀의 전체 멤버의 수와 같을 때만 참이 되도록.
-    //4)
+// 1-1. User가 보낸 정보 가져오기(body에 입력된 정보들 가져오기)
+    LocalDateTime startedAt = body.getStartedAt();
+    LocalDateTime endedAt = body.getEndedAt();
+    LocalDate gatheringDate = body.getGatheringDate();
+    String gatheringPlace = body.getGatheringPlace();
+    String gatheringTitle = body.getGatheringTitle();
 
-    //단일 셀 조회
-    List<CellEntity> cell = this.cellRepository.getCellByCellId(cellId);
-    System.out.println("cell = " + cell);
+// 1-2. 소모임 생성) body에서 가져온 정보들을 가지고, cellGathering 생성하기 및 Mapper 매핑.
+    CellGatheringEntity buildCellGathering = CellGatheringEntity.builder().cellId(cellId)
+        .startedAt(startedAt).endedAt(endedAt).gatheringDate(gatheringDate)
+        .gatheringPlace(gatheringPlace).gatheringTitle(gatheringTitle)
+        .build();
+    this.cellGatheringRepository.save(buildCellGathering);
 
-    // 2-1 전체 셀 리스트 조회
-    List<CellEntity> cellList = this.cellRepository.findAll();
-    System.out.println("cellList = " + cellList);
+    //초기화
+    Long saveCellGathering = buildCellGathering.getCellGatheringId();
 
-    // 2-2 전체 셀 리스트에서 cellId값만 List로 만들기
+//    List<Long> cellGatheringIdLIst = buildCellGathering.getCellGatheringId()
+
+//  2. 소모임 멤버 구하기(cell-gathering-member)
+//  2-1. 소모임 id(cell-gathering-id) 구하기
+    CellEntity cellGatheringId = this.cellGatheringRepository.getCellGatheringIdByCellId(
+        cellId);
+
+// 2-2. 셀 멤버 아이디(cell-member-map-id) 구하기
+    CellMemberMapEntity cellMemberMap = this.cellMemberMapRepository.getCellMemberMapByCellIdAndMemberId(
+        cellId, customUserDetails.getMemberId());
+    Long cellMemberMapId = cellMemberMap.getCellMemberMapId();
+
+    // 2-2-1 cellIdList
+    List<CellEntity> cellList = this.cellRepository.getCellByCellId(cellId).stream().toList();
     List<Long> cellIdList = cellList.stream().map(CellEntity::getCellId).toList();
 
-    //cell_member_Map 통하여 MemberIdList구하기
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
-        cellId);
-    System.out.println("cellMemberMapList = " + cellMemberMapList);
+    // 2-2-2. memberIdList
+    Optional<MemberEntity> memberList = this.memberRepository.getMemberByMemberId(
+        customUserDetails.getMemberId());
+    List<Long> memberIdList = memberList.stream().map(MemberEntity::getMemberId).toList();
 
-    Long memberIdList = cellMemberMapList.stream().map(CellMemberMapEntity::getMemberId);
-    System.out.println("memberIdList = " + memberIdList);
+    // 2-3 cell-member-Map-Id-List
+    List<CellMemberMapEntity> cellMemberMapIdList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(cellIdList,
+        customUserDetails.getMemberId());
 
-    List<CellMemberMapEntity> cellMemberMapId = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
-        cellIdList, memberIdList);
-    System.out.println("cellMemberMapId = " + cellMemberMapId);
+    //(2) cellGahteringIdLIst
+    List<CellGatheringEntity> cellGatheringIdList = this.cellGatheringRepository.getCellGatheringListByCellId(
+        cellId).stream().toList();
 
-    return this.cellMapper.getCellListByCellId(cell);
-  }
-};
+    //(2-1) cellGatheringMemberIdList
+    List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.getCellGatheringMemberListByCellGatheringIdListAndCellMemberMapIdList(
+        cellGatheringIdList, cellMemberMapIdList);
+
+    if (cellGatheringMemberList.size() == cellMemberMapIdList.size()) {
+      return this.cellMapper.getCellGatheringByCellId(buildCellGathering);
+    }
+
+    return null;
+}};
 

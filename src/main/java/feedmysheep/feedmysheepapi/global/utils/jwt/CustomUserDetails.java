@@ -29,7 +29,7 @@ public class CustomUserDetails implements UserDetails {
   public Long getMemerId() {
     return this.memberId;
   }
-  
+
   public String getMemberName() {
     return this.memberName;
   }

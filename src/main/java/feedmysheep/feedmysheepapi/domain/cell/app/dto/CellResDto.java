@@ -1,7 +1,9 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto.cellGatheringMember;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -53,9 +55,33 @@ public class CellResDto {
   @Getter
   @Setter
   @RequiredArgsConstructor
-  public static class createCell {
+  public static class createCellGathering {
 
     private Long cellGatheringId;
   }
 
-}
+    @Getter
+    @Setter
+    @RequiredArgsConstructor
+    public static class getCellGatheringAndMemberListAndPrayerList {
+
+      private Long cellGatheringId;
+      private String gatheringTitle;
+      private LocalDate gatheringDate;
+      private LocalDateTime startedAt;
+      private LocalDateTime endedAt;
+      private String gatheringPlace;
+      private String gatheringPhotoUrl;
+      private String description;
+      private List<cellGatheringMember> cellGatheringMemberList;
+    }
+
+    @Getter
+    @Setter
+    public static class cellGatheringMemberPrayer {
+
+      private Long cellGatheringMemberId;
+      private String prayerRequest;
+      private boolean isAnswered;
+    }
+  };

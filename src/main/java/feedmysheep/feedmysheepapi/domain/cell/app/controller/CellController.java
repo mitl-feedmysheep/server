@@ -2,11 +2,13 @@ package feedmysheep.feedmysheepapi.domain.cell.app.controller;
 
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.createCellGathering;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCellMemberByCellId;
 import feedmysheep.feedmysheepapi.domain.cell.app.service.CellService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,9 +54,9 @@ public class CellController {
   }
 
   @PostMapping("/{cellId}/cell-gathering")
-  public List<CellResDto.createCell> createCellGathering(@Valid @PathVariable Long cellId,
-      @RequestBody CellReqDto.createCellGathering body) {
-    return this.cellService.createCellGathering(cellId, body);
+  public CellResDto.createCellGathering createdCellGathering(@PathVariable Long cellId,
+      @Valid @RequestBody CellReqDto.createCellGathering body, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    return this.cellService.createCellGathering(cellId, body, customUserDetails);
 
   }
 }

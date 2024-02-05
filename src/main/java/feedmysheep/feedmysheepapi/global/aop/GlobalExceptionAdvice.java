@@ -45,6 +45,7 @@ public class GlobalExceptionAdvice {
 
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ErrorEntity handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    System.out.println(ex);
     return new ErrorEntity("fail", "RequestBody가 주어지지 않았어요. Swagger 문서를 확인해주세요.");
   }
 }

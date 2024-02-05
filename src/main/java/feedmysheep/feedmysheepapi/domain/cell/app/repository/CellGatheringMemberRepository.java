@@ -1,6 +1,9 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.repository;
 
+import feedmysheep.feedmysheepapi.models.CellEntity;
+import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
+import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +24,10 @@ public interface CellGatheringMemberRepository extends
   @Query("SELECT cgm FROM CellGatheringMemberEntity cgm WHERE cgm.cellGatheringId = :cellGatheringId")
   List<CellGatheringMemberEntity> getCellGatheringMemberListByCellGatheringId(
       @Param("cellGatheringId") Long cellGatheringId);
+
+  // TODO 테스트코드 작성
+  @Query("SELECT cgm FROM CellGatheringMemberEntity cgm WHERE cgm.cellGatheringId In (:cellGatheringIdList) and cgm.cellMemberId In (:cellMemberMapIdList)")
+  List<CellGatheringMemberEntity> getCellGatheringMemberListByCellGatheringIdListAndCellMemberMapIdList(
+      @Param("cellGatheringIdList") List<CellGatheringEntity> cellGatheringIdList,
+      @Param("cellMemberMapIdList") List<CellMemberMapEntity> cellMemberMapIdList);
 }
