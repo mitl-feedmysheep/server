@@ -54,7 +54,7 @@ public class CellController {
   }
 
   @PostMapping("/{cellId}/cell-gathering")
-  public CellResDto.createCellGathering createdCellGathering(@PathVariable Long cellId,
+  public CellResDto.createCellGathering createCellGathering(@PathVariable Long cellId,
       @Valid @RequestBody CellReqDto.createCellGathering body, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.cellService.createCellGathering(cellId, body, customUserDetails);
 
