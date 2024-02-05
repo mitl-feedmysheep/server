@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### 환경변수 ###
-!**/src/main/java/feedmysheep/feedmysheepapi/global/policy/CONSTANT.java
+!**/src/main/java/feedmysheep/feedmysheepapi/global/policy/
