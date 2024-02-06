@@ -2,6 +2,8 @@ package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,12 +30,14 @@ public class CellReqDto {
 
   @Getter
   public static class updateCellGatheringMemberPrayer {
+
     private Long cellGatheringMemberPrayerId;
     private String prayerRequest;
   }
 
   @Getter
   public static class deleteCellGatheringMemberPrayer {
+
     private List<Integer> cellGatheringMemberPrayerIdList;
   }
 
@@ -43,5 +47,21 @@ public class CellReqDto {
 
     @NotEmpty
     private Long cellId;
+  }
+
+  @AllArgsConstructor
+  @Getter
+  public static class updateCellGathering {
+
+    private String gatheringTitle;
+    private LocalDate gatheringDate;
+    private LocalDateTime startedAt;
+    private LocalDateTime endedAt;
+    private String gatheringPlace;
+    private String gatheringPhotoUrl;
+    private String description;
+    private String leaderComment;
+    private String pastorComment;
+
   }
 }

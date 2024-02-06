@@ -1,15 +1,11 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 
-import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
-import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
-import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Data

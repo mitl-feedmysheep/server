@@ -21,9 +21,13 @@ import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import jakarta.persistence.Column;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -268,4 +272,33 @@ public class CellService {
 
     return this.cellMapper.getCellByCellId(cell);
   }
-}
+
+  public void updateCellGathering(
+      CellReqDto.updateCellGathering body,
+      Long cellGatheringId) {
+
+    Optional<CellGatheringEntity> existingCell = this.cellGatheringRepository.getOptionalCellGatheringByCellGatheringId(
+        cellGatheringId);
+    existingCell.ifPresent(Cell -> {
+      if (Cell.isValid()) {
+
+// 1. Data-destructuring
+        String gatheringTitle = body.getGatheringTitle();
+        LocalDate gatheringDate = body.getGatheringDate();
+        LocalDateTime startedAt = body.getStartedAt();
+        LocalDateTime endedAt = body.getEndedAt();
+        String gatheringPlace = body.getGatheringPlace();
+        String gatheringPhotoUrl = body.getGatheringPhotoUrl();
+        String description = body.getDescription();
+        String leaderComment = body.getLeaderComment();
+        String pastorComment = body.getPastorComment();
+
+        CellReqDto.updateCellGathering updateDto = new CellReqDto.updateCellGathering(
+            gatheringTitle, gatheringDate, startedAt, endedAt, gatheringPlace, gatheringPhotoUrl,
+            description, leaderComment, pastorComment);
+
+        this.cellGatheringRepository.updateCellGatheringId(updateDto, cellGatheringId);
+      }
+    });
+  }
+};
