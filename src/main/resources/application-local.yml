@@ -13,13 +13,26 @@ spring:
     show-sql: true
     properties:
       hibernate:
-#        show_sql: true
+        #        show_sql: true
         format_sql: true
         highlight_sql: true
         use_sql_comments: true
     hibernate:
       #      db 변경 사항 적용 -> 향후 none
       ddl-auto: update
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: intotheheaven2024@gmail.com
+    password: rnrtelnrppnwbxrz
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging:
   level:

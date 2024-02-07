@@ -20,7 +20,6 @@ configurations {
 repositories {
     mavenCentral()
 }
-
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -43,9 +42,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     // SMS
     implementation "com.twilio.sdk:twilio:9.10.0"
-//    implementation 'org.springframework.boot:spring-boot-starter-web'
-//    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-//    implementation 'net.nurigo:sdk:4.2.7'
+    // EMAIL
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     // TEST
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -53,6 +51,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.1'
 
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()
