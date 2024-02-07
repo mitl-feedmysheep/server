@@ -103,4 +103,12 @@ public class CellController {
   public CellResDto.getCellByCellId getCellByCellId(@PathVariable Long cellId) {
     return this.cellService.getCellByCellId(cellId);
   }
+
+  @DeleteMapping("/cell-gathering/{cellGatheringId}")
+  public void deleteCellGatheringByCellGatheringId(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @PathVariable Long cellGatheringId) {
+    this.cellService.deleteCellGatheringByCellGatheringId(customUserDetails,cellGatheringId);
+  }
+
 }

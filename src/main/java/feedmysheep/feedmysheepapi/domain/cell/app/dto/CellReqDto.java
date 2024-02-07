@@ -28,20 +28,18 @@ public class CellReqDto {
 
   @Getter
   public static class updateCellGatheringMemberPrayer {
+
     private Long cellGatheringMemberPrayerId;
     private String prayerRequest;
   }
 
   @Getter
   public static class deleteCellGatheringMemberPrayer {
+
     private List<Integer> cellGatheringMemberPrayerIdList;
   }
-
-  @AllArgsConstructor
-  @Getter
-  public static class getCell {
-
-    @NotEmpty
-    private Long cellId;
-  }
+  
 }
+
+
+

@@ -23,7 +23,6 @@ import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -267,5 +266,11 @@ public class CellService {
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_FOUND));
 
     return this.cellMapper.getCellByCellId(cell);
+  }
+
+  public void deleteCellGatheringByCellGatheringId(
+      CustomUserDetails customUserDetails, Long cellGatheringId) {
+    this.cellGatheringRepository.deleteCellGatheringByCellGatheringId(
+        customUserDetails.getMemberId(), cellGatheringId);
   }
 }
