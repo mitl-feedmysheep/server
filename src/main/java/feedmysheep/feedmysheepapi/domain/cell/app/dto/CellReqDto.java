@@ -53,14 +53,23 @@ public class CellReqDto {
   @Getter
   public static class updateCellGathering {
 
+    @NotNull
     private String gatheringTitle;
+    @NotNull
     private LocalDate gatheringDate;
+    @NotNull
     private LocalDateTime startedAt;
+    @NotNull
     private LocalDateTime endedAt;
+    @NotNull
     private String gatheringPlace;
+    @NotNull
     private String gatheringPhotoUrl;
+    @NotNull
     private String description;
+    @NotNull
     private String leaderComment;
+    @NotNull
     private String pastorComment;
 
   }

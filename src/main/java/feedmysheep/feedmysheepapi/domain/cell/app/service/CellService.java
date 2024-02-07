@@ -274,24 +274,25 @@ public class CellService {
       CellReqDto.updateCellGathering body,
       Long cellGatheringId) {
 
-    this.cellGatheringRepository.getOptionalCellGatheringByCellGatheringId(cellGatheringId)
-        .ifPresent(existingCell -> {
-          // 1. Data-destructuring
-          String gatheringTitle = body.getGatheringTitle();
-          LocalDate gatheringDate = body.getGatheringDate();
-          LocalDateTime startedAt = body.getStartedAt();
-          LocalDateTime endedAt = body.getEndedAt();
-          String gatheringPlace = body.getGatheringPlace();
-          String gatheringPhotoUrl = body.getGatheringPhotoUrl();
-          String description = body.getDescription();
-          String leaderComment = body.getLeaderComment();
-          String pastorComment = body.getPastorComment();
+    CellGatheringEntity existingCell =
+        this.cellGatheringRepository.getOptionalCellGatheringByCellGatheringId(cellGatheringId)
+            .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_GATHERING_FOUND));
 
-          CellReqDto.updateCellGathering updateDto = new CellReqDto.updateCellGathering(
-              gatheringTitle, gatheringDate, startedAt, endedAt, gatheringPlace, gatheringPhotoUrl,
-              description, leaderComment, pastorComment);
+    // 1. Data-destructuring
+    String gatheringTitle = body.getGatheringTitle();
+    LocalDate gatheringDate = body.getGatheringDate();
+    LocalDateTime startedAt = body.getStartedAt();
+    LocalDateTime endedAt = body.getEndedAt();
+    String gatheringPlace = body.getGatheringPlace();
+    String gatheringPhotoUrl = body.getGatheringPhotoUrl();
+    String description = body.getDescription();
+    String leaderComment = body.getLeaderComment();
+    String pastorComment = body.getPastorComment();
 
-          this.cellGatheringRepository.updateCellGatheringId(updateDto, cellGatheringId);
-        });
+    CellReqDto.updateCellGathering updateDto = new CellReqDto.updateCellGathering(
+        gatheringTitle, gatheringDate, startedAt, endedAt, gatheringPlace, gatheringPhotoUrl,
+        description, leaderComment, pastorComment);
+
+    this.cellGatheringRepository.updateCellGatheringId(updateDto, cellGatheringId);
   }
 };
