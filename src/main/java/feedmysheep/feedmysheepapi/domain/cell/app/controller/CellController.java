@@ -107,7 +107,8 @@ public class CellController {
 
   @PutMapping("/cell-gathering/{cellGatheringId}")
   public void updateCellGathering(@Valid @RequestBody CellReqDto.updateCellGathering body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails,
       @PathVariable Long cellGatheringId) {
-    this.cellService.updateCellGathering(body, cellGatheringId);
+    this.cellService.updateCellGathering(body, customUserDetails, cellGatheringId);
   }
 }

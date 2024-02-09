@@ -160,7 +160,9 @@ public class CellService {
       Long cellGatheringId) {
     // 1. 셀모임 조회
     CellGatheringEntity cellGathering = this.cellGatheringRepository.getCellGatheringByCellGatheringId(
-        cellGatheringId);
+            cellGatheringId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_GATHERING_FOUND));
+
     CellResDto.getCellGatheringAndMemberListAndPrayerList cellGatheringDto = this.cellMapper.setCellGathering(
         cellGathering);
     // 2. 셀모임멤버 조회
@@ -271,28 +273,31 @@ public class CellService {
   }
 
   public void updateCellGathering(
-      CellReqDto.updateCellGathering body,
+      CellReqDto.updateCellGathering body, CustomUserDetails customUserDetails,
       Long cellGatheringId) {
 
     CellGatheringEntity existingCell =
-        this.cellGatheringRepository.getOptionalCellGatheringByCellGatheringId(cellGatheringId)
+        this.cellGatheringRepository.getCellGatheringByCellGatheringId(cellGatheringId)
             .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_GATHERING_FOUND));
 
     // 1. Data-destructuring
-    String gatheringTitle = body.getGatheringTitle();
-    LocalDate gatheringDate = body.getGatheringDate();
-    LocalDateTime startedAt = body.getStartedAt();
-    LocalDateTime endedAt = body.getEndedAt();
-    String gatheringPlace = body.getGatheringPlace();
-    String gatheringPhotoUrl = body.getGatheringPhotoUrl();
-    String description = body.getDescription();
-    String leaderComment = body.getLeaderComment();
-    String pastorComment = body.getPastorComment();
-
     CellReqDto.updateCellGathering updateDto = new CellReqDto.updateCellGathering(
-        gatheringTitle, gatheringDate, startedAt, endedAt, gatheringPlace, gatheringPhotoUrl,
-        description, leaderComment, pastorComment);
+        body.getGatheringTitle(), body.getGatheringDate(), body.getStartedAt(), body.getEndedAt(),
+        body.getGatheringPlace(),
+        body.getGatheringPhotoUrl(), body.getDescription(), body.getLeaderComment(),
+        body.getPastorComment());
 
-    this.cellGatheringRepository.updateCellGatheringId(updateDto, cellGatheringId);
+    updateDto.setGatheringTitle(body.getGatheringTitle());
+    updateDto.setGatheringDate(body.getGatheringDate());
+    updateDto.setStartedAt(body.getStartedAt());
+    updateDto.setEndedAt(body.getEndedAt());
+    updateDto.setGatheringPlace(body.getGatheringPlace());
+    updateDto.setGatheringPhotoUrl(body.getGatheringPhotoUrl());
+    updateDto.setDescription(body.getDescription());
+    updateDto.setLeaderComment(body.getLeaderComment());
+    updateDto.setPastorComment(body.getPastorComment());
+
+    this.cellGatheringRepository.updateCellGatheringByCellGatheringId(updateDto, customUserDetails.getMemberId(),
+        cellGatheringId);
   }
 };

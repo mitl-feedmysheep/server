@@ -8,6 +8,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 public class CellReqDto {
@@ -51,6 +52,7 @@ public class CellReqDto {
 
   @AllArgsConstructor
   @Getter
+  @Setter
   public static class updateCellGathering {
 
     @NotNull
