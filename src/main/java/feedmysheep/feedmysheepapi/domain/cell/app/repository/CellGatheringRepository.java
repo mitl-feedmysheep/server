@@ -27,5 +27,4 @@ public interface CellGatheringRepository extends JpaRepository<CellGatheringEnti
   @Query("UPDATE CellGatheringEntity cg SET cg.isValid = false,cg.updatedBy = :memberId WHERE cg.cellGatheringId = :cellGatheringId")
   void deleteCellGatheringByCellGatheringId(
        @Param("memberId") Long memberId, @Param("cellGatheringId") Long cellGatheringId);
-
 }

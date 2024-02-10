@@ -108,7 +108,13 @@ public class CellController {
   public void deleteCellGatheringByCellGatheringId(
       @AuthenticationPrincipal CustomUserDetails customUserDetails,
       @PathVariable Long cellGatheringId) {
-    this.cellService.deleteCellGatheringByCellGatheringId(customUserDetails,cellGatheringId);
+    this.cellService.deleteCellGatheringByCellGatheringId(customUserDetails, cellGatheringId);
   }
 
+  @PostMapping("/{cellId}/cell-gathering")
+  public CellResDto.createCellGatheringByCellId createCellGatheringByCellId(@PathVariable Long cellId,
+      @Valid @RequestBody CellReqDto.createCellGatheringByCellId body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    return this.cellService.createCellGatheringByCellId(cellId, body, customUserDetails);
+  }
 }

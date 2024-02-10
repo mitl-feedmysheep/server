@@ -2,10 +2,13 @@ package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 public class CellReqDto {
@@ -38,7 +41,22 @@ public class CellReqDto {
 
     private List<Integer> cellGatheringMemberPrayerIdList;
   }
-  
+
+  @Getter
+  @Setter
+  @RequiredArgsConstructor
+  public static class createCellGatheringByCellId {
+    @NotNull
+    private LocalDate gatheringDate;
+    @NotNull
+    private LocalDateTime startedAt;
+    @NotNull
+    private LocalDateTime endedAt;
+    @NotNull
+    private String gatheringPlace;
+    @Nullable
+    private String description;
+  }
 }
 
 

@@ -21,7 +21,6 @@ import feedmysheep.feedmysheepapi.global.thirdparty.email.EmailDto;
 import feedmysheep.feedmysheepapi.global.thirdparty.email.EmailSender;
 import feedmysheep.feedmysheepapi.global.thirdparty.sms.SmsDto;
 import feedmysheep.feedmysheepapi.global.thirdparty.sms.SmsSender;
-import feedmysheep.feedmysheepapi.global.thirdparty.sms.TwilioSender;
 import feedmysheep.feedmysheepapi.global.utils.Util;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;

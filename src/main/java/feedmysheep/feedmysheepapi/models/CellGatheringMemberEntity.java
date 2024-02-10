@@ -42,13 +42,11 @@ public class CellGatheringMemberEntity extends CreatedUpdated {
 
   @Builder
   public CellGatheringMemberEntity(Long cellGatheringId, Long cellMemberMapId,
-      boolean worshipAttendance, boolean cellGatheringAttendance, String story,
-      String leaderComment) {
+      boolean worshipAttendance, boolean cellGatheringAttendance, String story) {
     this.cellGatheringId = cellGatheringId;
     this.cellMemberMapId = cellMemberMapId;
     this.worshipAttendance = worshipAttendance;
     this.cellGatheringAttendance = cellGatheringAttendance;
     this.story = story;
-    this.leaderComment = leaderComment;
   }
 }
