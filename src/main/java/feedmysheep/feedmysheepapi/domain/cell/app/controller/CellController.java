@@ -112,9 +112,16 @@ public class CellController {
   }
 
   @PostMapping("/{cellId}/cell-gathering")
-  public CellResDto.createCellGatheringByCellId createCellGatheringByCellId(@PathVariable Long cellId,
-      @Valid @RequestBody CellReqDto.createCellGatheringByCellId body,
+  public CellResDto.createCellGatheringByCellId createCellGatheringByCellId(
+      @PathVariable Long cellId, @Valid @RequestBody CellReqDto.createCellGatheringByCellId body,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.cellService.createCellGatheringByCellId(cellId, body, customUserDetails);
+  }
+
+  @PutMapping("/cell-gathering/{cellGatheringId}")
+  public void updateCellGatheringByCellGatheringId(@PathVariable Long cellGatheringId,
+      @Valid @RequestBody CellReqDto.updateCellGatheringByCellGatheringId body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.updateCellGatheringByCellGatheringId(cellGatheringId, body, customUserDetails);
   }
 }

@@ -23,6 +23,7 @@ import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -159,7 +160,8 @@ public class CellService {
       Long cellGatheringId) {
     // 1. 셀모임 조회
     CellGatheringEntity cellGathering = this.cellGatheringRepository.getCellGatheringByCellGatheringId(
-        cellGatheringId);
+            cellGatheringId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_GATHERING_FOUND));
     CellResDto.getCellGatheringAndMemberListAndPrayerList cellGatheringDto = this.cellMapper.setCellGathering(
         cellGathering);
     // 2. 셀모임멤버 조회
@@ -309,5 +311,28 @@ public class CellService {
 
     // 3. 반환
     return new CellResDto.createCellGatheringByCellId(savedCellGathering.getCellGatheringId());
+  }
+
+  @Transactional
+  public void updateCellGatheringByCellGatheringId(Long cellGatheringId,
+      CellReqDto.updateCellGatheringByCellGatheringId body, CustomUserDetails customUserDetails) {
+    // 1. 셀모임 존재여부 확인
+    CellGatheringEntity cellGathering = this.cellGatheringRepository.getCellGatheringByCellGatheringId(
+            cellGatheringId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_GATHERING_FOUND));
+
+    // 2. 셀모임 업데이트
+    Optional.ofNullable(body.getGatheringDate()).ifPresent(gatheringDate -> {
+      cellGathering.setGatheringDate(gatheringDate);
+      cellGathering.setGatheringTitle(gatheringDate.toString() + " 모임");
+    });
+    Optional.ofNullable(body.getStartedAt()).ifPresent(cellGathering::setStartedAt);
+    Optional.ofNullable(body.getEndedAt()).ifPresent(cellGathering::setEndedAt);
+    Optional.ofNullable(body.getGatheringPlace()).ifPresent(cellGathering::setGatheringPlace);
+    Optional.ofNullable(body.getDescription()).ifPresent(cellGathering::setDescription);
+    cellGathering.setUpdatedBy(customUserDetails.getMemberId());
+
+    // 3. 셀모임 업데이트
+    this.cellGatheringRepository.save(cellGathering);
   }
 }
