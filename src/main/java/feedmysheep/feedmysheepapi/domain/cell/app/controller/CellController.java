@@ -7,6 +7,7 @@ import feedmysheep.feedmysheepapi.domain.cell.app.service.CellService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -116,5 +117,12 @@ public class CellController {
       @Valid @RequestBody CellReqDto.createCellGatheringByCellId body,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.cellService.createCellGatheringByCellId(cellId, body, customUserDetails);
+  }
+
+  @PutMapping("/cell-gathering/{cellGatheringId}")
+  public void updateCellGathering(@Valid @RequestBody CellReqDto.updateCellGathering body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @PathVariable Long cellGatheringId) {
+    this.cellService.updateCellGathering(body, customUserDetails, cellGatheringId);
   }
 }

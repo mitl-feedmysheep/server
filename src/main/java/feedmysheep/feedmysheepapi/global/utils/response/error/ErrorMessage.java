@@ -41,4 +41,6 @@ public class ErrorMessage {
 
   public static final String NO_CELL_GATHERING_FOUND = "해당 소모임 개별 모임이 존재하지 않아요.";
 
+  public static final String NO_CELL_GATHERING_FOUND = "해당 소모임이 존재하지 않아요.";
+
 }

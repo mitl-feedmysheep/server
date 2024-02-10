@@ -21,6 +21,8 @@ import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -159,7 +161,9 @@ public class CellService {
       Long cellGatheringId) {
     // 1. 셀모임 조회
     CellGatheringEntity cellGathering = this.cellGatheringRepository.getCellGatheringByCellGatheringId(
-        cellGatheringId);
+            cellGatheringId)
+        .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_GATHERING_FOUND));
+
     CellResDto.getCellGatheringAndMemberListAndPrayerList cellGatheringDto = this.cellMapper.setCellGathering(
         cellGathering);
     // 2. 셀모임멤버 조회
@@ -311,3 +315,33 @@ public class CellService {
     return new CellResDto.createCellGatheringByCellId(savedCellGathering.getCellGatheringId());
   }
 }
+
+  public void updateCellGathering(
+      CellReqDto.updateCellGathering body, CustomUserDetails customUserDetails,
+      Long cellGatheringId) {
+
+    CellGatheringEntity existingCell =
+        this.cellGatheringRepository.getCellGatheringByCellGatheringId(cellGatheringId)
+            .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_GATHERING_FOUND));
+
+    // 1. Data-destructuring
+    CellReqDto.updateCellGathering updateDto = new CellReqDto.updateCellGathering(
+        body.getGatheringTitle(), body.getGatheringDate(), body.getStartedAt(), body.getEndedAt(),
+        body.getGatheringPlace(),
+        body.getGatheringPhotoUrl(), body.getDescription(), body.getLeaderComment(),
+        body.getPastorComment());
+
+    updateDto.setGatheringTitle(body.getGatheringTitle());
+    updateDto.setGatheringDate(body.getGatheringDate());
+    updateDto.setStartedAt(body.getStartedAt());
+    updateDto.setEndedAt(body.getEndedAt());
+    updateDto.setGatheringPlace(body.getGatheringPlace());
+    updateDto.setGatheringPhotoUrl(body.getGatheringPhotoUrl());
+    updateDto.setDescription(body.getDescription());
+    updateDto.setLeaderComment(body.getLeaderComment());
+    updateDto.setPastorComment(body.getPastorComment());
+
+    this.cellGatheringRepository.updateCellGatheringByCellGatheringId(updateDto, customUserDetails.getMemberId(),
+        cellGatheringId);
+  }
+};
