@@ -90,4 +90,12 @@ public class CellResDto {
     private LocalDate startDate;
     private LocalDate endDate;
   }
+
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  public static class createCellGatheringByCellId {
+
+    private Long cellGatheringId;
+  }
 }
