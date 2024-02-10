@@ -2,6 +2,7 @@ package feedmysheep.feedmysheepapi.domain.cell.app.repository;
 
 import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +19,7 @@ public interface CellGatheringRepository extends JpaRepository<CellGatheringEnti
 
   // TODO 테스트코드 작성
   @Query("SELECT cg FROM CellGatheringEntity cg WHERE cg.cellGatheringId = :cellGatheringId and cg.isValid = true")
-  CellGatheringEntity getCellGatheringByCellGatheringId(
+  Optional<CellGatheringEntity> getCellGatheringByCellGatheringId(
       @Param("cellGatheringId") Long cellGatheringId);
 
   // TODO 테스트코드 작성

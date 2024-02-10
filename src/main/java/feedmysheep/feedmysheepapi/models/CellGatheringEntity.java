@@ -26,7 +26,7 @@ public class CellGatheringEntity extends CreatedUpdated {
 
   @Setter
   @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
-  private boolean isValid;
+  private boolean isValid = true;
 
   @Setter
   @Column(name = "gathering_title", nullable = false, length = 100)
