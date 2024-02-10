@@ -4,12 +4,11 @@ import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCellMemberByCellId;
 import feedmysheep.feedmysheepapi.domain.cell.app.service.CellService;
+import feedmysheep.feedmysheepapi.domain.cell.app.service.CellServiceImpl;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,15 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/app/cell")
 public class CellController {
 
   private final CellService cellService;
-
-  @Autowired
-  public CellController(CellService cellService) {
-    this.cellService = cellService;
-  }
 
   /**
    * POLICY: 해당 cellId를 가질 수 있다는 뜻은, 셀이 노출된 경우이기 때문에 일반적인 abusing은 없을 것이라고 판단 하지만, 권한없는 누군가가 API를
