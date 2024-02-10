@@ -17,7 +17,10 @@ import feedmysheep.feedmysheepapi.domain.verification.app.repository.Verificatio
 import feedmysheep.feedmysheepapi.domain.verification.app.repository.VerificationRepository;
 import feedmysheep.feedmysheepapi.global.interceptor.auth.MemberAuth;
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.VERIFICATION;
-import feedmysheep.feedmysheepapi.global.thirdparty.twilio.TwilioService;
+import feedmysheep.feedmysheepapi.global.thirdparty.email.EmailDto;
+import feedmysheep.feedmysheepapi.global.thirdparty.email.EmailSender;
+import feedmysheep.feedmysheepapi.global.thirdparty.sms.SmsDto;
+import feedmysheep.feedmysheepapi.global.thirdparty.sms.SmsSender;
 import feedmysheep.feedmysheepapi.global.utils.Util;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
@@ -56,7 +59,7 @@ public class MemberService {
   private final VerificationRepository verificationRepository;
   private final VerificationFailLogRepository verificationFailLogRepository;
   private final AuthorizationRepository authorizationRepository;
-  private final TwilioService twilioService;
+  private final SmsSender smsSender;
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenProvider jwtTokenProvider;
   private final ChurchMemberMapRepository churchMemberMapRepository;
@@ -68,6 +71,7 @@ public class MemberService {
   private final OrganMemberMapRepository organMemberMapRepository;
   private final CellRepository cellRepository;
   private final CellMemberMapRepository cellMemberMapRepository;
+  private final EmailSender emailSender;
 
   @Autowired
   public MemberService(MemberRepository memberRepository,
@@ -79,7 +83,8 @@ public class MemberService {
       ChurchRepository churchRepository, BodyRepository bodyRepository,
       BodyMemberMapRepository bodyMemberMapRepository, OrganRepository organRepository,
       OrganMemberMapRepository organMemberMapRepository, CellRepository cellRepository,
-      CellMemberMapRepository cellMemberMapRepository, TwilioService twilioService) {
+      CellMemberMapRepository cellMemberMapRepository, SmsSender smsSender,
+      EmailSender emailSender) {
     this.memberRepository = memberRepository;
     this.verificationRepository = verificationRepository;
     this.verificationFailLogRepository = verificationFailLogRepository;
@@ -95,7 +100,8 @@ public class MemberService {
     this.organMemberMapRepository = organMemberMapRepository;
     this.cellRepository = cellRepository;
     this.cellMemberMapRepository = cellMemberMapRepository;
-    this.twilioService = twilioService;
+    this.smsSender = smsSender;
+    this.emailSender = emailSender;
   }
 
   public void sendVerificationCode(MemberReqDto.sendVerificationCode query) {
@@ -132,7 +138,7 @@ public class MemberService {
     String phoneWithCountry = "+" + "82" + phone;
     String messageBody = "[피마쉽(FeedMySheep)] 인증번호는 " + verificationCode + "입니다.";
     try {
-      this.twilioService.sendSMS(phoneWithCountry, messageBody);
+      this.smsSender.send(SmsDto.builder().to(phoneWithCountry).body(messageBody).build());
     } catch (Exception e) {
       System.out.println(e);
       // TODO 슬랙 메시지
@@ -483,8 +489,10 @@ public class MemberService {
     String temporaryPassword = Util.getRandomString(10);
     this.memberRepository.updatePasswordByMemberId(member.getMemberId(), temporaryPassword);
 
-    // TODO 4. 이메일로 임시 비밀번호 전송
-    throw new CustomException(ErrorMessage.MEMBER_NOT_FOUND);
+    // 4. 이메일로 임시 비밀번호 전송
+    this.emailSender.send(
+        EmailDto.builder().to(member.getEmail()).subject("[Into-The-Heaven] 임시 비밀번호 발급")
+            .body("안녕하세요. 임시 비밀번호는 " + temporaryPassword + "입니다.").build());
   }
 
   public void changePassword(MemberReqDto.changePassword body) {

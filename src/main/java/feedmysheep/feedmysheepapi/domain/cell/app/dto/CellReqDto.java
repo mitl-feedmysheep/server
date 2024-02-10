@@ -42,12 +42,20 @@ public class CellReqDto {
     private List<Integer> cellGatheringMemberPrayerIdList;
   }
 
-  @AllArgsConstructor
   @Getter
-  public static class getCell {
-
-    @NotEmpty
-    private Long cellId;
+  @Setter
+  @RequiredArgsConstructor
+  public static class createCellGatheringByCellId {
+    @NotNull
+    private LocalDate gatheringDate;
+    @NotNull
+    private LocalDateTime startedAt;
+    @NotNull
+    private LocalDateTime endedAt;
+    @NotNull
+    private String gatheringPlace;
+    @Nullable
+    private String description;
   }
 
   @AllArgsConstructor
@@ -76,3 +84,6 @@ public class CellReqDto {
 
   }
 }
+
+
+

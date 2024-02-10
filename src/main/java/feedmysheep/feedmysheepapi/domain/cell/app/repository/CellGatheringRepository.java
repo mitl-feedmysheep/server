@@ -26,6 +26,13 @@ public interface CellGatheringRepository extends JpaRepository<CellGatheringEnti
   // TODO 테스트코드 작성
   @Transactional
   @Modifying
+  @Query("UPDATE CellGatheringEntity cg SET cg.isValid = false,cg.updatedBy = :memberId WHERE cg.cellGatheringId = :cellGatheringId")
+  void deleteCellGatheringByCellGatheringId(
+       @Param("memberId") Long memberId, @Param("cellGatheringId") Long cellGatheringId);
+
+  // TODO 테스트코드 작성
+  @Transactional
+  @Modifying
   @Query("UPDATE CellGatheringEntity cg SET cg.gatheringTitle = :#{#updateDto.gatheringTitle}, cg.gatheringDate = :#{#updateDto.gatheringDate}, cg.startedAt = :#{#updateDto.startedAt}, cg.endedAt = :#{#updateDto.endedAt}, cg.gatheringPlace = :#{#updateDto.gatheringPlace}, cg.gatheringPhotoUrl = :#{#updateDto.gatheringPhotoUrl}, cg.description = :#{#updateDto.description}, cg.leaderComment = :#{#updateDto.leaderComment}, cg.pastorComment = :#{#updateDto.pastorComment}, cg.updatedBy = :memberId WHERE cg.cellGatheringId = :cellGatheringId and cg.isValid = true")
   void updateCellGatheringByCellGatheringId(
       @Param("updateDto") CellReqDto.updateCellGathering updateDto, @Param("memberId") Long memberId, @Param("cellGatheringId") Long cellGatheringId);

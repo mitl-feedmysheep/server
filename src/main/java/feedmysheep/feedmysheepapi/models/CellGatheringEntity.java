@@ -57,17 +57,18 @@ public class CellGatheringEntity extends CreatedUpdated {
   private String description;
 
   @Setter
-  @Column(name = "leader_comment", length = 100)
+  @Column(name = "leader_comment", nullable = true, length = 100)
   private String leaderComment;
 
   @Setter
-  @Column(name = "pastor_comment", length = 100)
+  @Column(name = "pastor_comment", nullable = true, length = 100)
   private String pastorComment;
 
   @Builder
-  public CellGatheringEntity(Long cellId, boolean isValid, String gatheringTitle, LocalDate gatheringDate,
-      LocalDateTime startedAt, LocalDateTime endedAt, String gatheringPlace, String gatheringPhotoUrl,
-      String description, String leaderComment, String pastorComment) {
+  public CellGatheringEntity(Long cellId, boolean isValid, String gatheringTitle,
+      LocalDate gatheringDate, LocalDateTime startedAt, LocalDateTime endedAt,
+      String gatheringPlace, String gatheringPhotoUrl, String description, String leaderComment,
+      String pastorComment) {
     this.cellId = cellId;
     this.isValid = isValid;
     this.gatheringTitle = gatheringTitle;

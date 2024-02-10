@@ -1,4 +1,4 @@
-package feedmysheep.feedmysheepapi.global.thirdparty.twilio;
+package feedmysheep.feedmysheepapi.global.config;
 
 import feedmysheep.feedmysheepapi.global.policy.CONSTANT.TWILIO;
 import org.springframework.context.annotation.Bean;

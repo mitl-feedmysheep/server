@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CellService {
@@ -271,6 +272,49 @@ public class CellService {
 
     return this.cellMapper.getCellByCellId(cell);
   }
+
+  public void deleteCellGatheringByCellGatheringId(CustomUserDetails customUserDetails,
+      Long cellGatheringId) {
+    this.cellGatheringRepository.deleteCellGatheringByCellGatheringId(
+        customUserDetails.getMemberId(), cellGatheringId);
+  }
+
+  @Transactional
+  public CellResDto.createCellGatheringByCellId createCellGatheringByCellId(Long cellId,
+      CellReqDto.createCellGatheringByCellId body, CustomUserDetails customUserDetails) {
+    // 1. 셀모임 생성
+    CellGatheringEntity cellGathering = CellGatheringEntity.builder().cellId(cellId)
+        .gatheringTitle(body.getGatheringDate().toString() + " 모임")
+        .gatheringDate(body.getGatheringDate()).startedAt(body.getStartedAt())
+        .endedAt(body.getEndedAt()).gatheringPlace(body.getGatheringPlace())
+        .description(body.getDescription()).build();
+    cellGathering.setCreatedBy(customUserDetails.getMemberId());
+    cellGathering.setUpdatedBy(customUserDetails.getMemberId());
+    CellGatheringEntity savedCellGathering = this.cellGatheringRepository.save(cellGathering);
+
+    // 2. 셀모임 멤버 생성
+    // 2-1. 셀멤버맵 조회
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+        cellId);
+    List<Long> cellMemberMapIdList = cellMemberMapList.stream()
+        .map(CellMemberMapEntity::getCellMemberMapId).toList();
+    // 2-2. 셀멤버맵으로 셀모임멤버 생성
+    List<CellGatheringMemberEntity> cellGatheringMemberList = new ArrayList<>();
+    cellMemberMapIdList.forEach(cellMemberMapId -> {
+      CellGatheringMemberEntity cellGatheringMember = CellGatheringMemberEntity.builder()
+          .cellGatheringId(savedCellGathering.getCellGatheringId()).cellMemberMapId(cellMemberMapId)
+          .build();
+      cellGatheringMember.setCreatedBy(customUserDetails.getMemberId());
+      cellGatheringMember.setUpdatedBy(customUserDetails.getMemberId());
+      cellGatheringMemberList.add(cellGatheringMember);
+    });
+    // 2-3. 셀모임멤버 저장
+    this.cellGatheringMemberRepository.saveAll(cellGatheringMemberList);
+
+    // 3. 반환
+    return new CellResDto.createCellGatheringByCellId(savedCellGathering.getCellGatheringId());
+  }
+}
 
   public void updateCellGathering(
       CellReqDto.updateCellGathering body, CustomUserDetails customUserDetails,
