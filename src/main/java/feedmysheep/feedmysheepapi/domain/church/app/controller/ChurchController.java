@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,17 +27,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/app")
 public class ChurchController {
 
   private final ChurchService churchService;
-
-  @Autowired
-  public ChurchController(ChurchService churchService) {
-    this.churchService = churchService;
-  }
-
-  ;
 
   @GetMapping("/churches")
   public List<ChurchResDto.getChurch> getChurchList(

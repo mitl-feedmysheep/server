@@ -7,6 +7,7 @@ import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.query.QueryParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -21,15 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/app/member")
 public class MemberController {
 
   private final MemberService memberService;
-
-  @Autowired
-  public MemberController(MemberService memberService) {
-    this.memberService = memberService;
-  }
 
   @GetMapping("/phone/send-verification-code")
   public void sendVerificationCode(@Valid MemberReqDto.sendVerificationCode query) {
