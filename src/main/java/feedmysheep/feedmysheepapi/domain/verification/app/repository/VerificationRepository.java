@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface VerificationRepository extends JpaRepository<VerificationEntity, Long> {
+public interface VerificationRepository extends JpaRepository<VerificationEntity, UUID> {
 
   @Query("SELECT COUNT(v) FROM VerificationEntity v WHERE v.phone = :phone AND v.validDate = :validDate")
   int countByPhoneAndValidDate(@Param("phone") String phone,

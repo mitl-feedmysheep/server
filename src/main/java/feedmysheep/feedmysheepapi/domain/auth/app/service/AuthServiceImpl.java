@@ -5,7 +5,6 @@ import feedmysheep.feedmysheepapi.domain.auth.app.dto.AuthResDto;
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationScreenRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
-import feedmysheep.feedmysheepapi.global.interceptor.auth.MemberAuth;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtDto;
 import feedmysheep.feedmysheepapi.global.utils.jwt.JwtTokenProvider;
@@ -15,7 +14,6 @@ import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.AuthorizationScreenEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,22 +45,19 @@ public class AuthServiceImpl implements AuthService {
     // 1. 멤버의 아이디로 멤버의 권한을 조회합니다.
     MemberEntity member = this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
-    AuthorizationEntity memberAuthorization = this.authorizationRepository.getByAuthorizationId(
+    AuthorizationEntity memberAuthorization = this.authorizationRepository.findByAuthorizationId(
             member.getAuthorizationId())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
     // 2. 해당 스크린의 권한을 조회합니다.
-    AuthorizationScreenEntity authorizationScreen = this.authorizationScreenRepository.getAuthorizationScreenByScreenKey(
+    AuthorizationScreenEntity authorizationScreen = this.authorizationScreenRepository.findByScreenKey(
         screenKey).orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION_SCREEN));
-    AuthorizationEntity screenAuthorization = this.authorizationRepository.getByAuthorizationId(
+    AuthorizationEntity screenAuthorization = this.authorizationRepository.findByAuthorizationId(
             authorizationScreen.getAuthorizationId())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
     // 3. 멤버의 권한레벨과 스크린의 권한을 비교합니다.
     boolean isAccessible = screenAuthorization.getLevel() <= memberAuthorization.getLevel();
-
-    // FIXME: TEST
-    this.authorizationScreenRepository.save(AuthorizationScreenEntity.builder().authorizationId(1L).screenKey("test").build());
 
     return new AuthResDto.getMemberAuthByScreenKey(isAccessible);
   }

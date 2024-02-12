@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
+public interface MemberRepository extends JpaRepository<MemberEntity, UUID> {
 
   @Query("SELECT m FROM MemberEntity m WHERE m.isActive = true and m.memberId = :memberId")
   Optional<MemberEntity> getMemberByMemberId(@Param("memberId") Long memberId);

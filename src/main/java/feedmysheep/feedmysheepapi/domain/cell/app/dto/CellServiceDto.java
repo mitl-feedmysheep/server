@@ -6,6 +6,7 @@ import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -36,7 +37,7 @@ public class CellServiceDto {
   @Setter
   public static class cellGatheringMemberPrayer {
 
-    private Long cellGatheringMemberId;
+    private UUID cellGatheringMemberId;
     private String prayerRequest;
     private boolean isAnswered;
   }
@@ -45,18 +46,18 @@ public class CellServiceDto {
   @AllArgsConstructor
   public static class updateAttendancesAndStoryWhenExisting {
 
-    private Long cellGatheringMemberId;
+    private UUID cellGatheringMemberId;
     private Boolean worshipAttendance;
     private Boolean cellGatheringAttendance;
     private String story;
-    private Long memberId;
+    private UUID memberId;
   }
 
   @Getter
   @AllArgsConstructor
   public static class updatePrayerById {
-    private Long cellGatheringMemberPrayerId;
+    private UUID cellGatheringMemberPrayerId;
     private String prayerRequest;
-    private Long memberId;
+    private UUID memberId;
   }
 }

@@ -4,6 +4,7 @@ import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface CellGatheringMemberRepository extends
-    JpaRepository<CellGatheringMemberEntity, Long> {
+    JpaRepository<CellGatheringMemberEntity, UUID> {
 
   // TODO 테스트코드 작성
   @Query("SELECT cgm FROM CellGatheringMemberEntity cgm WHERE cgm.cellGatheringId In (:cellGatheringIdList)")

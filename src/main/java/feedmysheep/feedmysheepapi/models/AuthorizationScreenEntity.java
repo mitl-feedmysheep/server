@@ -1,40 +1,51 @@
 package feedmysheep.feedmysheepapi.models;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import java.time.Instant;
+import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
+import org.springframework.data.domain.Persistable;
+import org.springframework.lang.Nullable;
+
 
 @Entity
 @Table(name = "authorization_screen")
 @Getter
 @Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AuthorizationScreenEntity extends CreatedUpdated {
-  
-  @Id
-  @Column(columnDefinition = "BINARY(16)", name = "authorization_screen_id")
-  private UUID authorizationScreenId = UuidCreator.getTimeOrdered();
+public class AuthorizationScreenEntity extends CreatedUpdated implements Persistable<UUID> {
 
-  @Column(name = "authorization_id", nullable = false)
-  private Long authorizationId;
+	@Id
+	@Column(columnDefinition = "BINARY(16)", name = "authorization_screen_id")
+	private UUID authorizationScreenId = UuidCreator.getTimeOrdered();
 
-  @Column(name = "screen_key", nullable = false, length = 50)
-  private String screenKey;
+	@Column(name = "authorization_id", nullable = false, columnDefinition = "BINARY(16)")
+	private UUID authorizationId;
 
-  @Builder
-  public AuthorizationScreenEntity(Long authorizationId, String screenKey) {
-    this.authorizationId = authorizationId;
-    this.screenKey = screenKey;
-  }
+	@Column(name = "screen_key", nullable = false, length = 50)
+	private String screenKey;
+
+	@Builder
+	public AuthorizationScreenEntity(UUID authorizationId, String screenKey) {
+		this.authorizationId = authorizationId;
+		this.screenKey = screenKey;
+	}
+
+	@Nullable
+	@Override
+	public UUID getId() {
+		return this.authorizationScreenId;
+	}
+
+	@Override
+	public boolean isNew() {
+		return this.getCreatedAt() == null;
+	}
 }

@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OrganMemberMapRepository extends JpaRepository<OrganMemberMapEntity, Long> {
+public interface OrganMemberMapRepository extends JpaRepository<OrganMemberMapEntity, UUID> {
 
   @Query("SELECT omm FROM OrganMemberMapEntity omm WHERE omm.isValid = true and omm.memberId = :memberId and omm.organId IN (:organIdList)")
   List<OrganMemberMapEntity> getOrganMemberMapListByOrganIdListAndMemberId(

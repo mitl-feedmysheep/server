@@ -1,34 +1,32 @@
 package feedmysheep.feedmysheepapi.models;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import java.util.List;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.Where;
+import org.springframework.data.domain.Persistable;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "body")
 @Getter
+@Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BodyEntity extends CreatedUpdated {
+public class BodyEntity extends CreatedUpdated implements Persistable<UUID> {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "body_id", nullable = false, columnDefinition = "bigint COMMENT '바디 아이디'")
-  private Long bodyId;
+  @Column(columnDefinition = "BINARY(16)", name = "body_id")
+  private UUID bodyId = UuidCreator.getTimeOrdered();
 
-  @Column(name = "church_id", nullable = false)
-  private Long churchId;
+  @Column(name = "church_id", nullable = false, columnDefinition = "BINARY(16)")
+  private UUID churchId;
 
   @Column(name = "body_name", nullable = false, length = 50, columnDefinition = "varchar(50) COMMENT '바디 이름 (ex. 새청)'")
   private String bodyName;
@@ -45,10 +43,6 @@ public class BodyEntity extends CreatedUpdated {
   @Column(name = "body_description", length = 100, columnDefinition = "varchar(100) COMMENT '설명'")
   private String bodyDescription;
 
-  @Setter
-  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
-  private boolean isValid = false;
-
   @Column(name = "youtube_url", length = 100, columnDefinition = "varchar(100) COMMENT '유투브 주소'")
   private String youtubeUrl;
 
@@ -60,9 +54,9 @@ public class BodyEntity extends CreatedUpdated {
 
 
   @Builder
-  public BodyEntity(Long churchId, String bodyName, String bodyLogoUrl, String bodyLocation,
+  public BodyEntity(UUID churchId, String bodyName, String bodyLogoUrl, String bodyLocation,
       String bodyNumber, String bodyDescription, String youtubeUrl, String instagramUrl,
-      String facebookUrl, boolean isValid) {
+      String facebookUrl) {
     this.churchId = churchId;
     this.bodyName = bodyName;
     this.bodyLogoUrl = bodyLogoUrl;
@@ -72,6 +66,16 @@ public class BodyEntity extends CreatedUpdated {
     this.youtubeUrl = youtubeUrl;
     this.instagramUrl = instagramUrl;
     this.facebookUrl = facebookUrl;
-    this.isValid = isValid;
+  }
+
+  @Nullable
+  @Override
+  public UUID getId() {
+    return this.bodyId;
+  }
+
+  @Override
+  public boolean isNew() {
+    return this.getCreatedAt() == null;
   }
 }

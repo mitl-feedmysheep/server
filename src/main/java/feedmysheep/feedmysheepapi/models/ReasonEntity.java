@@ -1,31 +1,50 @@
 package feedmysheep.feedmysheepapi.models;
 
-import jakarta.persistence.*;
+import com.github.f4b6a3.uuid.UuidCreator;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.Where;
+import org.springframework.data.domain.Persistable;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "reason")
 @Getter
+@Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ReasonEntity extends CreatedUpdated {
+public class ReasonEntity extends CreatedUpdated implements Persistable<UUID> {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "reason_id")
-  private Long reasonId;
+  @Column(columnDefinition = "BINARY(16)", name = "reason_id")
+  private UUID reasonId = UuidCreator.getTimeOrdered();
 
-  @Column(name = "main_screen", length = 50, nullable = false)
-  private String mainScreen;
-
-  @Column(name = "sub_screen", length = 50)
-  private String subScreen;
-
-  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효여부'")
-  private boolean isValid = true;
+  @Column(name = "screen_key", nullable = false, length = 50)
+  private String screenKey;
 
   @Column(name = "reason", length = 50, nullable = false)
   private String reason;
+
+  @Builder
+  public ReasonEntity(String screenKey, String reason) {
+    this.screenKey = screenKey;
+    this.reason = reason;
+  }
+
+  @Nullable
+  @Override
+  public UUID getId() {
+    return this.reasonId;
+  }
+
+  @Override
+  public boolean isNew() {
+    return this.getCreatedAt() == null;
+  }
 }

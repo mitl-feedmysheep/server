@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface WordRepository extends JpaRepository<WordEntity, Long> {
+public interface WordRepository extends JpaRepository<WordEntity, UUID> {
 
   @Query("SELECT w FROM WordEntity w WHERE w.isValid = true and w.screenKey = :screenKey")
   List<WordEntity> getWordListByScreenKey(@Param("screenKey") String screenKey);

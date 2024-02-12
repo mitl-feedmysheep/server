@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VerificationFailLogRepository extends
-    JpaRepository<VerificationFailLogEntity, Long> {
+    JpaRepository<VerificationFailLogEntity, UUID> {
 
   @Query("SELECT COUNT(vfl) FROM VerificationFailLogEntity vfl WHERE vfl.phone = :phone AND vfl.isFailed = true AND vfl.createdAt BETWEEN :startOfToday AND :endOfToday")
   int countByPhoneAndCreatedAtBetween(@Param("phone") String phone,

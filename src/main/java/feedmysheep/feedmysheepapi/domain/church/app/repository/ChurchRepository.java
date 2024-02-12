@@ -3,13 +3,14 @@ package feedmysheep.feedmysheepapi.domain.church.app.repository;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ChurchRepository extends JpaRepository<ChurchEntity, Long> {
+public interface ChurchRepository extends JpaRepository<ChurchEntity, UUID> {
 
   @Query("SELECT c FROM ChurchEntity c WHERE c.isValid = true")
   List<ChurchEntity> getChurchList();

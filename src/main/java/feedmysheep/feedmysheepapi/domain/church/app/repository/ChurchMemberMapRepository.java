@@ -3,13 +3,14 @@ package feedmysheep.feedmysheepapi.domain.church.app.repository;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ChurchMemberMapRepository extends JpaRepository<ChurchMemberMapEntity, Long> {
+public interface ChurchMemberMapRepository extends JpaRepository<ChurchMemberMapEntity, UUID> {
 
   @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.isValid = true and cmm.memberId = :memberId")
   List<ChurchMemberMapEntity> getChurchMemberMapListByMemberId(@Param("memberId") Long memberId);

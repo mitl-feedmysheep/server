@@ -84,7 +84,7 @@ public class CellServiceImpl implements CellService {
         .map(CellGatheringMemberEntity::getCellGatheringMemberId).toList();
 
     // 3. 셀모임멤버로 멤버당 셀모임멤버기도제목 조회
-    List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.getCellGatheringMemberPrayerListByCellGatheringMemberIdList(
+    List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.findAllByCellGatheringMemberIdList(
         cellGatheringMemberIdList);
 
     // 4. 셀모임개수와 기도제목개수
@@ -155,7 +155,7 @@ public class CellServiceImpl implements CellService {
       cellGatheringMemberDto.setBirthday(member.getBirthday());
       cellGatheringMemberDto.setProfileImageUrl(member.getProfileImageUrl());
       // 3-3. 셀모임멤버당 기도제목
-      List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.getCellGatheringMemberPrayerListByCellGatheringMemberId(
+      List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.findAllByCellGatheringMemberId(
           cellGatheringMember.getCellGatheringMemberId());
       List<CellServiceDto.cellGatheringMemberPrayer> cellGatheringMemberPrayerListDto = this.cellMapper.setCellGatheringMemberPrayerList(
           cellGatheringMemberPrayerList);
@@ -172,7 +172,7 @@ public class CellServiceImpl implements CellService {
   public List<CellResDto.cellGatheringMemberPrayer> getCellGatheringMemberPrayerListByCellGatheringMemberId(
       Long cellGatheringMemberId) {
     // 1. 셀모임 멤버별 기도제목 리스트 조회
-    List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.getCellGatheringMemberPrayerListByCellGatheringMemberId(
+    List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.findAllByCellGatheringMemberId(
         cellGatheringMemberId);
 
     // 2. 리턴
@@ -224,7 +224,7 @@ public class CellServiceImpl implements CellService {
       CellServiceDto.updatePrayerById updateDto = new updatePrayerById(
           cellGatheringMemberPrayer.getCellGatheringMemberPrayerId(),
           cellGatheringMemberPrayer.getPrayerRequest(), customUserDetails.getMemberId());
-      this.cellGatheringMemberPrayerRepository.updatePrayerById(updateDto);
+      this.cellGatheringMemberPrayerRepository.updateByCellGatheringMemberPrayerId(updateDto);
     });
   }
 
@@ -233,7 +233,7 @@ public class CellServiceImpl implements CellService {
       CustomUserDetails customUserDetails) {
     List<Integer> cellGatheringMemberPrayerIdList = body.getCellGatheringMemberPrayerIdList();
     cellGatheringMemberPrayerIdList.forEach(cellGatheringMemberPrayerId -> {
-      this.cellGatheringMemberPrayerRepository.deletePrayerById(customUserDetails.getMemberId(),
+      this.cellGatheringMemberPrayerRepository.deleteByCellGatheringMemberPrayerId(customUserDetails.getMemberId(),
           (long) cellGatheringMemberPrayerId);
     });
   }
