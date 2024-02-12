@@ -8,11 +8,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AuthorizationRepository extends JpaRepository<AuthorizationEntity, Long> {
+public interface AuthorizationRepository extends JpaRepository<AuthorizationEntity, Long>,
+    AuthorizationRepositoryCustom {
 
-  @Query("SELECT a FROM AuthorizationEntity a WHERE a.authorizationId = :authorizationId")
-  Optional<AuthorizationEntity> getAuthorizationByAuthorizationId(@Param("authorizationId") Long authorizationId);
+  Optional<AuthorizationEntity> findByAuthorizationId(Long authorizationId);
 
-  @Query("SELECT a FROM AuthorizationEntity a WHERE a.level = :level")
-  Optional<AuthorizationEntity> getAuthorizationByLevel(@Param("level") int level);
+  Optional<AuthorizationEntity> findByLevel(int level);
 }

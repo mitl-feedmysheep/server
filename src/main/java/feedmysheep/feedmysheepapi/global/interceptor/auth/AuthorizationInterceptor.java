@@ -52,7 +52,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     Long memberId = memberInfo.getMemberId();
     MemberEntity member = this.memberRepository.getMemberByMemberId(memberId)
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
-    AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
+    AuthorizationEntity authorization = this.authorizationRepository.getByAuthorizationId(
             member.getAuthorizationId())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_AUTHORIZATION));
 

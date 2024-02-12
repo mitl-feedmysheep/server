@@ -23,4 +23,12 @@ public class CreatedUpdated {
   @Setter
   @Column(name = "updated_by", nullable = false, columnDefinition = "bigint DEFAULT 0 COMMENT '수정자'")
   private Long updatedBy = 0L;
+
+  @Setter
+  @Column(name = "deleted_at", nullable = true, columnDefinition = "datetime COMMENT '삭제일시'")
+  private LocalDateTime deletedAt;
+
+  @Setter
+  @Column(name = "deleted_by", nullable = true, columnDefinition = "bigint COMMENT '삭제자'")
+  private Long deletedBy;
 }

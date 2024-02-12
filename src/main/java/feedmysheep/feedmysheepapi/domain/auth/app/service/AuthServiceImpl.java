@@ -47,19 +47,22 @@ public class AuthServiceImpl implements AuthService {
     // 1. 멤버의 아이디로 멤버의 권한을 조회합니다.
     MemberEntity member = this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
-    AuthorizationEntity memberAuthorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
+    AuthorizationEntity memberAuthorization = this.authorizationRepository.getByAuthorizationId(
             member.getAuthorizationId())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
     // 2. 해당 스크린의 권한을 조회합니다.
     AuthorizationScreenEntity authorizationScreen = this.authorizationScreenRepository.getAuthorizationScreenByScreenKey(
         screenKey).orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION_SCREEN));
-    AuthorizationEntity screenAuthorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
+    AuthorizationEntity screenAuthorization = this.authorizationRepository.getByAuthorizationId(
             authorizationScreen.getAuthorizationId())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
     // 3. 멤버의 권한레벨과 스크린의 권한을 비교합니다.
     boolean isAccessible = screenAuthorization.getLevel() <= memberAuthorization.getLevel();
+
+    // FIXME: TEST
+    this.authorizationScreenRepository.save(AuthorizationScreenEntity.builder().authorizationId(1L).screenKey("test").build());
 
     return new AuthResDto.getMemberAuthByScreenKey(isAccessible);
   }

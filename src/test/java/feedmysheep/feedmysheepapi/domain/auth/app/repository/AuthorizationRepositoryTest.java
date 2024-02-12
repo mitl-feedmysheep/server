@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
+import feedmysheep.feedmysheepapi.global.config.TestConfig;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
@@ -14,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
+@ActiveProfiles("test")
+@Import(TestConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class AuthorizationRepositoryTest {
   @Autowired
@@ -41,7 +46,7 @@ class AuthorizationRepositoryTest {
     // given
 
     // when
-    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getByAuthorizationId(
         authorization1.getAuthorizationId());
 
     // then
@@ -55,7 +60,7 @@ class AuthorizationRepositoryTest {
     Long randomLong = (long) TestUtil.getRandomNum(5);
 
     // when
-    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(randomLong);
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getByAuthorizationId(randomLong);
 
     // then
     assertThat(authorization).isNotPresent();
@@ -68,7 +73,7 @@ class AuthorizationRepositoryTest {
     int levelToFind = 1;
 
     // when
-    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByLevel(levelToFind);
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getByLevel(levelToFind);
 
     // then
     assertThat(authorization).isPresent();
@@ -81,7 +86,7 @@ class AuthorizationRepositoryTest {
     int levelToFind = 9999;
 
     // when
-    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByLevel(levelToFind);
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getByLevel(levelToFind);
 
     // then
     assertThat(authorization).isNotPresent();

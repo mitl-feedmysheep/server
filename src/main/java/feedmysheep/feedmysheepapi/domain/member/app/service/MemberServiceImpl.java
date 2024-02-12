@@ -190,7 +190,7 @@ public class MemberServiceImpl implements MemberService {
     });
 
     // 3. 기본 authroization 가져오기
-    AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByLevel(
+    AuthorizationEntity authorization = this.authorizationRepository.getByLevel(
             MemberAuth.MEMBER.getValue())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
