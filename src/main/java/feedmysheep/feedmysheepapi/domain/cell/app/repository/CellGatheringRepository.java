@@ -12,21 +12,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface CellGatheringRepository extends JpaRepository<CellGatheringEntity, UUID> {
+public interface CellGatheringRepository extends JpaRepository<CellGatheringEntity, UUID>, CellGatheringRepositoryCustom {
 
-  // TODO 테스트코드 작성
-  @Query("SELECT cg FROM CellGatheringEntity cg WHERE cg.cellId = :cellId and cg.isValid = true")
-  List<CellGatheringEntity> getCellGatheringListByCellId(@Param("cellId") Long cellId);
+  List<CellGatheringEntity> findAllByCellId(UUID cellId);
 
-  // TODO 테스트코드 작성
-  @Query("SELECT cg FROM CellGatheringEntity cg WHERE cg.cellGatheringId = :cellGatheringId and cg.isValid = true")
-  Optional<CellGatheringEntity> getCellGatheringByCellGatheringId(
-      @Param("cellGatheringId") Long cellGatheringId);
-
-  // TODO 테스트코드 작성
-  @Transactional
-  @Modifying
-  @Query("UPDATE CellGatheringEntity cg SET cg.isValid = false,cg.updatedBy = :memberId WHERE cg.cellGatheringId = :cellGatheringId")
-  void deleteCellGatheringByCellGatheringId(
-       @Param("memberId") Long memberId, @Param("cellGatheringId") Long cellGatheringId);
+  // TODO 이거 옵셔널하게 가져오는지 테스트 꼭 해보기
+  Optional<CellGatheringEntity> findByCellGatheringId(UUID cellGatheringId);
 }

@@ -74,7 +74,7 @@ class CellMemberMapRepositoryTest {
     // given
 
     // when
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdListAndMemberIdAndCurDate(
         cellIdList, memberId);
 
     // then
@@ -89,7 +89,7 @@ class CellMemberMapRepositoryTest {
     // given
 
     // when
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellIdList.get(0));
 
     // then
@@ -103,7 +103,7 @@ class CellMemberMapRepositoryTest {
     // given
 
     // when
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellIdList.get(2));
 
     // then
@@ -116,7 +116,7 @@ class CellMemberMapRepositoryTest {
     // given
 
     // when
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellIdList.get(3));
 
     // then

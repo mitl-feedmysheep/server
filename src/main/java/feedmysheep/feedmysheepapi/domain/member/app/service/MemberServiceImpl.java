@@ -346,7 +346,7 @@ public class MemberServiceImpl implements MemberService {
         .toList();
 
     // 3. 올건 밑에 속한 셀 리스트 조회
-    return this.cellRepository.getCellListByOrganIdList(organIdListByBodyId);
+    return this.cellRepository.findAllByOrganIdListAndCurDate(organIdListByBodyId);
   }
 
   private List<CellEntity> getCellListForOrganLeaderAndCellLeaderAndMember(Long memberId,
@@ -370,12 +370,12 @@ public class MemberServiceImpl implements MemberService {
     });
 
     // 3. 유저가 속한 올건 중 셀 리스트 조회
-    List<CellEntity> cellListByBodyId = this.cellRepository.getCellListByOrganIdList(
+    List<CellEntity> cellListByBodyId = this.cellRepository.findAllByOrganIdListAndCurDate(
         organIdListByMemberId);
     List<Long> cellIdListByBodyId = cellListByBodyId.stream().map(CellEntity::getCellId).toList();
 
     // 4. 유저가 속한 셀 리스트 조회
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdListAndMemberIdAndCurDate(
         cellIdListByBodyId, memberId);
     List<Long> cellIdListByMemberId = cellMemberMapList.stream().map(CellMemberMapEntity::getCellId)
         .toList();
@@ -387,7 +387,7 @@ public class MemberServiceImpl implements MemberService {
     // 6. 셀 인원 조회 및 매핑
     List<CellEntity> cellList = new ArrayList<>();
     List<CellEntity> memberCellList = cellListByMemberId.stream().map(cell -> {
-      List<CellMemberMapEntity> cellMemberMapListByCellId = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+      List<CellMemberMapEntity> cellMemberMapListByCellId = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
           cell.getCellId());
       cell.setCellMemberCount(cellMemberMapListByCellId.size());
       return cell;
@@ -395,7 +395,7 @@ public class MemberServiceImpl implements MemberService {
 
     // 7. 올건리더로서 올건이 존재할 경우, 올건 밑에 속한 셀 리스트 조회 및 추가
     if (organLeaderIdListByMemberId.size() > 0) {
-      List<CellEntity> cellListAsOrganLeader = this.cellRepository.getCellListByOrganIdList(
+      List<CellEntity> cellListAsOrganLeader = this.cellRepository.findAllByOrganIdListAndCurDate(
           organLeaderIdListByMemberId);
       cellList.addAll(cellListAsOrganLeader);
     }

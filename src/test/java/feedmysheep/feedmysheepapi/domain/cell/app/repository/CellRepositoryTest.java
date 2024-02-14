@@ -55,7 +55,7 @@ class CellRepositoryTest {
     // given
 
     // when
-    List<CellEntity> cellList = this.cellRepository.getCellListByOrganIdList(List.of(organId1, organId2));
+    List<CellEntity> cellList = this.cellRepository.findAllByOrganIdListAndCurDate(List.of(organId1, organId2));
 
     // then
     assertThat(cellList.size()).isEqualTo(4);

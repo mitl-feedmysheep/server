@@ -46,7 +46,7 @@ public class CellServiceImpl implements CellService {
     Long memberId = customUserDetails.getMemberId();
 
     // 1. 본인이 속한 셀인지 확인
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellId);
     List<Long> memberIdList = cellMemberMapList.stream().map(CellMemberMapEntity::getMemberId)
         .toList();
@@ -72,13 +72,13 @@ public class CellServiceImpl implements CellService {
   @Override
   public CellResDto.getGatheringsAndPrayersCount getGatheringsAndPrayersCountByCellId(Long cellId) {
     // 1. 셀 아이디로 셀모임 조회
-    List<CellGatheringEntity> cellGatheringList = this.cellGatheringRepository.getCellGatheringListByCellId(
+    List<CellGatheringEntity> cellGatheringList = this.cellGatheringRepository.findAllByCellId(
         cellId);
     List<Long> cellGatheringIdList = cellGatheringList.stream()
         .map(CellGatheringEntity::getCellGatheringId).toList();
 
     // 2. 셀모임으로 셀모임멤버 조회
-    List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.getCellGatheringMemberListByCellGatheringIdList(
+    List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.findAllByCellGatheringIdList(
         cellGatheringIdList);
     List<Long> cellGatheringMemberIdList = cellGatheringMemberList.stream()
         .map(CellGatheringMemberEntity::getCellGatheringMemberId).toList();
@@ -101,7 +101,7 @@ public class CellServiceImpl implements CellService {
     int month = query.getMonth();
 
     // 1. 셀 아이디로 셀모임 전체 횟수 조회 (over-fetching)
-    List<CellGatheringEntity> cellGatheringList = this.cellGatheringRepository.getCellGatheringListByCellId(
+    List<CellGatheringEntity> cellGatheringList = this.cellGatheringRepository.findAllByCellId(
         cellId);
 
     // 2. N번째 모임 붙이기 & 요일 붙이기 & 내림차순 정렬
@@ -116,7 +116,7 @@ public class CellServiceImpl implements CellService {
     List<CellGatheringEntity> cellGatheringListToReturn = cellGatheringListByMonth.stream()
         .map(cellGathering -> {
           // 4.1 셀모임 아이디로 셀모임멤버 조회
-          List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.getCellGatheringMemberListByCellGatheringId(
+          List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.findAllByCellGatheringMemberId(
               cellGathering.getCellGatheringId());
           // 4.2 셀모임멤버로 출석자수 조회 & 출석자수 넣기
           return this.cellProcessor.addAttendanceCountToCellGathering(cellGathering,
@@ -130,13 +130,13 @@ public class CellServiceImpl implements CellService {
   public CellResDto.getCellGatheringAndMemberListAndPrayerList getCellGatheringAndMemberListAndPrayerList(
       Long cellGatheringId) {
     // 1. 셀모임 조회
-    CellGatheringEntity cellGathering = this.cellGatheringRepository.getCellGatheringByCellGatheringId(
+    CellGatheringEntity cellGathering = this.cellGatheringRepository.findByCellGatheringId(
             cellGatheringId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_GATHERING_FOUND));
     CellResDto.getCellGatheringAndMemberListAndPrayerList cellGatheringDto = this.cellMapper.setCellGathering(
         cellGathering);
     // 2. 셀모임멤버 조회
-    List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.getCellGatheringMemberListByCellGatheringId(
+    List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.findAllByCellGatheringMemberId(
         cellGatheringId);
     // 3. 셀모임멤버당 리더여부 조회 및 셀모임멤버당 기도제목 조회 & 매퍼처리
     List<CellServiceDto.cellGatheringMember> cellGatheringMemberListDto = new ArrayList<>();
@@ -144,7 +144,7 @@ public class CellServiceImpl implements CellService {
       CellServiceDto.cellGatheringMember cellGatheringMemberDto = this.cellMapper.setCellGatheringMember(
           cellGatheringMember);
       // 3-1. 셀모임멤버당 리더여부
-      CellMemberMapEntity cellMemberMap = this.cellMemberMapRepository.getCellMemberMapByCellMemberMapId(
+      CellMemberMapEntity cellMemberMap = this.cellMemberMapRepository.findByCellMemberMapId(
               cellGatheringMember.getCellMemberMapId())
           .orElseThrow(() -> new CustomException(ErrorMessage.NOT_CELL_MEMBER));
       cellGatheringMemberDto.setLeader(cellMemberMap.isLeader());
@@ -193,7 +193,7 @@ public class CellServiceImpl implements CellService {
         cellGatheringMemberId, worshipAttendance, cellGatheringAttendance, story, memberId);
 
     // 2. 업데이트
-    this.cellGatheringMemberRepository.updateAttendancesAndStoryWhenExisting(repoDto);
+    this.cellGatheringMemberRepository.updateByCellGatheringMemberId(repoDto);
   }
 
   @Override
@@ -242,7 +242,7 @@ public class CellServiceImpl implements CellService {
   public CellResDto.getCellByCellId getCellByCellId(Long cellId) {
 
     // 1. Repository에서 cell 검색
-    CellEntity cell = this.cellRepository.getCellByCellId(cellId)
+    CellEntity cell = this.cellRepository.findByCellId(cellId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_FOUND));
 
     return this.cellMapper.getCellByCellId(cell);
@@ -251,7 +251,7 @@ public class CellServiceImpl implements CellService {
   @Override
   public void deleteCellGatheringByCellGatheringId(CustomUserDetails customUserDetails,
       Long cellGatheringId) {
-    this.cellGatheringRepository.deleteCellGatheringByCellGatheringId(
+    this.cellGatheringRepository.deleteByCellGatheringId(
         customUserDetails.getMemberId(), cellGatheringId);
   }
 
@@ -271,7 +271,7 @@ public class CellServiceImpl implements CellService {
 
     // 2. 셀모임 멤버 생성
     // 2-1. 셀멤버맵 조회
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellId);
     List<Long> cellMemberMapIdList = cellMemberMapList.stream()
         .map(CellMemberMapEntity::getCellMemberMapId).toList();
@@ -297,7 +297,7 @@ public class CellServiceImpl implements CellService {
   public void updateCellGatheringByCellGatheringId(Long cellGatheringId,
       CellReqDto.updateCellGatheringByCellGatheringId body, CustomUserDetails customUserDetails) {
     // 1. 셀모임 존재여부 확인
-    CellGatheringEntity cellGathering = this.cellGatheringRepository.getCellGatheringByCellGatheringId(
+    CellGatheringEntity cellGathering = this.cellGatheringRepository.findByCellGatheringId(
             cellGatheringId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_CELL_GATHERING_FOUND));
 

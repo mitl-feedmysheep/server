@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto.updatePrayerById;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.QCellGatheringMemberPrayerEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -16,16 +17,6 @@ public class CellGatheringMemberPrayerRepositoryImpl implements
   private final QCellGatheringMemberPrayerEntity cellGatheringMemberPrayer = QCellGatheringMemberPrayerEntity.cellGatheringMemberPrayerEntity;
 
   @Override
-  public long insert(CellGatheringMemberPrayerEntity cellGatheringMemberPrayer) {
-//    return null;
-    return queryFactory.insert(this.cellGatheringMemberPrayer)
-        .set(this.cellGatheringMemberPrayer.cellGatheringMemberId,
-            cellGatheringMemberPrayer.getCellGatheringMemberId())
-        .set()
-        .execute();
-  }
-
-  @Override
   public List<CellGatheringMemberPrayerEntity> findAllByCellGatheringMemberIdList(
       List<UUID> cellGatheringMemberIdList) {
     return queryFactory.selectFrom(cellGatheringMemberPrayer)
@@ -34,15 +25,20 @@ public class CellGatheringMemberPrayerRepositoryImpl implements
   }
 
   @Override
-  public long updateByCellGatheringMemberPrayerId(updatePrayerById updateDto) {
-    return queryFactory.update(cellGatheringMemberPrayer)
-        .set(cellGatheringMemberPrayer.prayerRequest, updateDto.getPrayerRequest()).where(
+  public void updateByCellGatheringMemberPrayerId(updatePrayerById updateDto) {
+    this.queryFactory.update(cellGatheringMemberPrayer)
+        .set(cellGatheringMemberPrayer.prayerRequest, updateDto.getPrayerRequest())
+        .set(cellGatheringMemberPrayer.updatedBy, updateDto.getMemberId()).where(
             cellGatheringMemberPrayer.cellGatheringMemberPrayerId.eq(
                 updateDto.getCellGatheringMemberPrayerId())).execute();
   }
 
   @Override
   public void deleteByCellGatheringMemberPrayerId(UUID memberId, UUID cellGatheringMemberPrayerId) {
-
+    this.queryFactory.update(cellGatheringMemberPrayer)
+        .set(cellGatheringMemberPrayer.deletedAt, LocalDateTime.now())
+        .set(cellGatheringMemberPrayer.deletedBy, memberId).where(
+            cellGatheringMemberPrayer.cellGatheringMemberPrayerId.eq(cellGatheringMemberPrayerId))
+        .execute();
   }
 }
