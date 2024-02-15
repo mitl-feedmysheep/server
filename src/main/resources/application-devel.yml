@@ -18,3 +18,25 @@ spring:
     hibernate:
       #      db 변경 사항 적용 -> 향후 none
       ddl-auto: none
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: intotheheaven2024@gmail.com
+    password: rnrtelnrppnwbxrz
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  logging:
+    level:
+      org:
+        hibernate:
+          type: trace
+          orm:
+            jdbc:
+              bind: trace
