@@ -54,7 +54,7 @@ class ChurchRepositoryTest {
     this.churchRepository.save(church);
 
     // when
-    List<ChurchEntity> churchList = this.churchRepository.getChurchList();
+    List<ChurchEntity> churchList = this.churchRepository.findAll();
 
     // then
     assertThat(churchList.size()).isEqualTo(2);
@@ -66,9 +66,9 @@ class ChurchRepositoryTest {
     // given
 
     // when
-    List<ChurchEntity> validChurchList = this.churchRepository.getChurchListByChurchName(
+    List<ChurchEntity> validChurchList = this.churchRepository.findByChurchName(
         validChurch1.getChurchName());
-    List<ChurchEntity> invalidChurchList = this.churchRepository.getChurchListByChurchName(
+    List<ChurchEntity> invalidChurchList = this.churchRepository.findByChurchName(
         invalidChurch1.getChurchName());
 
     // then
@@ -83,7 +83,7 @@ class ChurchRepositoryTest {
     // given
 
     // when
-    Optional<ChurchEntity> validChurch = this.churchRepository.getChurchByChurchId(
+    Optional<ChurchEntity> validChurch = this.churchRepository.findByChurchId(
         validChurch1.getChurchId());
 
     // then
@@ -97,7 +97,7 @@ class ChurchRepositoryTest {
     // given
 
     // when
-    Optional<ChurchEntity> validChurch = this.churchRepository.getChurchByChurchId(
+    Optional<ChurchEntity> validChurch = this.churchRepository.findByChurchId(
         invalidChurch1.getChurchId());
 
     // then

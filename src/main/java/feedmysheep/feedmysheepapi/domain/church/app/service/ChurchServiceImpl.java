@@ -46,9 +46,9 @@ public class ChurchServiceImpl implements ChurchService {
     // 2. 교회 리스트
     List<ChurchEntity> churchList;
     if (churchName != null && !churchName.isEmpty()) {
-      churchList = this.churchRepository.getChurchListByChurchName(churchName);
+      churchList = this.churchRepository.findByChurchName(churchName);
     } else {
-      churchList = this.churchRepository.getChurchList();
+      churchList = this.churchRepository.findAll();
     }
 
     // 3. 반환
@@ -63,7 +63,7 @@ public class ChurchServiceImpl implements ChurchService {
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 바디 리스트 반환
-    List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(churchId);
+    List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(churchId);
 
     // 3. DTO 매핑
     return this.churchMapper.getBodyListByChurchId(bodyList);
@@ -90,7 +90,7 @@ public class ChurchServiceImpl implements ChurchService {
     int offset = page - 1; // Pageable에서 limit을 곱해서 설정해놓음
 
     // 2. body(부서)에 해당하는 멤버들 bodyId 통해 가져오기
-    List<BodyMemberMapEntity> bodyMemberListByBodyId = this.bodyMemberMapRepository.getBodyMemberListByBodyId(
+    List<BodyMemberMapEntity> bodyMemberListByBodyId = this.bodyMemberMapRepository.findAllByBodyId(
         bodyId);
 
     // 3. BodyMemberMap에 있는 모든 정보들 중에서, memberId에 대한 정보들만 가져와서 List형식으로 만듦.

@@ -83,7 +83,7 @@ class ChurchMemberMapRepositoryTest {
     // given
 
     // when
-    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.findAllByMemberId(
         member1.getMemberId());
 
     // then
@@ -99,7 +99,7 @@ class ChurchMemberMapRepositoryTest {
         DataFactory.createMember(authorization1.getAuthorizationId()));
 
     // when
-    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.findAllByMemberId(
         member2.getMemberId());
 
     // then
@@ -120,7 +120,7 @@ class ChurchMemberMapRepositoryTest {
     this.churchMemberMapRepository.save(churchMemberMap2);
 
     // when
-    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.findAllByMemberId(
         member1.getMemberId());
 
     // then
@@ -135,7 +135,7 @@ class ChurchMemberMapRepositoryTest {
     // given
 
     // when
-    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(
+    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.findByChurchIdAndMemberId(
         church1.getChurchId(), member1.getMemberId());
 
     // then
@@ -150,7 +150,7 @@ class ChurchMemberMapRepositoryTest {
     // given
 
     // when
-    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(
+    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.findByChurchIdAndMemberId(
         invalidChurchMemberMap1.getChurchId(), invalidChurchMemberMap1.getMemberId());
 
     // then

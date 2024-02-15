@@ -57,7 +57,7 @@ class OrganMemberMapRepositoryTest {
     // given
 
     // when
-    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
+    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.findAllByOrganIdListAndMemberId(
         organIdList, memberId);
 
     // then

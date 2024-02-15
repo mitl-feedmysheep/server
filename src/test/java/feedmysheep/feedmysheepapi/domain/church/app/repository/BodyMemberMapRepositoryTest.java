@@ -58,7 +58,7 @@ class BodyMemberMapRepositoryTest {
     // given
 
     // when
-    Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(
+    Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.findByBodyIdAndMemberId(
         bodyId, memberId);
 
     // then
@@ -71,7 +71,7 @@ class BodyMemberMapRepositoryTest {
     // given
 
     // when
-    Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(
+    Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.findByBodyIdAndMemberId(
         bodyId, invalidMemberId);
 
     // then

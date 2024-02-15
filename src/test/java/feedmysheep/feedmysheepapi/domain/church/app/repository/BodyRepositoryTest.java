@@ -60,7 +60,7 @@ class BodyRepositoryTest {
     this.bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId()));
 
     // when
-    List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church1.getChurchId());
+    List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(church1.getChurchId());
 
     // then
     assertThat(bodyList.size()).isEqualTo(2);
@@ -75,7 +75,7 @@ class BodyRepositoryTest {
     this.bodyRepository.save(body);
 
     // when
-    List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church1.getChurchId());
+    List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(church1.getChurchId());
 
     // then
     assertThat(bodyList.size()).isEqualTo(1);
@@ -88,7 +88,7 @@ class BodyRepositoryTest {
     // given
 
     // when
-    List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(
+    List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(
         (long) TestUtil.getRandomNum(5));
 
     // then
@@ -101,7 +101,7 @@ class BodyRepositoryTest {
     // given
 
     // when
-    Optional<BodyEntity> body = this.bodyRepository.getBodyByBodyId(body1.getBodyId());
+    Optional<BodyEntity> body = this.bodyRepository.findByBodyId(body1.getBodyId());
 
     // then
     assertThat(body).isPresent();
@@ -114,7 +114,7 @@ class BodyRepositoryTest {
     // given
 
     // when
-    Optional<BodyEntity> body = this.bodyRepository.getBodyByBodyId(invalidBody1.getBodyId());
+    Optional<BodyEntity> body = this.bodyRepository.findByBodyId(invalidBody1.getBodyId());
 
     // then
     assertThat(body).isNotPresent();

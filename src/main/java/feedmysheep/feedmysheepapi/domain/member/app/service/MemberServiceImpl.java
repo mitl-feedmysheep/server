@@ -234,7 +234,7 @@ public class MemberServiceImpl implements MemberService {
 
   @Override
   public MemberResDto.checkChurchMember checkChurchMember(CustomUserDetails customUserDetails) {
-    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.findAllByMemberId(
         customUserDetails.getMemberId());
     boolean isChurchMember = churchMemberMapList.size() > 0;
 
@@ -248,17 +248,17 @@ public class MemberServiceImpl implements MemberService {
   public List<MemberResDto.getChurchWithBody> getMemberChurchesWithBodies(
       CustomUserDetails customUserDetails) {
     // 1. 유저 아이디로 교회 조회
-    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.findAllByMemberId(
         customUserDetails.getMemberId());
 
     // 2. 유저가 다니는 교회별 부서 매핑
     List<ChurchEntity> churchList = new ArrayList<>();
     for (ChurchMemberMapEntity churchMemberMap : churchMemberMapList) {
       // 2-1. 유저가 다니는 교회 조회
-      ChurchEntity church = this.churchRepository.getChurchByChurchId(churchMemberMap.getChurchId())
+      ChurchEntity church = this.churchRepository.findByChurchId(churchMemberMap.getChurchId())
           .orElseThrow(() -> new CustomException(ErrorMessage.CHURCH_INVALIDATED));
       // 2-2. 교회별 부서 조회
-      List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church.getChurchId());
+      List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(church.getChurchId());
 
       // 2-3. 최고 권한이면 모든 부서 리턴 (담임 목사)
       if (churchMemberMap.isLeader()) {
@@ -270,7 +270,7 @@ public class MemberServiceImpl implements MemberService {
       // 2-4. 교회별 부서 중, 유저가 속한 부서 필터링
       List<BodyEntity> validBodyList = new ArrayList<>();
       for (BodyEntity body : bodyList) {
-        Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(
+        Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.findByBodyIdAndMemberId(
             body.getBodyId(), customUserDetails.getMemberId());
         // 2-5. 유저가 속한 부서만 add
         if (bodyMemberMap.isPresent()) {
@@ -311,18 +311,18 @@ public class MemberServiceImpl implements MemberService {
 
     // 1. 멤버가 속한 교회가져오기
     Long memberId = customUserDetails.getMemberId();
-    BodyEntity body = this.bodyRepository.getBodyByBodyId(bodyId)
+    BodyEntity body = this.bodyRepository.findByBodyId(bodyId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_BODY));
-    ChurchEntity church = this.churchRepository.getChurchByChurchId(body.getChurchId())
+    ChurchEntity church = this.churchRepository.findByChurchId(body.getChurchId())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_CHURCH));
 
     // 2. churchLeader OR bodyLeader OR organLeader OR cellLeader & member 검사
     List<CellEntity> cellList;
-    ChurchMemberMapEntity churchMemberMap = this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(
+    ChurchMemberMapEntity churchMemberMap = this.churchMemberMapRepository.findByChurchIdAndMemberId(
             church.getChurchId(), memberId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NOT_CHURCH_MEMBER));
     boolean isChurchLeader = churchMemberMap.isLeader();
-    BodyMemberMapEntity bodyMemberMap = this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(
+    BodyMemberMapEntity bodyMemberMap = this.bodyMemberMapRepository.findByBodyIdAndMemberId(
         bodyId, memberId).orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
     boolean isBodyLeader = bodyMemberMap.isLeader();
 
@@ -341,7 +341,7 @@ public class MemberServiceImpl implements MemberService {
 
   private List<CellEntity> getCellListForChurchLeaderAndBodyLeader(Long bodyId) {
     // 2. 바디 밑에 속한 올건 리스트 조회
-    List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
+    List<OrganEntity> organListByBodyId = this.organRepository.findAllByBodyId(bodyId);
     List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getBodyId)
         .toList();
 
@@ -352,12 +352,12 @@ public class MemberServiceImpl implements MemberService {
   private List<CellEntity> getCellListForOrganLeaderAndCellLeaderAndMember(Long memberId,
       Long bodyId) {
     // 1. 바디 밑에 속한 올건 리스트 조회
-    List<OrganEntity> organListByBodyId = this.organRepository.getOrganListByBodyId(bodyId);
+    List<OrganEntity> organListByBodyId = this.organRepository.findAllByBodyId(bodyId);
     List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
         .toList();
 
     // 2. 유저가 속한 올건 조회 및 필터링
-    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
+    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.findAllByOrganIdListAndMemberId(
         organIdListByBodyId, memberId);
     List<Long> organLeaderIdListByMemberId = new ArrayList<>();
     List<Long> organIdListByMemberId = new ArrayList<>();
@@ -409,13 +409,13 @@ public class MemberServiceImpl implements MemberService {
   public void askToJoinChurchAndBody(Long churchId, Long bodyId,
       CustomUserDetails customUserDetails) {
     // 1. 교회 및 부서 존재 여부 체크
-    this.churchRepository.getChurchByChurchId(churchId)
+    this.churchRepository.findByChurchId(churchId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_CHURCH));
-    this.bodyRepository.getBodyByBodyId(bodyId)
+    this.bodyRepository.findByBodyId(bodyId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_BODY));
 
     // 2. 이미 가입된 교회인지 체크
-    this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(churchId,
+    this.churchMemberMapRepository.findByChurchIdAndMemberId(churchId,
         customUserDetails.getMemberId()).ifPresent(churchMemberMap -> {
       throw new CustomException(ErrorMessage.ALREADY_JOINED_CHURCH);
     });
@@ -425,7 +425,7 @@ public class MemberServiceImpl implements MemberService {
     });
 
     // 3. 이미 가입된 부서인지 체크
-    this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(bodyId,
+    this.bodyMemberMapRepository.findByBodyIdAndMemberId(bodyId,
         customUserDetails.getMemberId()).ifPresent(bodyMemberMap -> {
       throw new CustomException(ErrorMessage.ALREADY_JOINED_BODY);
     });

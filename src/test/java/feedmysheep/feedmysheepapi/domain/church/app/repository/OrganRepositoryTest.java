@@ -48,7 +48,7 @@ public class OrganRepositoryTest {
     // given
 
     // when
-    List<OrganEntity> organList = this.organRepository.getOrganListByBodyId(bodyId);
+    List<OrganEntity> organList = this.organRepository.findAllByBodyId(bodyId);
 
     // then
     assertThat(organList.size()).isEqualTo(3);
