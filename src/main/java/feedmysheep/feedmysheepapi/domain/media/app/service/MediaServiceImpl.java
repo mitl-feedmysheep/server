@@ -24,7 +24,7 @@ public class MediaServiceImpl implements MediaService {
     String screenKey = query.getScreenKey();
 
     // 1. 스크린들에 맞는 데이터 가져오기
-    List<MediaEntity> mediaList = this.mediaRepository.getMediasByScreenKey(screenKey);
+    List<MediaEntity> mediaList = this.mediaRepository.findAllByScreenKey(screenKey);
     if (mediaList.isEmpty()) {
       throw new CustomException(ErrorMessage.NO_MEDIALIST_FOR_SCREENS);
     }

@@ -46,7 +46,7 @@ class MediaRepositoryTest {
     // given
 
     // when
-    List<MediaEntity> mediaList = this.mediaRepository.getMediasByScreenKey(media1.getScreenKey());
+    List<MediaEntity> mediaList = this.mediaRepository.findAllByScreenKey(media1.getScreenKey());
 
     // then
     assertThat(mediaList.size()).isEqualTo(2);
