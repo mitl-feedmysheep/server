@@ -60,9 +60,9 @@ class MemberRepositoryTest {
     // given
 
     // when
-    Optional<MemberEntity> validMember = this.memberRepository.getMemberByMemberId(
+    Optional<MemberEntity> validMember = this.memberRepository.findByMemberId(
         validMember1.getMemberId());
-    Optional<MemberEntity> invalidMemberNotExists = this.memberRepository.getMemberByMemberId(
+    Optional<MemberEntity> invalidMemberNotExists = this.memberRepository.findByMemberId(
         invalidMember1.getMemberId());
 
     // then
@@ -76,9 +76,9 @@ class MemberRepositoryTest {
     // given
 
     // when
-    Optional<MemberEntity> validMember = this.memberRepository.getMemberByEmail(
+    Optional<MemberEntity> validMember = this.memberRepository.findByEmail(
         validMember1.getEmail());
-    Optional<MemberEntity> invalidMemberNotExists = this.memberRepository.getMemberByEmail(
+    Optional<MemberEntity> invalidMemberNotExists = this.memberRepository.findByEmail(
         invalidMember1.getEmail());
 
     // then
@@ -92,9 +92,9 @@ class MemberRepositoryTest {
     // given
 
     // when
-    Optional<MemberEntity> validMember = this.memberRepository.getMemberByPhone(
+    Optional<MemberEntity> validMember = this.memberRepository.findByPhone(
         validMember1.getPhone());
-    Optional<MemberEntity> invalidMemberNotExists = this.memberRepository.getMemberByPhone(
+    Optional<MemberEntity> invalidMemberNotExists = this.memberRepository.findByPhone(
         invalidMember1.getPhone());
 
     // then

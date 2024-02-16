@@ -25,7 +25,7 @@ public class WordServiceImpl implements WordService {
     String screenKey = query.getScreenKey();
 
     // 1. 스크린들에 맞는 데이터 가져오기
-    List<WordEntity> wordList = this.wordRepository.getWordListByScreenKey(screenKey);
+    List<WordEntity> wordList = this.wordRepository.findAllByScreenKey(screenKey);
     if (wordList.isEmpty()) {
       throw new CustomException(ErrorMessage.NO_WORD_FOR_SCREENS);
     }

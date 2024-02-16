@@ -45,7 +45,7 @@ class TextRepositoryTest {
     // given
 
     // when
-    Optional<TextEntity> text = this.textRepository.getTextByScreenKey(text1.getScreenKey());
+    Optional<TextEntity> text = this.textRepository.findByScreenKey(text1.getScreenKey());
 
     // then
     assertThat(text).isPresent();
@@ -57,7 +57,7 @@ class TextRepositoryTest {
     // given
 
     // when
-    Optional<TextEntity> text = this.textRepository.getTextByScreenKey(TestUtil.getRandomString());
+    Optional<TextEntity> text = this.textRepository.findByScreenKey(TestUtil.getRandomString());
 
     // then
     assertThat(text).isNotPresent();

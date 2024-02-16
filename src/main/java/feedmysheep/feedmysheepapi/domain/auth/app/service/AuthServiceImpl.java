@@ -43,7 +43,7 @@ public class AuthServiceImpl implements AuthService {
     String screenKey = query.getScreenKey();
 
     // 1. 멤버의 아이디로 멤버의 권한을 조회합니다.
-    MemberEntity member = this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
+    MemberEntity member = this.memberRepository.findByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
     AuthorizationEntity memberAuthorization = this.authorizationRepository.findByAuthorizationId(
             member.getAuthorizationId())

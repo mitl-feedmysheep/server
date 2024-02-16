@@ -50,7 +50,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     String accessToken = request.getHeader(TOKEN); // doFilterInternal 이후에 호출 됨
     JwtDto.memberInfo memberInfo = this.jwtTokenProvider.validateToken(accessToken);
     Long memberId = memberInfo.getMemberId();
-    MemberEntity member = this.memberRepository.getMemberByMemberId(memberId)
+    MemberEntity member = this.memberRepository.findByMemberId(memberId)
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
     AuthorizationEntity authorization = this.authorizationRepository.getByAuthorizationId(
             member.getAuthorizationId())

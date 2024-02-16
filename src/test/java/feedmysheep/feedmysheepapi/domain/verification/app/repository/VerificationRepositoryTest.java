@@ -63,7 +63,7 @@ class VerificationRepositoryTest {
     // given
 
     // when
-    Optional<VerificationEntity> validVerification = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+    Optional<VerificationEntity> validVerification = this.verificationRepository.findByPhoneAndVerificationCode(
         verification1.getPhone(),
         verification1.getVerificationCode());
 
@@ -77,10 +77,10 @@ class VerificationRepositoryTest {
     // given
 
     // when
-    Optional<VerificationEntity> invalidVerificationByPhone = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+    Optional<VerificationEntity> invalidVerificationByPhone = this.verificationRepository.findByPhoneAndVerificationCode(
         TestUtil.getRandomPhone(),
         verification1.getVerificationCode());
-    Optional<VerificationEntity> invalidVerificationByVerificationCode = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+    Optional<VerificationEntity> invalidVerificationByVerificationCode = this.verificationRepository.findByPhoneAndVerificationCode(
         verification1.getPhone(),
         TestUtil.getRandomString(6));
 

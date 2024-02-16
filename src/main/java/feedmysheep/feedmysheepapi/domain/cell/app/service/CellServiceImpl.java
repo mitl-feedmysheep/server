@@ -52,7 +52,7 @@ public class CellServiceImpl implements CellService {
         .toList();
 
     // 2. 셀멤버맵으로 멤버리스트 조회
-    List<MemberEntity> memberList = this.memberRepository.getMemberListByMemberIdList(memberIdList);
+    List<MemberEntity> memberList = this.memberRepository.findAllByMemberIdList(memberIdList);
 
     // 3. 멤버에 isLeader 추가
     List<MemberEntity> memberListWithIsLeader = this.cellProcessor.addIsLeaderToMemberList(
@@ -149,7 +149,7 @@ public class CellServiceImpl implements CellService {
           .orElseThrow(() -> new CustomException(ErrorMessage.NOT_CELL_MEMBER));
       cellGatheringMemberDto.setLeader(cellMemberMap.isLeader());
       // 3-2. 셀모임멤버당 멤버정보
-      MemberEntity member = this.memberRepository.getMemberByMemberId(cellMemberMap.getMemberId())
+      MemberEntity member = this.memberRepository.findByMemberId(cellMemberMap.getMemberId())
           .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
       cellGatheringMemberDto.setMemberName(member.getMemberName());
       cellGatheringMemberDto.setBirthday(member.getBirthday());

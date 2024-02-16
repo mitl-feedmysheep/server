@@ -40,7 +40,7 @@ public class ChurchServiceImpl implements ChurchService {
   public List<ChurchResDto.getChurch> getChurchList(CustomUserDetails customUserDetails,
       String churchName) {
     // 1. 유효한 멤버인지 검사
-    this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
+    this.memberRepository.findByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 교회 리스트
@@ -59,7 +59,7 @@ public class ChurchServiceImpl implements ChurchService {
   public List<ChurchResDto.getBodyByChurchId> getBodyListByChurchId(
       CustomUserDetails customUserDetails, Long churchId) {
     // 1. 유효한 멤버인지 검사
-    this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
+    this.memberRepository.findByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 바디 리스트 반환
@@ -99,7 +99,7 @@ public class ChurchServiceImpl implements ChurchService {
 
     // 4. memberRepository에 설정된 값과 매칭하기
     Pageable pageRequest = PageRequest.of(offset, limit);
-    Page<MemberEntity> eventMemberPage = this.memberRepository.getMemberListByMemberIdListAndMonth(
+    Page<MemberEntity> eventMemberPage = this.memberRepository.findAllByMemberIdListAndMonth(
         memberIdListByBodyId, month, pageRequest);
 
     // 5. eventMemberPage에서 찾은 멤버들의 수 찾기 & 이벤트 멤버 조회 및 DTO 매핑

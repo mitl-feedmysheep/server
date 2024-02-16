@@ -47,7 +47,7 @@ class WordRepositoryTest {
     // given
 
     // when
-    List<WordEntity> wordList = this.wordRepository.getWordListByScreenKey(word1.getScreenKey());
+    List<WordEntity> wordList = this.wordRepository.findAllByScreenKey(word1.getScreenKey());
 
     // then
     assertThat(wordList.size()).isEqualTo(2);
@@ -61,7 +61,7 @@ class WordRepositoryTest {
         DataFactory.createWordByScreenKey(TestUtil.getRandomString()));
 
     // when
-    List<WordEntity> emptyWordList = this.wordRepository.getWordListByScreenKey(word.getScreenKey());
+    List<WordEntity> emptyWordList = this.wordRepository.findAllByScreenKey(word.getScreenKey());
 
     // then
     assertThat(emptyWordList.size()).isEqualTo(1);

@@ -21,7 +21,7 @@ public class TextServiceImpl implements TextService {
     String screenKey = query.getScreenKey();
 
     // 1. 스크린들에 맞는 데이터 가져오기.
-    TextEntity text = this.textRepository.getTextByScreenKey(screenKey)
+    TextEntity text = this.textRepository.findByScreenKey(screenKey)
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_TEXT_FOR_SCREENS));
 
     // 2. 반환

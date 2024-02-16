@@ -83,7 +83,7 @@ public class MemberServiceImpl implements MemberService {
     LocalDateTime endOfToday = today.atTime(LocalTime.MAX);
 
     // 1. 휴대폰 사용 여부 체크
-    this.memberRepository.getMemberByPhone(phone).ifPresent((member -> {
+    this.memberRepository.findByPhone(phone).ifPresent((member -> {
       throw new CustomException(ErrorMessage.PHONE_IN_USE);
     }));
 
@@ -134,7 +134,7 @@ public class MemberServiceImpl implements MemberService {
     LocalDateTime endOfToday = LocalDate.now().atTime(LocalTime.MAX);
 
     // 1. 휴대폰 사용 여부 체크
-    this.memberRepository.getMemberByPhone(phone).ifPresent(member -> {
+    this.memberRepository.findByPhone(phone).ifPresent(member -> {
       throw new CustomException(ErrorMessage.PHONE_IN_USE);
     });
 
@@ -146,7 +146,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 3. 휴대폰 번호와 인증코드 여부 체크
-    VerificationEntity verification = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+    VerificationEntity verification = this.verificationRepository.findByPhoneAndVerificationCode(
         phone, code).orElseThrow(() -> new CustomException(ErrorMessage.NO_VERIFICATION_CODE));
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime threeMinLater = verification.getCreatedAt().plusMinutes(3);
@@ -163,7 +163,7 @@ public class MemberServiceImpl implements MemberService {
   public void checkEmailDuplication(MemberReqDto.checkEmailDuplication query) {
     String email = query.getEmail();
 
-    this.memberRepository.getMemberByEmail(email).ifPresent(member -> {
+    this.memberRepository.findByEmail(email).ifPresent(member -> {
       throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
     });
   }
@@ -182,10 +182,10 @@ public class MemberServiceImpl implements MemberService {
     body.setPassword(this.passwordEncoder.encode(body.getPassword()));
 
     // 2. Validation - 방어로직
-    this.memberRepository.getMemberByPhone(body.getPhone()).ifPresent(member -> {
+    this.memberRepository.findByPhone(body.getPhone()).ifPresent(member -> {
       throw new CustomException(ErrorMessage.PHONE_IN_USE);
     });
-    this.memberRepository.getMemberByEmail(body.getEmail()).ifPresent(member -> {
+    this.memberRepository.findByEmail(body.getEmail()).ifPresent(member -> {
       throw new CustomException(ErrorMessage.EMAIL_DUPLICATED);
     });
 
@@ -214,7 +214,7 @@ public class MemberServiceImpl implements MemberService {
   @Override
   public MemberResDto.signIn signIn(MemberReqDto.signIn body) {
     // 1. 이메일 유저 여부 체크
-    MemberEntity member = this.memberRepository.getMemberByEmail(body.getEmail())
+    MemberEntity member = this.memberRepository.findByEmail(body.getEmail())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_EMAIL_MEMBER_FOUND));
 
     // 2. 유저 비밀번호 체크
@@ -288,7 +288,7 @@ public class MemberServiceImpl implements MemberService {
   @Override
   public MemberResDto.getMemberInfo getMemberInfo(CustomUserDetails customUserDetails) {
     // 1. 유저 정보 검색
-    MemberEntity member = this.memberRepository.getMemberByMemberId(customUserDetails.getMemberId())
+    MemberEntity member = this.memberRepository.findByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
 
     // 2. 리턴
@@ -451,7 +451,7 @@ public class MemberServiceImpl implements MemberService {
     LocalDate birthday = query.getBirthday();
 
     // 2. 이메일 여부 조회
-    MemberEntity member = this.memberRepository.getMemberByMemberNameAndBirthday(memberName,
+    MemberEntity member = this.memberRepository.findByMemberNameAndBirthday(memberName,
         birthday).orElseThrow(() -> new CustomException(ErrorMessage.CAN_NOT_FIND_EMAIL));
 
     return new MemberResDto.findMemberEmail(member.getEmail());
@@ -465,7 +465,7 @@ public class MemberServiceImpl implements MemberService {
     String memberName = body.getMemberName();
 
     // 2. 멤버 찾기
-    MemberEntity member = this.memberRepository.getMemberByEmailAndMemberName(email, memberName)
+    MemberEntity member = this.memberRepository.findByEmailAndMemberName(email, memberName)
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_EMAIL_NOT_MATCHED));
 
     // 3. 임시 비밀번호 생성 및 비밀번호 업데이트
@@ -492,7 +492,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 2. 현재 비밀번호 확인
-    MemberEntity member = this.memberRepository.getMemberByEmail(email)
+    MemberEntity member = this.memberRepository.findByEmail(email)
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
     if (!this.passwordEncoder.matches(currentPassword, member.getPassword())) {
       throw new CustomException(ErrorMessage.WRONG_PASSWORD);
