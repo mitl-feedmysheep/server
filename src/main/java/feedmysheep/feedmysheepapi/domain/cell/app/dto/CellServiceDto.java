@@ -20,9 +20,9 @@ public class CellServiceDto {
   @Setter
   public static class cellGatheringMember {
 
-    private Long cellGatheringMemberId;
-    private Long cellGatheringId;
-    private Long cellMemberMapId;
+    private UUID cellGatheringMemberId;
+    private UUID cellGatheringId;
+    private UUID cellMemberMapId;
     private boolean isLeader;
     private String memberName;
     private LocalDate birthday;

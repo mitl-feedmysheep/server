@@ -23,6 +23,7 @@ import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,14 +42,14 @@ public class CellServiceImpl implements CellService {
   private final CellProcessor cellProcessor;
 
   @Override
-  public List<CellResDto.getCellMemberByCellId> getCellMemberListByCellId(Long cellId,
+  public List<CellResDto.getCellMemberByCellId> getCellMemberListByCellId(UUID cellId,
       CustomUserDetails customUserDetails) {
-    Long memberId = customUserDetails.getMemberId();
+    UUID memberId = customUserDetails.getMemberId();
 
     // 1. 본인이 속한 셀인지 확인
     List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellId);
-    List<Long> memberIdList = cellMemberMapList.stream().map(CellMemberMapEntity::getMemberId)
+    List<UUID> memberIdList = cellMemberMapList.stream().map(CellMemberMapEntity::getMemberId)
         .toList();
 
     // 2. 셀멤버맵으로 멤버리스트 조회
@@ -70,17 +71,17 @@ public class CellServiceImpl implements CellService {
   }
 
   @Override
-  public CellResDto.getGatheringsAndPrayersCount getGatheringsAndPrayersCountByCellId(Long cellId) {
+  public CellResDto.getGatheringsAndPrayersCount getGatheringsAndPrayersCountByCellId(UUID cellId) {
     // 1. 셀 아이디로 셀모임 조회
     List<CellGatheringEntity> cellGatheringList = this.cellGatheringRepository.findAllByCellId(
         cellId);
-    List<Long> cellGatheringIdList = cellGatheringList.stream()
+    List<UUID> cellGatheringIdList = cellGatheringList.stream()
         .map(CellGatheringEntity::getCellGatheringId).toList();
 
     // 2. 셀모임으로 셀모임멤버 조회
     List<CellGatheringMemberEntity> cellGatheringMemberList = this.cellGatheringMemberRepository.findAllByCellGatheringIdList(
         cellGatheringIdList);
-    List<Long> cellGatheringMemberIdList = cellGatheringMemberList.stream()
+    List<UUID> cellGatheringMemberIdList = cellGatheringMemberList.stream()
         .map(CellGatheringMemberEntity::getCellGatheringMemberId).toList();
 
     // 3. 셀모임멤버로 멤버당 셀모임멤버기도제목 조회
@@ -96,7 +97,7 @@ public class CellServiceImpl implements CellService {
   }
 
   @Override
-  public List<CellResDto.getCellGathering> getCellGatheringListByCellId(Long cellId,
+  public List<CellResDto.getCellGathering> getCellGatheringListByCellId(UUID cellId,
       CellReqDto.getCellGatheringListByCellId query) {
     int month = query.getMonth();
 
@@ -128,7 +129,7 @@ public class CellServiceImpl implements CellService {
 
   @Override
   public CellResDto.getCellGatheringAndMemberListAndPrayerList getCellGatheringAndMemberListAndPrayerList(
-      Long cellGatheringId) {
+      UUID cellGatheringId) {
     // 1. 셀모임 조회
     CellGatheringEntity cellGathering = this.cellGatheringRepository.findByCellGatheringId(
             cellGatheringId)
@@ -170,7 +171,7 @@ public class CellServiceImpl implements CellService {
 
   @Override
   public List<CellResDto.cellGatheringMemberPrayer> getCellGatheringMemberPrayerListByCellGatheringMemberId(
-      Long cellGatheringMemberId) {
+      UUID cellGatheringMemberId) {
     // 1. 셀모임 멤버별 기도제목 리스트 조회
     List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = this.cellGatheringMemberPrayerRepository.findAllByCellGatheringMemberId(
         cellGatheringMemberId);
@@ -181,14 +182,14 @@ public class CellServiceImpl implements CellService {
   }
 
   @Override
-  public void updateCellGatheringMemberByCellGatheringMemberId(Long cellGatheringMemberId,
+  public void updateCellGatheringMemberByCellGatheringMemberId(UUID cellGatheringMemberId,
       CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
       CustomUserDetails customUserDetails) {
     // 1. Data-destructuring
     Boolean worshipAttendance = body.getWorshipAttendance();
     Boolean cellGatheringAttendance = body.getWorshipAttendance();
     String story = body.getStory();
-    Long memberId = customUserDetails.getMemberId();
+    UUID memberId = customUserDetails.getMemberId();
     CellServiceDto.updateAttendancesAndStoryWhenExisting repoDto = new CellServiceDto.updateAttendancesAndStoryWhenExisting(
         cellGatheringMemberId, worshipAttendance, cellGatheringAttendance, story, memberId);
 
@@ -197,10 +198,10 @@ public class CellServiceImpl implements CellService {
   }
 
   @Override
-  public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(Long cellGatheringMemberId,
+  public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(UUID cellGatheringMemberId,
       List<String> prayerRequestList, CustomUserDetails customUserDetails) {
     // 1. Data-destructuring
-    Long memberId = customUserDetails.getMemberId();
+    UUID memberId = customUserDetails.getMemberId();
 
     // 2. 저장
     List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = new ArrayList<>();
@@ -231,15 +232,15 @@ public class CellServiceImpl implements CellService {
   @Override
   public void deleteCellGatheringMemberPrayerList(CellReqDto.deleteCellGatheringMemberPrayer body,
       CustomUserDetails customUserDetails) {
-    List<Integer> cellGatheringMemberPrayerIdList = body.getCellGatheringMemberPrayerIdList();
+    List<UUID> cellGatheringMemberPrayerIdList = body.getCellGatheringMemberPrayerIdList();
     cellGatheringMemberPrayerIdList.forEach(cellGatheringMemberPrayerId -> {
-      this.cellGatheringMemberPrayerRepository.deleteByCellGatheringMemberPrayerId(customUserDetails.getMemberId(),
-          (long) cellGatheringMemberPrayerId);
+      this.cellGatheringMemberPrayerRepository.deleteByCellGatheringMemberPrayerId(
+          customUserDetails.getMemberId(), cellGatheringMemberPrayerId);
     });
   }
 
   @Override
-  public CellResDto.getCellByCellId getCellByCellId(Long cellId) {
+  public CellResDto.getCellByCellId getCellByCellId(UUID cellId) {
 
     // 1. Repository에서 cell 검색
     CellEntity cell = this.cellRepository.findByCellId(cellId)
@@ -250,14 +251,14 @@ public class CellServiceImpl implements CellService {
 
   @Override
   public void deleteCellGatheringByCellGatheringId(CustomUserDetails customUserDetails,
-      Long cellGatheringId) {
-    this.cellGatheringRepository.deleteByCellGatheringId(
-        customUserDetails.getMemberId(), cellGatheringId);
+      UUID cellGatheringId) {
+    this.cellGatheringRepository.deleteByCellGatheringId(customUserDetails.getMemberId(),
+        cellGatheringId);
   }
 
   @Override
   @Transactional
-  public CellResDto.createCellGatheringByCellId createCellGatheringByCellId(Long cellId,
+  public CellResDto.createCellGatheringByCellId createCellGatheringByCellId(UUID cellId,
       CellReqDto.createCellGatheringByCellId body, CustomUserDetails customUserDetails) {
     // 1. 셀모임 생성
     CellGatheringEntity cellGathering = CellGatheringEntity.builder().cellId(cellId)
@@ -273,7 +274,7 @@ public class CellServiceImpl implements CellService {
     // 2-1. 셀멤버맵 조회
     List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellId);
-    List<Long> cellMemberMapIdList = cellMemberMapList.stream()
+    List<UUID> cellMemberMapIdList = cellMemberMapList.stream()
         .map(CellMemberMapEntity::getCellMemberMapId).toList();
     // 2-2. 셀멤버맵으로 셀모임멤버 생성
     List<CellGatheringMemberEntity> cellGatheringMemberList = new ArrayList<>();
@@ -294,7 +295,7 @@ public class CellServiceImpl implements CellService {
 
   @Override
   @Transactional
-  public void updateCellGatheringByCellGatheringId(Long cellGatheringId,
+  public void updateCellGatheringByCellGatheringId(UUID cellGatheringId,
       CellReqDto.updateCellGatheringByCellGatheringId body, CustomUserDetails customUserDetails) {
     // 1. 셀모임 존재여부 확인
     CellGatheringEntity cellGathering = this.cellGatheringRepository.findByCellGatheringId(

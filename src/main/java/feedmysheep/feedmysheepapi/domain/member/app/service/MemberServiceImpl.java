@@ -47,8 +47,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -190,7 +190,7 @@ public class MemberServiceImpl implements MemberService {
     });
 
     // 3. 기본 authroization 가져오기
-    AuthorizationEntity authorization = this.authorizationRepository.getByLevel(
+    AuthorizationEntity authorization = this.authorizationRepository.findByLevel(
             MemberAuth.MEMBER.getValue())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_AUTHORIZATION));
 
@@ -307,10 +307,10 @@ public class MemberServiceImpl implements MemberService {
    */
   @Override
   public List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
-      CustomUserDetails customUserDetails, Long bodyId) {
+      CustomUserDetails customUserDetails, UUID bodyId) {
 
     // 1. 멤버가 속한 교회가져오기
-    Long memberId = customUserDetails.getMemberId();
+    UUID memberId = customUserDetails.getMemberId();
     BodyEntity body = this.bodyRepository.findByBodyId(bodyId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_BODY));
     ChurchEntity church = this.churchRepository.findByChurchId(body.getChurchId())
@@ -322,8 +322,8 @@ public class MemberServiceImpl implements MemberService {
             church.getChurchId(), memberId)
         .orElseThrow(() -> new CustomException(ErrorMessage.NOT_CHURCH_MEMBER));
     boolean isChurchLeader = churchMemberMap.isLeader();
-    BodyMemberMapEntity bodyMemberMap = this.bodyMemberMapRepository.findByBodyIdAndMemberId(
-        bodyId, memberId).orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
+    BodyMemberMapEntity bodyMemberMap = this.bodyMemberMapRepository.findByBodyIdAndMemberId(bodyId,
+        memberId).orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_UNDER_BODY));
     boolean isBodyLeader = bodyMemberMap.isLeader();
 
     // 3.1 담임목사님이거나 부목사님일 경우
@@ -339,28 +339,28 @@ public class MemberServiceImpl implements MemberService {
     return this.memberMapper.getCellListByBodyIdAndMemberId(cellList);
   }
 
-  private List<CellEntity> getCellListForChurchLeaderAndBodyLeader(Long bodyId) {
+  private List<CellEntity> getCellListForChurchLeaderAndBodyLeader(UUID bodyId) {
     // 2. 바디 밑에 속한 올건 리스트 조회
     List<OrganEntity> organListByBodyId = this.organRepository.findAllByBodyId(bodyId);
-    List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getBodyId)
+    List<UUID> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getBodyId)
         .toList();
 
     // 3. 올건 밑에 속한 셀 리스트 조회
     return this.cellRepository.findAllByOrganIdListAndCurDate(organIdListByBodyId);
   }
 
-  private List<CellEntity> getCellListForOrganLeaderAndCellLeaderAndMember(Long memberId,
-      Long bodyId) {
+  private List<CellEntity> getCellListForOrganLeaderAndCellLeaderAndMember(UUID memberId,
+      UUID bodyId) {
     // 1. 바디 밑에 속한 올건 리스트 조회
     List<OrganEntity> organListByBodyId = this.organRepository.findAllByBodyId(bodyId);
-    List<Long> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
+    List<UUID> organIdListByBodyId = organListByBodyId.stream().map(OrganEntity::getOrganId)
         .toList();
 
     // 2. 유저가 속한 올건 조회 및 필터링
     List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.findAllByOrganIdListAndMemberId(
         organIdListByBodyId, memberId);
-    List<Long> organLeaderIdListByMemberId = new ArrayList<>();
-    List<Long> organIdListByMemberId = new ArrayList<>();
+    List<UUID> organLeaderIdListByMemberId = new ArrayList<>();
+    List<UUID> organIdListByMemberId = new ArrayList<>();
     organMemberMapList.forEach(organMemberMap -> {
       if (organMemberMap.isLeader()) {
         organLeaderIdListByMemberId.add(organMemberMap.getOrganId());
@@ -372,12 +372,12 @@ public class MemberServiceImpl implements MemberService {
     // 3. 유저가 속한 올건 중 셀 리스트 조회
     List<CellEntity> cellListByBodyId = this.cellRepository.findAllByOrganIdListAndCurDate(
         organIdListByMemberId);
-    List<Long> cellIdListByBodyId = cellListByBodyId.stream().map(CellEntity::getCellId).toList();
+    List<UUID> cellIdListByBodyId = cellListByBodyId.stream().map(CellEntity::getCellId).toList();
 
     // 4. 유저가 속한 셀 리스트 조회
     List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdListAndMemberIdAndCurDate(
         cellIdListByBodyId, memberId);
-    List<Long> cellIdListByMemberId = cellMemberMapList.stream().map(CellMemberMapEntity::getCellId)
+    List<UUID> cellIdListByMemberId = cellMemberMapList.stream().map(CellMemberMapEntity::getCellId)
         .toList();
 
     // 5. 유저가 속한 셀 리스트 필터링
@@ -406,7 +406,7 @@ public class MemberServiceImpl implements MemberService {
   }
 
   @Override
-  public void askToJoinChurchAndBody(Long churchId, Long bodyId,
+  public void askToJoinChurchAndBody(UUID churchId, UUID bodyId,
       CustomUserDetails customUserDetails) {
     // 1. 교회 및 부서 존재 여부 체크
     this.churchRepository.findByChurchId(churchId)
@@ -425,10 +425,10 @@ public class MemberServiceImpl implements MemberService {
     });
 
     // 3. 이미 가입된 부서인지 체크
-    this.bodyMemberMapRepository.findByBodyIdAndMemberId(bodyId,
-        customUserDetails.getMemberId()).ifPresent(bodyMemberMap -> {
-      throw new CustomException(ErrorMessage.ALREADY_JOINED_BODY);
-    });
+    this.bodyMemberMapRepository.findByBodyIdAndMemberId(bodyId, customUserDetails.getMemberId())
+        .ifPresent(bodyMemberMap -> {
+          throw new CustomException(ErrorMessage.ALREADY_JOINED_BODY);
+        });
     this.bodyMemberMapRepository.geInvalidBodyMemberMapByBodyIdAndMemberId(bodyId,
         customUserDetails.getMemberId()).ifPresent(bodyMemberMap -> {
       throw new CustomException(ErrorMessage.ALREADY_ASKED_TO_JOIN_BODY);
@@ -436,11 +436,17 @@ public class MemberServiceImpl implements MemberService {
 
     // 4. 교회 및 부서에 가입 요청
     ChurchMemberMapEntity churchMemberMap = ChurchMemberMapEntity.builder().churchId(churchId)
-        .memberId(customUserDetails.getMemberId()).isValid(false).build();
+        .memberId(customUserDetails.getMemberId()).build();
+    // TODO deleted로 처리하는 게 맞는걸까.. 임시 처리
+    churchMemberMap.setDeletedAt(LocalDateTime.now());
+    churchMemberMap.setDeletedBy(customUserDetails.getMemberId());
     this.churchMemberMapRepository.save(churchMemberMap);
 
     BodyMemberMapEntity bodyMemberMap = BodyMemberMapEntity.builder().bodyId(bodyId)
-        .memberId(customUserDetails.getMemberId()).isValid(false).build();
+        .memberId(customUserDetails.getMemberId()).build();
+    // TODO deleted로 처리하는 게 맞는걸까.. 임시 처리
+    bodyMemberMap.setDeletedAt(LocalDateTime.now());
+    bodyMemberMap.setDeletedBy(customUserDetails.getMemberId());
     this.bodyMemberMapRepository.save(bodyMemberMap);
   }
 
@@ -451,8 +457,8 @@ public class MemberServiceImpl implements MemberService {
     LocalDate birthday = query.getBirthday();
 
     // 2. 이메일 여부 조회
-    MemberEntity member = this.memberRepository.findByMemberNameAndBirthday(memberName,
-        birthday).orElseThrow(() -> new CustomException(ErrorMessage.CAN_NOT_FIND_EMAIL));
+    MemberEntity member = this.memberRepository.findByMemberNameAndBirthday(memberName, birthday)
+        .orElseThrow(() -> new CustomException(ErrorMessage.CAN_NOT_FIND_EMAIL));
 
     return new MemberResDto.findMemberEmail(member.getEmail());
   }
@@ -505,7 +511,7 @@ public class MemberServiceImpl implements MemberService {
 
   @Override
   public void deactivate(CustomUserDetails customUserDetails) {
-    Long memberId = customUserDetails.getMemberId();
+    UUID memberId = customUserDetails.getMemberId();
 
     this.memberRepository.deactivate(memberId);
   }

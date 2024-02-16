@@ -20,10 +20,8 @@ import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -57,7 +55,7 @@ public class ChurchServiceImpl implements ChurchService {
 
   @Override
   public List<ChurchResDto.getBodyByChurchId> getBodyListByChurchId(
-      CustomUserDetails customUserDetails, Long churchId) {
+      CustomUserDetails customUserDetails, UUID churchId) {
     // 1. 유효한 멤버인지 검사
     this.memberRepository.findByMemberId(customUserDetails.getMemberId())
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
@@ -82,29 +80,27 @@ public class ChurchServiceImpl implements ChurchService {
 
   @Override
   public ChurchResDto.getMemberEventListByMemberId getMemberEventsByBodyId(
-      getMemberEventsByBodyId query, Long bodyId) {
+      getMemberEventsByBodyId query, UUID bodyId) {
     // 1. Data-destructuring
     Integer month = query.getMonth();
     int page = query.getPage();
     int limit = query.getLimit();
-    int offset = page - 1; // Pageable에서 limit을 곱해서 설정해놓음
+    int offset = (page - 1) * limit;
 
     // 2. body(부서)에 해당하는 멤버들 bodyId 통해 가져오기
     List<BodyMemberMapEntity> bodyMemberListByBodyId = this.bodyMemberMapRepository.findAllByBodyId(
         bodyId);
 
     // 3. BodyMemberMap에 있는 모든 정보들 중에서, memberId에 대한 정보들만 가져와서 List형식으로 만듦.
-    List<Long> memberIdListByBodyId = bodyMemberListByBodyId.stream()
+    List<UUID> memberIdListByBodyId = bodyMemberListByBodyId.stream()
         .map(BodyMemberMapEntity::getMemberId).toList();
 
     // 4. memberRepository에 설정된 값과 매칭하기
-    Pageable pageRequest = PageRequest.of(offset, limit);
-    Page<MemberEntity> eventMemberPage = this.memberRepository.findAllByMemberIdListAndMonth(
-        memberIdListByBodyId, month, pageRequest);
+    List<MemberEntity> memberList = this.memberRepository.findAllByMemberIdListAndMonth(
+        memberIdListByBodyId, month, offset, limit);
 
     // 5. eventMemberPage에서 찾은 멤버들의 수 찾기 & 이벤트 멤버 조회 및 DTO 매핑
-    int totalMemberEventCount = Long.valueOf(eventMemberPage.getTotalElements()).intValue();
-    List<MemberEntity> memberList = eventMemberPage.getContent();
+    int totalMemberEventCount = memberList.size();
     List<ChurchServiceDto.memberEventList> eventMemberList = this.churchMapper.setMemberEventList(
         memberList);
 

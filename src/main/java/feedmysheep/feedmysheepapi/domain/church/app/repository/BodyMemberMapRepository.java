@@ -18,7 +18,7 @@ public interface BodyMemberMapRepository extends JpaRepository<BodyMemberMapEnti
   // TODO 테스트코드 --> 이건 어떻게 할지 고민 좀..
   @Query("SELECT bmm FROM BodyMemberMapEntity bmm WHERE bmm.deletedAt is not null and bmm.bodyId = :bodyId and bmm.memberId = :memberId")
   Optional<BodyMemberMapEntity> geInvalidBodyMemberMapByBodyIdAndMemberId(
-      @Param("bodyId") Long bodyId, @Param("memberId") Long memberId);
+      @Param("bodyId") UUID bodyId, @Param("memberId") UUID memberId);
 
   List<BodyMemberMapEntity> findAllByBodyId(UUID bodyId);
 }

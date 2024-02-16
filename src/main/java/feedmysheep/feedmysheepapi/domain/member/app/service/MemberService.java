@@ -4,8 +4,8 @@ import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberReqDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto;
 import feedmysheep.feedmysheepapi.domain.member.app.dto.MemberResDto.getChurchWithBody;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
-import feedmysheep.feedmysheepapi.models.CellEntity;
 import java.util.List;
+import java.util.UUID;
 
 public interface MemberService {
 
@@ -26,9 +26,9 @@ public interface MemberService {
   MemberResDto.getMemberInfo getMemberInfo(CustomUserDetails customUserDetails);
 
   List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
-      CustomUserDetails customUserDetails, Long bodyId);
+      CustomUserDetails customUserDetails, UUID bodyId);
 
-  void askToJoinChurchAndBody(Long churchId, Long bodyId, CustomUserDetails customUserDetails);
+  void askToJoinChurchAndBody(UUID churchId, UUID bodyId, CustomUserDetails customUserDetails);
 
   MemberResDto.findMemberEmail findMemberEmail(MemberReqDto.findMemberEmail query);
 

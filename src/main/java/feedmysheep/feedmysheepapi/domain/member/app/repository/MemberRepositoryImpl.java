@@ -17,10 +17,10 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
   @Override
   public List<MemberEntity> findAllByMemberIdListAndMonth(List<UUID> memberIdList, Integer month,
-      Integer page, Integer size) {
+      Integer offset, Integer limit) {
     return this.queryFactory.selectFrom(member)
         .where(member.memberId.in(memberIdList).and(member.birthday.month().eq(month)))
-        .offset((long) page * size).limit(size).fetch();
+        .offset((long) offset).limit(limit).fetch();
   }
 
   @Override

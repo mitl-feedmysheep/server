@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,7 +43,7 @@ public class ChurchController {
 
   @GetMapping("/church/{churchId}/bodies")
   public List<ChurchResDto.getBodyByChurchId> getBodyListByChurchId(
-      @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long churchId) {
+      @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable UUID churchId) {
     return this.churchService.getBodyListByChurchId(customUserDetails, churchId);
   }
 
@@ -54,7 +55,7 @@ public class ChurchController {
 
   @GetMapping("/church/body/{bodyId}/member-events")
   public ChurchResDto.getMemberEventListByMemberId getMemberEventsByBodyId(
-      @Valid ChurchReqDto.getMemberEventsByBodyId query, @PathVariable Long bodyId) {
+      @Valid ChurchReqDto.getMemberEventsByBodyId query, @PathVariable UUID bodyId) {
     return this.churchService.getMemberEventsByBodyId(query, bodyId);
   }
 }

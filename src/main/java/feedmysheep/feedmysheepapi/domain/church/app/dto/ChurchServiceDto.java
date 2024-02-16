@@ -1,6 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.church.app.dto;
 
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -14,7 +15,7 @@ public class ChurchServiceDto {
   @Setter
   public static class memberEventList {
 
-    private Long memberId;
+    private UUID memberId;
     private String memberName;
     private String sex;
     private LocalDate birthday;

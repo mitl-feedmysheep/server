@@ -7,12 +7,12 @@ import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ public class CellProcessor {
   public List<MemberEntity> addIsLeaderToMemberList(List<MemberEntity> cellMemberList,
       List<CellMemberMapEntity> cellMemberMapList) {
     // { memberId: boolean... } 멤버아이디: 리더여부
-    Map<Long, Boolean> memberIdLeaderMap = cellMemberMapList.stream()
+    Map<UUID, Boolean> memberIdLeaderMap = cellMemberMapList.stream()
         .collect(Collectors.toMap(CellMemberMapEntity::getMemberId, CellMemberMapEntity::isLeader));
 
     // cellMemberList를 순회하면서 memberIdLeaderMap을 참조하여 리더 여부를 설정

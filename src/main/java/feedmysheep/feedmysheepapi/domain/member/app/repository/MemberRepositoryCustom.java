@@ -8,7 +8,7 @@ public interface MemberRepositoryCustom {
 
   // TODO 원하는대로 동작하는지 테스트해보기..
   List<MemberEntity> findAllByMemberIdListAndMonth(List<UUID> memberIdList, Integer month,
-      Integer page, Integer size);
+      Integer offset, Integer limit);
 
   // TODO 테스트코드
   List<MemberEntity> findAllByMemberIdList(List<UUID> memberIdList);

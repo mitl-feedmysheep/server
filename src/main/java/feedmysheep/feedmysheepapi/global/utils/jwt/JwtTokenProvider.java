@@ -13,6 +13,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -55,7 +56,7 @@ public class JwtTokenProvider {
           .parseClaimsJws(token).getBody();
 
       JwtDto.memberInfo memberInfo = new memberInfo();
-      memberInfo.setMemberId(claims.get("memberId", Long.class));
+      memberInfo.setMemberId(claims.get("memberId", UUID.class));
       memberInfo.setMemberName(claims.get("memberName", String.class));
 
       return memberInfo;
