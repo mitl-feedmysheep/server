@@ -20,7 +20,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
       Integer offset, Integer limit) {
     return this.queryFactory.selectFrom(member)
         .where(member.memberId.in(memberIdList).and(member.birthday.month().eq(month)))
-        .offset((long) offset).limit(limit).fetch();
+        .orderBy(member.birthday.dayOfMonth().asc()).offset((long) offset).limit(limit).fetch();
   }
 
   @Override
