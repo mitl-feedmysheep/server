@@ -7,13 +7,10 @@ import java.util.UUID;
 
 public interface CellGatheringMemberPrayerRepositoryCustom {
 
-  // TODO 테스트코드
   List<CellGatheringMemberPrayerEntity> findAllByCellGatheringMemberIdList(
       List<UUID> cellGatheringMemberIdList);
 
-  // TODO 테스트코드
   void updateByCellGatheringMemberPrayerId(updatePrayerById updateDto);
 
-  // TODO 테스트코드
-  void deleteByCellGatheringMemberPrayerId(UUID memberId, UUID cellGatheringMemberPrayerId);
+  void deleteByCellGatheringMemberPrayerId(UUID cellGatheringMemberPrayerId);
 }

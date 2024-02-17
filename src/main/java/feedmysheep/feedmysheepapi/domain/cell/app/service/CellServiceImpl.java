@@ -4,7 +4,6 @@ import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellMapper;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto;
-import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto.updatePrayerById;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberPrayerRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringMemberRepository;
 import feedmysheep.feedmysheepapi.domain.cell.app.repository.CellGatheringRepository;
@@ -183,15 +182,13 @@ public class CellServiceImpl implements CellService {
 
   @Override
   public void updateCellGatheringMemberByCellGatheringMemberId(UUID cellGatheringMemberId,
-      CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
-      CustomUserDetails customUserDetails) {
+      CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body) {
     // 1. Data-destructuring
     Boolean worshipAttendance = body.getWorshipAttendance();
     Boolean cellGatheringAttendance = body.getWorshipAttendance();
     String story = body.getStory();
-    UUID memberId = customUserDetails.getMemberId();
     CellServiceDto.updateAttendancesAndStoryWhenExisting repoDto = new CellServiceDto.updateAttendancesAndStoryWhenExisting(
-        cellGatheringMemberId, worshipAttendance, cellGatheringAttendance, story, memberId);
+        cellGatheringMemberId, worshipAttendance, cellGatheringAttendance, story);
 
     // 2. 업데이트
     this.cellGatheringMemberRepository.updateByCellGatheringMemberId(repoDto);
@@ -220,9 +217,9 @@ public class CellServiceImpl implements CellService {
       List<CellReqDto.updateCellGatheringMemberPrayer> cellGatheringMemberPrayerList,
       CustomUserDetails customUserDetails) {
     cellGatheringMemberPrayerList.forEach(cellGatheringMemberPrayer -> {
-      CellServiceDto.updatePrayerById updateDto = new updatePrayerById(
+      CellServiceDto.updatePrayerById updateDto = new CellServiceDto.updatePrayerById(
           cellGatheringMemberPrayer.getCellGatheringMemberPrayerId(),
-          cellGatheringMemberPrayer.getPrayerRequest(), customUserDetails.getMemberId());
+          cellGatheringMemberPrayer.getPrayerRequest());
       this.cellGatheringMemberPrayerRepository.updateByCellGatheringMemberPrayerId(updateDto);
     });
   }
@@ -231,10 +228,8 @@ public class CellServiceImpl implements CellService {
   public void deleteCellGatheringMemberPrayerList(CellReqDto.deleteCellGatheringMemberPrayer body,
       CustomUserDetails customUserDetails) {
     List<UUID> cellGatheringMemberPrayerIdList = body.getCellGatheringMemberPrayerIdList();
-    cellGatheringMemberPrayerIdList.forEach(cellGatheringMemberPrayerId -> {
-      this.cellGatheringMemberPrayerRepository.deleteByCellGatheringMemberPrayerId(
-          customUserDetails.getMemberId(), cellGatheringMemberPrayerId);
-    });
+    cellGatheringMemberPrayerIdList.forEach(
+        this.cellGatheringMemberPrayerRepository::deleteByCellGatheringMemberPrayerId);
   }
 
   @Override
@@ -248,10 +243,8 @@ public class CellServiceImpl implements CellService {
   }
 
   @Override
-  public void deleteCellGatheringByCellGatheringId(CustomUserDetails customUserDetails,
-      UUID cellGatheringId) {
-    this.cellGatheringRepository.deleteByCellGatheringId(customUserDetails.getMemberId(),
-        cellGatheringId);
+  public void deleteCellGatheringByCellGatheringId(UUID cellGatheringId) {
+    this.cellGatheringRepository.deleteByCellGatheringId(cellGatheringId);
   }
 
   @Override

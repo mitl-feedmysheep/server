@@ -30,14 +30,14 @@ class WordRepositoryTest {
   static WordEntity word1;
 
   @BeforeAll
-  public static void setup(@Autowired WordRepository wordRepository) {
+  public static void setUp(@Autowired WordRepository wordRepository) {
     String screenKey = TestUtil.getRandomString();
     word1 = wordRepository.save(DataFactory.createWordByScreenKey(screenKey));
     wordRepository.save(DataFactory.createWordByScreenKey(screenKey));
   }
 
   @AfterAll
-  public static void cleanup(@Autowired WordRepository wordRepository) {
+  public static void tearDown(@Autowired WordRepository wordRepository) {
     wordRepository.deleteAll();
   }
 

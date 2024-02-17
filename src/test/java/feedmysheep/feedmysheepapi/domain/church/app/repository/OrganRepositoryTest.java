@@ -31,7 +31,7 @@ public class OrganRepositoryTest {
   private static UUID bodyId = TestUtil.getRandomUUID();
 
   @BeforeAll
-  public static void setup(@Autowired OrganRepository organRepository) {
+  public static void setUp(@Autowired OrganRepository organRepository) {
     organRepository.save(DataFactory.createOrganByBodyId(bodyId));
     organRepository.save(DataFactory.createOrganByBodyId(bodyId));
     organRepository.save(DataFactory.createOrganByBodyId(bodyId));
@@ -39,7 +39,7 @@ public class OrganRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired OrganRepository organRepository) {
+  public static void tearDown(@Autowired OrganRepository organRepository) {
     organRepository.deleteAll();
   }
 

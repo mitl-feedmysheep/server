@@ -34,7 +34,7 @@ class BodyMemberMapRepositoryTest {
   static UUID bodyId = TestUtil.getRandomUUID();
 
   @BeforeAll
-  public static void setup(@Autowired BodyMemberMapRepository bodyMemberMapRepository) {
+  public static void setUp(@Autowired BodyMemberMapRepository bodyMemberMapRepository) {
     bodyMemberMapRepository.save(
         DataFactory.createBodyMemberMapByBodyIdAndMemberId(bodyId, memberId));
     BodyMemberMapEntity invalidBodyMemberMap = DataFactory.createBodyMemberMapByBodyIdAndMemberId(
@@ -49,7 +49,7 @@ class BodyMemberMapRepositoryTest {
 
 
   @AfterAll
-  public static void cleanup(@Autowired BodyMemberMapRepository bodyMemberMapRepository) {
+  public static void tearDown(@Autowired BodyMemberMapRepository bodyMemberMapRepository) {
     bodyMemberMapRepository.deleteAll();
   }
 

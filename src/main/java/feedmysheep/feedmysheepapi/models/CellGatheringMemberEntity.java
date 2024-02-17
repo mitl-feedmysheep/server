@@ -41,11 +41,11 @@ public class CellGatheringMemberEntity extends BaseEntity implements Persistable
   private boolean cellGatheringAttendance = false;
 
   @Setter
-  @Column(name = "story", nullable = false, length = 500)
+  @Column(name = "story", nullable = true, length = 500)
   private String story;
 
   @Setter
-  @Column(name = "leader_comment", nullable = false, length = 100)
+  @Column(name = "leader_comment", nullable = true, length = 100)
   private String leaderComment;
 
   @Builder

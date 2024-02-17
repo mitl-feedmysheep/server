@@ -24,8 +24,7 @@ public interface CellService {
       UUID cellGatheringMemberId);
 
   void updateCellGatheringMemberByCellGatheringMemberId(UUID cellGatheringMemberId,
-      CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
-      CustomUserDetails customUserDetails);
+      CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body);
 
   void insertCellGatheringMemberPrayerListByCellGatheringMemberId(UUID cellGatheringMemberId,
       List<String> prayerRequestList, CustomUserDetails customUserDetails);
@@ -39,8 +38,7 @@ public interface CellService {
 
   CellResDto.getCellByCellId getCellByCellId(UUID cellId);
 
-  void deleteCellGatheringByCellGatheringId(CustomUserDetails customUserDetails,
-      UUID cellGatheringId);
+  void deleteCellGatheringByCellGatheringId(UUID cellGatheringId);
 
   CellResDto.createCellGatheringByCellId createCellGatheringByCellId(UUID cellId,
       CellReqDto.createCellGatheringByCellId body, CustomUserDetails customUserDetails);

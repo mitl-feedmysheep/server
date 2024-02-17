@@ -37,7 +37,7 @@ class CellMemberMapRepositoryTest {
   static List<UUID> cellIdList = new ArrayList<>();
 
   @BeforeAll
-  public static void setup(@Autowired MemberRepository memberRepository,
+  public static void setUp(@Autowired MemberRepository memberRepository,
       @Autowired CellMemberMapRepository cellMemberMapRepository) {
     // 셀 추가
     cellIdList.add(TestUtil.getRandomUUID());
@@ -61,7 +61,7 @@ class CellMemberMapRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired AuthorizationRepository authorizationRepository,
+  public static void tearDown(@Autowired AuthorizationRepository authorizationRepository,
       @Autowired MemberRepository memberRepository,
       @Autowired CellMemberMapRepository cellMemberMapRepository) {
     authorizationRepository.deleteAll();

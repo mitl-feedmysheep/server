@@ -31,13 +31,13 @@ class AuthorizationScreenRepositoryTest {
   static AuthorizationScreenEntity authorizationScreen1;
 
   @BeforeAll
-  public static void setup(@Autowired AuthorizationScreenRepository authorizationScreenRepository) {
+  public static void setUp(@Autowired AuthorizationScreenRepository authorizationScreenRepository) {
     authorizationScreen1 = authorizationScreenRepository.save(
         DataFactory.createAuthorizationScreen());
   }
 
   @AfterAll
-  public static void cleanup(
+  public static void tearDown(
       @Autowired AuthorizationScreenRepository authorizationScreenRepository) {
     authorizationScreenRepository.deleteAll();
   }

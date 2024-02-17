@@ -31,7 +31,7 @@ class AuthorizationRepositoryTest {
   static AuthorizationEntity authorization1;
 
   @BeforeAll
-  public static void setup(@Autowired AuthorizationRepository authorizationRepository) {
+  public static void setUp(@Autowired AuthorizationRepository authorizationRepository) {
     authorization1 = DataFactory.createAuthorization();
     authorization1.setLevel(1);
     authorizationRepository.save(authorization1);
@@ -39,7 +39,7 @@ class AuthorizationRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired AuthorizationRepository authorizationRepository) {
+  public static void tearDown(@Autowired AuthorizationRepository authorizationRepository) {
     authorizationRepository.deleteAll();
   }
 

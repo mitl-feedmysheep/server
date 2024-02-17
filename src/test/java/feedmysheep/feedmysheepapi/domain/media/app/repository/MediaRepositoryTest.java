@@ -29,14 +29,14 @@ class MediaRepositoryTest {
   static MediaEntity media1;
 
   @BeforeAll
-  public static void setup(@Autowired MediaRepository mediaRepository) {
+  public static void setUp(@Autowired MediaRepository mediaRepository) {
     String screenKey = TestUtil.getRandomString();
     media1 = mediaRepository.save(DataFactory.createMediaByScreenKey(screenKey));
     mediaRepository.save(DataFactory.createMediaByScreenKey(screenKey));
   }
 
   @AfterAll
-  public static void cleanup(@Autowired MediaRepository mediaRepository) {
+  public static void tearDown(@Autowired MediaRepository mediaRepository) {
     mediaRepository.deleteAll();
   }
 

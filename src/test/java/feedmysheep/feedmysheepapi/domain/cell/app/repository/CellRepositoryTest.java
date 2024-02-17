@@ -33,7 +33,7 @@ class CellRepositoryTest {
   static UUID organId2 = TestUtil.getRandomUUID();
 
   @BeforeAll
-  public static void setup(@Autowired CellRepository cellRepository) {
+  public static void setUp(@Autowired CellRepository cellRepository) {
     cellRepository.save(DataFactory.createCellByOrganId(organId1));
     cellRepository.save(DataFactory.createCellByOrganId(organId2));
     cellRepository.save(DataFactory.createCellByOrganId(organId2));
@@ -46,7 +46,7 @@ class CellRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired CellRepository cellRepository) {
+  public static void tearDown(@Autowired CellRepository cellRepository) {
     cellRepository.deleteAll();
   }
 

@@ -31,7 +31,7 @@ class VerificationRepositoryTest {
   static VerificationEntity verification1;
 
   @BeforeAll
-  public static void setup(@Autowired VerificationRepository verificationRepository) {
+  public static void setUp(@Autowired VerificationRepository verificationRepository) {
     String phone = TestUtil.getRandomPhone();
     verification1 = verificationRepository.save(DataFactory.createVerificationByPhone(phone));
     verificationRepository.save(DataFactory.createVerificationByPhone(phone));
@@ -39,7 +39,7 @@ class VerificationRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired VerificationRepository verificationRepository) {
+  public static void tearDown(@Autowired VerificationRepository verificationRepository) {
     verificationRepository.deleteAll();
   }
 

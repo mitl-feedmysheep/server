@@ -27,7 +27,7 @@ public class AuthorizationEntity extends BaseEntity implements Persistable<UUID>
   private UUID authorizationId = UuidCreator.getTimeOrdered();
 
   @Setter
-  @Column(name = "level", nullable = false)
+  @Column(name = "level", nullable = false, unique = true)
   private int level = 0;
 
   @Column(name = "level_name", length = 20, nullable = false)

@@ -4,7 +4,6 @@ import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellReqDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto;
 import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellResDto.getCellMemberByCellId;
 import feedmysheep.feedmysheepapi.domain.cell.app.service.CellService;
-import feedmysheep.feedmysheepapi.domain.cell.app.service.CellServiceImpl;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -68,10 +67,8 @@ public class CellController {
   @PutMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}")
   public void updateCellGatheringMemberByCellGatheringMemberId(
       @PathVariable UUID cellGatheringMemberId,
-      @Valid @RequestBody CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
-      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-    this.cellService.updateCellGatheringMemberByCellGatheringMemberId(cellGatheringMemberId, body,
-        customUserDetails);
+      @Valid @RequestBody CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body) {
+    this.cellService.updateCellGatheringMemberByCellGatheringMemberId(cellGatheringMemberId, body);
   }
 
   @GetMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
@@ -101,10 +98,8 @@ public class CellController {
   }
 
   @DeleteMapping("/cell-gathering/{cellGatheringId}")
-  public void deleteCellGatheringByCellGatheringId(
-      @AuthenticationPrincipal CustomUserDetails customUserDetails,
-      @PathVariable UUID cellGatheringId) {
-    this.cellService.deleteCellGatheringByCellGatheringId(customUserDetails, cellGatheringId);
+  public void deleteCellGatheringByCellGatheringId(@PathVariable UUID cellGatheringId) {
+    this.cellService.deleteCellGatheringByCellGatheringId(cellGatheringId);
   }
 
   @PostMapping("/{cellId}/cell-gathering")

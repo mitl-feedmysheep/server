@@ -37,7 +37,7 @@ class MemberRepositoryTest {
   static MemberEntity invalidMember1;
 
   @BeforeAll
-  public static void setup(@Autowired AuthorizationRepository authorizationRepository,
+  public static void setUp(@Autowired AuthorizationRepository authorizationRepository,
       @Autowired MemberRepository memberRepository) {
     authorization1 = authorizationRepository.save(DataFactory.createAuthorization());
     validMember1 = memberRepository.save(DataFactory.createMember(
@@ -48,7 +48,7 @@ class MemberRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired AuthorizationRepository authorizationRepository,
+  public static void tearDown(@Autowired AuthorizationRepository authorizationRepository,
       @Autowired MemberRepository memberRepository) {
     authorizationRepository.deleteAll();
     memberRepository.deleteAll();

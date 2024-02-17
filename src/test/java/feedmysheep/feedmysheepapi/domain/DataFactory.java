@@ -5,6 +5,9 @@ import feedmysheep.feedmysheepapi.models.AuthorizationScreenEntity;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.CellEntity;
+import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
+import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
+import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
@@ -16,6 +19,7 @@ import feedmysheep.feedmysheepapi.models.TextEntity;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import feedmysheep.feedmysheepapi.models.WordEntity;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class DataFactory {
@@ -111,5 +115,27 @@ public class DataFactory {
   public static AuthorizationScreenEntity createAuthorizationScreen() {
     return AuthorizationScreenEntity.builder().authorizationId(TestUtil.getRandomUUID())
         .screenKey(TestUtil.getRandomString()).build();
+  }
+
+  // 교회 모임 멤버 기도제목 생성
+  public static CellGatheringMemberPrayerEntity createCellGatheringMemberPrayer(
+      UUID cellGatheringMemberId) {
+    return CellGatheringMemberPrayerEntity.builder().cellGatheringMemberId(cellGatheringMemberId)
+        .prayerRequest(TestUtil.getRandomString()).build();
+  }
+
+  // 교회 모임 멤버 생성
+  public static CellGatheringMemberEntity createCellGatheringMember(UUID cellGatheringId,
+      UUID cellMemberMapId) {
+    return CellGatheringMemberEntity.builder().cellGatheringId(cellGatheringId)
+        .cellMemberMapId(cellMemberMapId).build();
+  }
+
+  // 교회 모임 생성
+  public static CellGatheringEntity createCellGathering(UUID cellId) {
+    LocalDateTime now = LocalDateTime.now();
+    return CellGatheringEntity.builder().cellId(cellId).gatheringTitle(TestUtil.getRandomString())
+        .gatheringDate(TestUtil.getRandomBirthday()).startedAt(now).endedAt(now.plusHours(1))
+        .gatheringPlace(TestUtil.getRandomString()).build();
   }
 }

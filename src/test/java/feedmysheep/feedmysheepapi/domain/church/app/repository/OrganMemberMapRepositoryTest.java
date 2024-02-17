@@ -34,7 +34,7 @@ class OrganMemberMapRepositoryTest {
   static UUID memberId = TestUtil.getRandomUUID();
 
   @BeforeAll
-  public static void setup(@Autowired OrganMemberMapRepository organMemberMapRepository) {
+  public static void setUp(@Autowired OrganMemberMapRepository organMemberMapRepository) {
     organMemberMapRepository.save(
         DataFactory.createOrganMemberMapByOrganIdAndMemberId(organIdList.get(0), memberId));
     organMemberMapRepository.save(
@@ -49,7 +49,7 @@ class OrganMemberMapRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired OrganMemberMapRepository organMemberMapRepository) {
+  public static void tearDown(@Autowired OrganMemberMapRepository organMemberMapRepository) {
     organMemberMapRepository.deleteAll();
   }
 

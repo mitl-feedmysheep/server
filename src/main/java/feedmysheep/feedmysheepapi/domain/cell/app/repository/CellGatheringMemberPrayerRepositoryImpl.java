@@ -1,7 +1,7 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto.updatePrayerById;
+import feedmysheep.feedmysheepapi.domain.cell.app.dto.CellServiceDto;
 import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import feedmysheep.feedmysheepapi.models.QCellGatheringMemberPrayerEntity;
 import java.time.LocalDateTime;
@@ -19,13 +19,13 @@ public class CellGatheringMemberPrayerRepositoryImpl implements
   @Override
   public List<CellGatheringMemberPrayerEntity> findAllByCellGatheringMemberIdList(
       List<UUID> cellGatheringMemberIdList) {
-    return queryFactory.selectFrom(cellGatheringMemberPrayer)
+    return this.queryFactory.selectFrom(cellGatheringMemberPrayer)
         .where(cellGatheringMemberPrayer.cellGatheringMemberId.in(cellGatheringMemberIdList))
         .fetch();
   }
 
   @Override
-  public void updateByCellGatheringMemberPrayerId(updatePrayerById updateDto) {
+  public void updateByCellGatheringMemberPrayerId(CellServiceDto.updatePrayerById updateDto) {
     this.queryFactory.update(cellGatheringMemberPrayer)
         .set(cellGatheringMemberPrayer.prayerRequest, updateDto.getPrayerRequest()).where(
             cellGatheringMemberPrayer.cellGatheringMemberPrayerId.eq(
@@ -33,7 +33,7 @@ public class CellGatheringMemberPrayerRepositoryImpl implements
   }
 
   @Override
-  public void deleteByCellGatheringMemberPrayerId(UUID memberId, UUID cellGatheringMemberPrayerId) {
+  public void deleteByCellGatheringMemberPrayerId(UUID cellGatheringMemberPrayerId) {
     this.queryFactory.update(cellGatheringMemberPrayer)
         .set(cellGatheringMemberPrayer.deletedAt, LocalDateTime.now()).where(
             cellGatheringMemberPrayer.cellGatheringMemberPrayerId.eq(cellGatheringMemberPrayerId))

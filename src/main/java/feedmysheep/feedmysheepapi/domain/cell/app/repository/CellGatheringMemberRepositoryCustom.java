@@ -7,10 +7,8 @@ import java.util.UUID;
 
 public interface CellGatheringMemberRepositoryCustom {
 
-  // TODO 테스트코드 작성
   List<CellGatheringMemberEntity> findAllByCellGatheringIdList(List<UUID> cellGatheringIdList);
 
-  // TODO 테스트코드 작성
   void updateByCellGatheringMemberId(
       CellServiceDto.updateAttendancesAndStoryWhenExisting updateDto);
 }

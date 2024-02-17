@@ -28,7 +28,7 @@ class VerificationFailLogRepositoryTest {
   VerificationFailLogRepository verificationFailLogRepository;
 
   @AfterAll
-  public static void cleanup(@Autowired VerificationRepository verificationRepository) {
+  public static void tearDown(@Autowired VerificationRepository verificationRepository) {
     verificationRepository.deleteAll();
   }
 

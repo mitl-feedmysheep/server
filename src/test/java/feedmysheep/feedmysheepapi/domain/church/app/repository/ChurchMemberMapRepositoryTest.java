@@ -48,7 +48,7 @@ class ChurchMemberMapRepositoryTest {
   static ChurchMemberMapEntity invalidChurchMemberMap1;
 
   @BeforeAll
-  public static void setup(@Autowired ChurchRepository churchRepository,
+  public static void setUp(@Autowired ChurchRepository churchRepository,
       @Autowired AuthorizationRepository authorizationRepository,
       @Autowired MemberRepository memberRepository,
       @Autowired ChurchMemberMapRepository churchMemberMapRepository) {
@@ -67,7 +67,7 @@ class ChurchMemberMapRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired ChurchRepository churchRepository,
+  public static void tearDown(@Autowired ChurchRepository churchRepository,
       @Autowired AuthorizationRepository authorizationRepository,
       @Autowired MemberRepository memberRepository,
       @Autowired ChurchMemberMapRepository churchMemberMapRepository) {

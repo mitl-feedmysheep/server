@@ -13,9 +13,8 @@ public class CellGatheringRepositoryImpl implements CellGatheringRepositoryCusto
   private final QCellGatheringEntity cellGathering = QCellGatheringEntity.cellGatheringEntity;
 
   @Override
-  public void deleteByCellGatheringId(UUID memberId, UUID cellGatheringId) {
+  public void deleteByCellGatheringId(UUID cellGatheringId) {
     this.queryFactory.update(cellGathering).set(cellGathering.deletedAt, LocalDateTime.now())
-        .set(cellGathering.deletedBy, memberId)
         .where(cellGathering.cellGatheringId.eq(cellGatheringId)).execute();
   }
 }

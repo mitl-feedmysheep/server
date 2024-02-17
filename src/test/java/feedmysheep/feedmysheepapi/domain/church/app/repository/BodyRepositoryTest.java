@@ -35,7 +35,7 @@ class BodyRepositoryTest {
   static BodyEntity invalidBody1;
 
   @BeforeAll
-  public static void setup(@Autowired BodyRepository bodyRepository,
+  public static void setUp(@Autowired BodyRepository bodyRepository,
       @Autowired ChurchRepository churchRepository) {
     // 기본 한개씩
     ChurchEntity church = DataFactory.createChurch();
@@ -47,7 +47,7 @@ class BodyRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired BodyRepository bodyRepository,
+  public static void tearDown(@Autowired BodyRepository bodyRepository,
       @Autowired ChurchRepository churchRepository) {
     bodyRepository.deleteAll();
     churchRepository.deleteAll();

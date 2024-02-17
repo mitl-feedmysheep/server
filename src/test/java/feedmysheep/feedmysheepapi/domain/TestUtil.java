@@ -65,6 +65,6 @@ public class TestUtil {
   }
 
   public static UUID getRandomUUID() {
-    return UuidCreator.getTimeOrdered();
+    return UUID.randomUUID();
   }
 }

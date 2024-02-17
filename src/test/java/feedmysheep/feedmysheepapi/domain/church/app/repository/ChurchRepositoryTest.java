@@ -32,7 +32,7 @@ class ChurchRepositoryTest {
   static ChurchEntity invalidChurch1;
 
   @BeforeAll
-  public static void setup(@Autowired ChurchRepository churchRepository) {
+  public static void setUp(@Autowired ChurchRepository churchRepository) {
     ChurchEntity validChurch = DataFactory.createChurch();
     validChurch1 = churchRepository.save(validChurch);
     invalidChurch1 = DataFactory.createChurch();
@@ -41,7 +41,7 @@ class ChurchRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired ChurchRepository churchRepository) {
+  public static void tearDown(@Autowired ChurchRepository churchRepository) {
     churchRepository.deleteAll();
   }
 

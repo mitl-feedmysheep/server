@@ -29,13 +29,13 @@ class TextRepositoryTest {
   static TextEntity text1;
 
   @BeforeAll
-  public static void setup(@Autowired TextRepository textRepository) {
+  public static void setUp(@Autowired TextRepository textRepository) {
     String screenKey = TestUtil.getRandomString();
     text1 = textRepository.save(DataFactory.createTextByScreenKey(screenKey));
   }
 
   @AfterAll
-  public static void cleanup(@Autowired TextRepository textRepository) {
+  public static void tearDown(@Autowired TextRepository textRepository) {
     textRepository.deleteAll();
   }
 
