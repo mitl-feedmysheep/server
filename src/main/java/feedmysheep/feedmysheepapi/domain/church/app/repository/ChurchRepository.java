@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface ChurchRepository extends JpaRepository<ChurchEntity, UUID>,
     ChurchRepositoryCustom {
 
-  List<ChurchEntity> findByChurchName(String churchName);
+  List<ChurchEntity> findAllByChurchName(String churchName);
 
   Optional<ChurchEntity> findByChurchId(UUID churchId);
 }

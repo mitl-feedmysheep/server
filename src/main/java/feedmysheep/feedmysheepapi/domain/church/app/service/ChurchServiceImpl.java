@@ -44,7 +44,7 @@ public class ChurchServiceImpl implements ChurchService {
     // 2. 교회 리스트
     List<ChurchEntity> churchList;
     if (churchName != null && !churchName.isEmpty()) {
-      churchList = this.churchRepository.findByChurchName(churchName);
+      churchList = this.churchRepository.findAllByChurchName(churchName);
     } else {
       churchList = this.churchRepository.findAll();
     }

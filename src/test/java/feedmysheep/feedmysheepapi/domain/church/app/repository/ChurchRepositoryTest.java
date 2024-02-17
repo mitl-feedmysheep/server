@@ -65,9 +65,9 @@ class ChurchRepositoryTest {
     // given
 
     // when
-    List<ChurchEntity> validChurchList = this.churchRepository.findByChurchName(
+    List<ChurchEntity> validChurchList = this.churchRepository.findAllByChurchName(
         validChurch1.getChurchName());
-    List<ChurchEntity> invalidChurchList = this.churchRepository.findByChurchName(
+    List<ChurchEntity> invalidChurchList = this.churchRepository.findAllByChurchName(
         invalidChurch1.getChurchName());
 
     // then
