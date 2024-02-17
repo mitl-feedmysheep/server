@@ -20,7 +20,7 @@ import org.springframework.lang.Nullable;
 @Getter
 @Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BodyMemberMapEntity extends CreatedUpdated implements Persistable<UUID> {
+public class BodyMemberMapEntity extends BaseEntity implements Persistable<UUID> {
 
   @Id
   @Column(columnDefinition = "BINARY(16)", name = "body_member_map_id")

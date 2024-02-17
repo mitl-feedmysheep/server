@@ -73,7 +73,6 @@ public class ChurchServiceImpl implements ChurchService {
         .churchLocation(body.getChurchLocation()).churchLogoUrl(body.getChurchLogoUrl())
         .churchNumber(body.getChurchNumber()).churchDescription(body.getChurchDescription())
         .churchNumber(body.getChurchNumber()).build();
-    church.setCreatedBy(customUserDetails.getMemberId());
 
     this.churchRepository.save(church);
   }

@@ -42,7 +42,7 @@ public class JwtTokenProvider {
 
     // Private Claims
     Map<String, Object> privateClaims = new HashMap<>();
-    privateClaims.put("memberId", memberInfo.getMemberId());
+    privateClaims.put("memberId", memberInfo.getMemberId().toString());
     privateClaims.put("memberName", memberInfo.getMemberName());
 
     return Jwts.builder().setClaims(privateClaims).setIssuedAt(now).setExpiration(expiryDate)
@@ -56,7 +56,7 @@ public class JwtTokenProvider {
           .parseClaimsJws(token).getBody();
 
       JwtDto.memberInfo memberInfo = new memberInfo();
-      memberInfo.setMemberId(claims.get("memberId", UUID.class));
+      memberInfo.setMemberId(UUID.fromString(claims.get("memberId", String.class)));
       memberInfo.setMemberName(claims.get("memberName", String.class));
 
       return memberInfo;

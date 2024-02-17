@@ -37,7 +37,6 @@ public class CellGatheringMemberRepositoryImpl implements CellGatheringMemberRep
     if (Util.isNotNull(updateDto.getStory())) {
       clause.set(cellGatheringMember.story, updateDto.getStory());
     }
-    clause.set(cellGatheringMember.updatedBy, updateDto.getMemberId());
     clause.where(cellGatheringMember.cellGatheringMemberId.eq(updateDto.getCellGatheringMemberId()))
         .execute();
   }

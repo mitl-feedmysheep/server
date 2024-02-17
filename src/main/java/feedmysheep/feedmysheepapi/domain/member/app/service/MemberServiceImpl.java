@@ -439,14 +439,12 @@ public class MemberServiceImpl implements MemberService {
         .memberId(customUserDetails.getMemberId()).build();
     // TODO deleted로 처리하는 게 맞는걸까.. 임시 처리
     churchMemberMap.setDeletedAt(LocalDateTime.now());
-    churchMemberMap.setDeletedBy(customUserDetails.getMemberId());
     this.churchMemberMapRepository.save(churchMemberMap);
 
     BodyMemberMapEntity bodyMemberMap = BodyMemberMapEntity.builder().bodyId(bodyId)
         .memberId(customUserDetails.getMemberId()).build();
     // TODO deleted로 처리하는 게 맞는걸까.. 임시 처리
     bodyMemberMap.setDeletedAt(LocalDateTime.now());
-    bodyMemberMap.setDeletedBy(customUserDetails.getMemberId());
     this.bodyMemberMapRepository.save(bodyMemberMap);
   }
 

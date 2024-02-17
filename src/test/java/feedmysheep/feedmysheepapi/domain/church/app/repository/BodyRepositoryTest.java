@@ -4,9 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestConfig;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
@@ -22,7 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class BodyRepositoryTest {
 
@@ -38,11 +39,10 @@ class BodyRepositoryTest {
       @Autowired ChurchRepository churchRepository) {
     // 기본 한개씩
     ChurchEntity church = DataFactory.createChurch();
-    church.setValid(true);
     church1 = churchRepository.save(church);
     body1 = bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId()));
     BodyEntity invalidBody = DataFactory.createBodyByChurchId(church1.getChurchId());
-    invalidBody.setValid(false);
+    invalidBody.setDeletedAt(LocalDateTime.now());
     invalidBody1 = bodyRepository.save(invalidBody);
   }
 
@@ -71,7 +71,7 @@ class BodyRepositoryTest {
   void test2() {
     // given
     BodyEntity body = DataFactory.createBodyByChurchId(church1.getChurchId());
-    body.setValid(false);
+    body.setDeletedAt(LocalDateTime.now());
     this.bodyRepository.save(body);
 
     // when
@@ -88,8 +88,7 @@ class BodyRepositoryTest {
     // given
 
     // when
-    List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(
-        (long) TestUtil.getRandomNum(5));
+    List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(TestUtil.getRandomUUID());
 
     // then
     assertThat(bodyList.size()).isEqualTo(0);

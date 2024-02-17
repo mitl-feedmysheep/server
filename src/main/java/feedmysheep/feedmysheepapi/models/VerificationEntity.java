@@ -20,7 +20,7 @@ import org.springframework.lang.Nullable;
 @Getter
 @Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class VerificationEntity extends CreatedUpdated implements Persistable<UUID> {
+public class VerificationEntity extends BaseEntity implements Persistable<UUID> {
 
   @Id
   @Column(columnDefinition = "BINARY(16)", name = "verification_id")

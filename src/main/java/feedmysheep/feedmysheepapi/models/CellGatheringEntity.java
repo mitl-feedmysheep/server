@@ -23,7 +23,7 @@ import org.springframework.lang.Nullable;
 @Getter
 @Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CellGatheringEntity extends CreatedUpdated implements Persistable<UUID> {
+public class CellGatheringEntity extends BaseEntity implements Persistable<UUID> {
 
   @Id
   @Column(columnDefinition = "BINARY(16)", name = "cell_gathering_id")

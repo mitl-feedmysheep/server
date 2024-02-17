@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChurchRepositoryImpl implements ChurchRepositoryCustom {
 
-  private JPAQueryFactory queryFactory;
+  private final JPAQueryFactory queryFactory;
 
   QChurchEntity churchEntity = QChurchEntity.churchEntity;
 

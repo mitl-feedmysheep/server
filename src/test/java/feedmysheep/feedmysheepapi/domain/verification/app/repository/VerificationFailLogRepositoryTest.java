@@ -3,7 +3,7 @@ package feedmysheep.feedmysheepapi.domain.verification.app.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
-import feedmysheep.feedmysheepapi.global.config.TestConfig;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.VerificationFailLogEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class VerificationFailLogRepositoryTest {
 

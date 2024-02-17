@@ -20,32 +20,32 @@ import org.springframework.lang.Nullable;
 @Getter
 @Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AuthorizationScreenEntity extends CreatedUpdated implements Persistable<UUID> {
+public class AuthorizationScreenEntity extends BaseEntity implements Persistable<UUID> {
 
-	@Id
-	@Column(columnDefinition = "BINARY(16)", name = "authorization_screen_id")
-	private UUID authorizationScreenId = UuidCreator.getTimeOrdered();
+  @Id
+  @Column(columnDefinition = "BINARY(16)", name = "authorization_screen_id")
+  private UUID authorizationScreenId = UuidCreator.getTimeOrdered();
 
-	@Column(name = "authorization_id", nullable = false, columnDefinition = "BINARY(16)")
-	private UUID authorizationId;
+  @Column(name = "authorization_id", nullable = false, columnDefinition = "BINARY(16)")
+  private UUID authorizationId;
 
-	@Column(name = "screen_key", nullable = false, length = 50)
-	private String screenKey;
+  @Column(name = "screen_key", nullable = false, length = 50)
+  private String screenKey;
 
-	@Builder
-	public AuthorizationScreenEntity(UUID authorizationId, String screenKey) {
-		this.authorizationId = authorizationId;
-		this.screenKey = screenKey;
-	}
+  @Builder
+  public AuthorizationScreenEntity(UUID authorizationId, String screenKey) {
+    this.authorizationId = authorizationId;
+    this.screenKey = screenKey;
+  }
 
-	@Nullable
-	@Override
-	public UUID getId() {
-		return this.authorizationScreenId;
-	}
+  @Nullable
+  @Override
+  public UUID getId() {
+    return this.authorizationScreenId;
+  }
 
-	@Override
-	public boolean isNew() {
-		return this.getCreatedAt() == null;
-	}
+  @Override
+  public boolean isNew() {
+    return this.getCreatedAt() == null;
+  }
 }

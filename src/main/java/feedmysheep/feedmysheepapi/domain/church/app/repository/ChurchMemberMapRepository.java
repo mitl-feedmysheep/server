@@ -16,7 +16,7 @@ public interface ChurchMemberMapRepository extends JpaRepository<ChurchMemberMap
 
   Optional<ChurchMemberMapEntity> findByChurchIdAndMemberId(UUID churchId, UUID memberId);
 
-  // TODO 이거 어떻게 할지... 고민해보기
+  // TODO 이거 어떻게 할지... 고민해보기 --> 이거 동작안함
   @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.deletedAt is not null and cmm.churchId = :churchId and cmm.memberId = :memberId")
   Optional<ChurchMemberMapEntity> getInvalidChurchMemberMapByChurchIdAndMemberId(
       @Param("churchId") UUID churchId, @Param("memberId") UUID memberId);

@@ -4,10 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestConfig;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.CellEntity;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -21,15 +22,15 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class CellRepositoryTest {
 
   @Autowired
   private CellRepository cellRepository;
 
-  static Long organId1 = TestUtil.getRandomLong();
-  static Long organId2 = TestUtil.getRandomLong();
+  static UUID organId1 = TestUtil.getRandomUUID();
+  static UUID organId2 = TestUtil.getRandomUUID();
 
   @BeforeAll
   public static void setup(@Autowired CellRepository cellRepository) {
@@ -41,7 +42,7 @@ class CellRepositoryTest {
     invalidCell.setStartDate(LocalDate.parse("2000-01-01"));
     invalidCell.setEndDate(LocalDate.parse("2000-12-31"));
     cellRepository.save(invalidCell);
-    cellRepository.save(DataFactory.createCellByOrganId(TestUtil.getRandomLong()));
+    cellRepository.save(DataFactory.createCellByOrganId(TestUtil.getRandomUUID()));
   }
 
   @AfterAll

@@ -27,8 +27,7 @@ public class CellGatheringMemberPrayerRepositoryImpl implements
   @Override
   public void updateByCellGatheringMemberPrayerId(updatePrayerById updateDto) {
     this.queryFactory.update(cellGatheringMemberPrayer)
-        .set(cellGatheringMemberPrayer.prayerRequest, updateDto.getPrayerRequest())
-        .set(cellGatheringMemberPrayer.updatedBy, updateDto.getMemberId()).where(
+        .set(cellGatheringMemberPrayer.prayerRequest, updateDto.getPrayerRequest()).where(
             cellGatheringMemberPrayer.cellGatheringMemberPrayerId.eq(
                 updateDto.getCellGatheringMemberPrayerId())).execute();
   }
@@ -36,8 +35,7 @@ public class CellGatheringMemberPrayerRepositoryImpl implements
   @Override
   public void deleteByCellGatheringMemberPrayerId(UUID memberId, UUID cellGatheringMemberPrayerId) {
     this.queryFactory.update(cellGatheringMemberPrayer)
-        .set(cellGatheringMemberPrayer.deletedAt, LocalDateTime.now())
-        .set(cellGatheringMemberPrayer.deletedBy, memberId).where(
+        .set(cellGatheringMemberPrayer.deletedAt, LocalDateTime.now()).where(
             cellGatheringMemberPrayer.cellGatheringMemberPrayerId.eq(cellGatheringMemberPrayerId))
         .execute();
   }

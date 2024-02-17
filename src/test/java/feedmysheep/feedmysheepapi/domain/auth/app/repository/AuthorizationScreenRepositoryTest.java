@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestConfig;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.AuthorizationScreenEntity;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
@@ -21,7 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class AuthorizationScreenRepositoryTest {
 
@@ -48,7 +48,7 @@ class AuthorizationScreenRepositoryTest {
     // given
 
     // when
-    Optional<AuthorizationScreenEntity> authorizationScreen = this.authorizationScreenRepository.getAuthorizationScreenByScreenKey(
+    Optional<AuthorizationScreenEntity> authorizationScreen = this.authorizationScreenRepository.findByScreenKey(
         authorizationScreen1.getScreenKey());
 
     // then
@@ -62,7 +62,7 @@ class AuthorizationScreenRepositoryTest {
     String randomString = TestUtil.getRandomString();
 
     // when
-    Optional<AuthorizationScreenEntity> authorizationScreen = this.authorizationScreenRepository.getAuthorizationScreenByScreenKey(
+    Optional<AuthorizationScreenEntity> authorizationScreen = this.authorizationScreenRepository.findByScreenKey(
         randomString);
 
     // then

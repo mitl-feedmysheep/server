@@ -208,8 +208,6 @@ public class CellServiceImpl implements CellService {
     prayerRequestList.forEach(prayerRequest -> {
       CellGatheringMemberPrayerEntity cellGatheringMemberPrayer = CellGatheringMemberPrayerEntity.builder()
           .cellGatheringMemberId(cellGatheringMemberId).prayerRequest(prayerRequest).build();
-      cellGatheringMemberPrayer.setCreatedBy(memberId);
-      cellGatheringMemberPrayer.setUpdatedBy(memberId);
       cellGatheringMemberPrayerList.add(cellGatheringMemberPrayer);
     });
     this.cellGatheringMemberPrayerRepository.saveAll(cellGatheringMemberPrayerList);
@@ -266,8 +264,6 @@ public class CellServiceImpl implements CellService {
         .gatheringDate(body.getGatheringDate()).startedAt(body.getStartedAt())
         .endedAt(body.getEndedAt()).gatheringPlace(body.getGatheringPlace())
         .description(body.getDescription()).build();
-    cellGathering.setCreatedBy(customUserDetails.getMemberId());
-    cellGathering.setUpdatedBy(customUserDetails.getMemberId());
     CellGatheringEntity savedCellGathering = this.cellGatheringRepository.save(cellGathering);
 
     // 2. 셀모임 멤버 생성
@@ -282,8 +278,6 @@ public class CellServiceImpl implements CellService {
       CellGatheringMemberEntity cellGatheringMember = CellGatheringMemberEntity.builder()
           .cellGatheringId(savedCellGathering.getCellGatheringId()).cellMemberMapId(cellMemberMapId)
           .build();
-      cellGatheringMember.setCreatedBy(customUserDetails.getMemberId());
-      cellGatheringMember.setUpdatedBy(customUserDetails.getMemberId());
       cellGatheringMemberList.add(cellGatheringMember);
     });
     // 2-3. 셀모임멤버 저장
@@ -311,7 +305,6 @@ public class CellServiceImpl implements CellService {
     Optional.ofNullable(body.getEndedAt()).ifPresent(cellGathering::setEndedAt);
     Optional.ofNullable(body.getGatheringPlace()).ifPresent(cellGathering::setGatheringPlace);
     Optional.ofNullable(body.getDescription()).ifPresent(cellGathering::setDescription);
-    cellGathering.setUpdatedBy(customUserDetails.getMemberId());
 
     // 3. 셀모임 업데이트
     this.cellGatheringRepository.save(cellGathering);

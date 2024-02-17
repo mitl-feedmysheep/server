@@ -31,12 +31,12 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
   @Override
   public void updatePasswordByMemberId(UUID memberId, String newPassword) {
     this.queryFactory.update(member).where(member.memberId.eq(memberId))
-        .set(member.password, newPassword).set(member.updatedBy, memberId).execute();
+        .set(member.password, newPassword).execute();
   }
 
   @Override
   public void deactivate(UUID memberId) {
     this.queryFactory.update(member).where(member.memberId.eq(memberId))
-        .set(member.deletedAt, LocalDateTime.now()).set(member.deletedBy, memberId).execute();
+        .set(member.deletedAt, LocalDateTime.now()).execute();
   }
 }

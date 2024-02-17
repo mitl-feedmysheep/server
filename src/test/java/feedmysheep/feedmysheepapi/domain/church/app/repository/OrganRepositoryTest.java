@@ -4,9 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestConfig;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.OrganEntity;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -20,21 +21,21 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class OrganRepositoryTest {
 
   @Autowired
   private OrganRepository organRepository;
 
-  private static Long bodyId = TestUtil.getRandomLong();
+  private static UUID bodyId = TestUtil.getRandomUUID();
 
   @BeforeAll
   public static void setup(@Autowired OrganRepository organRepository) {
     organRepository.save(DataFactory.createOrganByBodyId(bodyId));
     organRepository.save(DataFactory.createOrganByBodyId(bodyId));
     organRepository.save(DataFactory.createOrganByBodyId(bodyId));
-    organRepository.save(DataFactory.createOrganByBodyId(TestUtil.getRandomLong()));
+    organRepository.save(DataFactory.createOrganByBodyId(TestUtil.getRandomUUID()));
   }
 
   @AfterAll

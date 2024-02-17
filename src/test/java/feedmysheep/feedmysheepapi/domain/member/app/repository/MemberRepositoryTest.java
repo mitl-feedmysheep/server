@@ -4,9 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
-import feedmysheep.feedmysheepapi.global.config.TestConfig;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,7 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class MemberRepositoryTest {
 
@@ -42,7 +43,7 @@ class MemberRepositoryTest {
     validMember1 = memberRepository.save(DataFactory.createMember(
         authorization1.getAuthorizationId()));
     MemberEntity invalidMember = DataFactory.createMember(authorization1.getAuthorizationId());
-    invalidMember.setActive(false);
+    invalidMember.setDeletedAt(LocalDateTime.now());
     invalidMember1 = memberRepository.save(invalidMember);
   }
 

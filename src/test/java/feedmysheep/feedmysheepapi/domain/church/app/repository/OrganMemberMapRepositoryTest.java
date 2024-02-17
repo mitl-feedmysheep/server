@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestConfig;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.OrganMemberMapEntity;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -20,16 +22,16 @@ import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@Import(TestConfig.class)
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class OrganMemberMapRepositoryTest {
 
   @Autowired
   private OrganMemberMapRepository organMemberMapRepository;
 
-  static List<Long> organIdList = List.of(TestUtil.getRandomLong(), TestUtil.getRandomLong(),
-      TestUtil.getRandomLong(), TestUtil.getRandomLong());
-  static Long memberId = TestUtil.getRandomLong();
+  static List<UUID> organIdList = List.of(TestUtil.getRandomUUID(), TestUtil.getRandomUUID(),
+      TestUtil.getRandomUUID(), TestUtil.getRandomUUID());
+  static UUID memberId = TestUtil.getRandomUUID();
 
   @BeforeAll
   public static void setup(@Autowired OrganMemberMapRepository organMemberMapRepository) {
@@ -40,8 +42,8 @@ class OrganMemberMapRepositoryTest {
     organMemberMapRepository.save(
         DataFactory.createOrganMemberMapByOrganIdAndMemberId(organIdList.get(2), memberId));
     OrganMemberMapEntity invalidOrganMemberMap = DataFactory.createOrganMemberMapByOrganIdAndMemberId(
-        TestUtil.getRandomLong(), memberId);
-    invalidOrganMemberMap.setValid(false);
+        TestUtil.getRandomUUID(), memberId);
+    invalidOrganMemberMap.setDeletedAt(LocalDateTime.now());
     organMemberMapRepository.save(invalidOrganMemberMap);
 
   }

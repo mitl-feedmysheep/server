@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrganMemberMapRepositoryImpl implements OrganMemberMapRepositoryCustom {
 
-  private JPAQueryFactory queryFactory;
+  private final JPAQueryFactory queryFactory;
 
   QOrganMemberMapEntity organMemberMapEntity = QOrganMemberMapEntity.organMemberMapEntity;
 
