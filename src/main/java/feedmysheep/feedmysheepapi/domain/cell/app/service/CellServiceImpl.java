@@ -41,9 +41,7 @@ public class CellServiceImpl implements CellService {
   private final CellProcessor cellProcessor;
 
   @Override
-  public List<CellResDto.getCellMemberByCellId> getCellMemberListByCellId(UUID cellId,
-      CustomUserDetails customUserDetails) {
-    UUID memberId = customUserDetails.getMemberId();
+  public List<CellResDto.getCellMemberByCellId> getCellMemberListByCellId(UUID cellId) {
 
     // 1. 본인이 속한 셀인지 확인
     List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
@@ -196,11 +194,7 @@ public class CellServiceImpl implements CellService {
 
   @Override
   public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(UUID cellGatheringMemberId,
-      List<String> prayerRequestList, CustomUserDetails customUserDetails) {
-    // 1. Data-destructuring
-    UUID memberId = customUserDetails.getMemberId();
-
-    // 2. 저장
+      List<String> prayerRequestList) {
     List<CellGatheringMemberPrayerEntity> cellGatheringMemberPrayerList = new ArrayList<>();
     prayerRequestList.forEach(prayerRequest -> {
       CellGatheringMemberPrayerEntity cellGatheringMemberPrayer = CellGatheringMemberPrayerEntity.builder()
@@ -283,7 +277,7 @@ public class CellServiceImpl implements CellService {
   @Override
   @Transactional
   public void updateCellGatheringByCellGatheringId(UUID cellGatheringId,
-      CellReqDto.updateCellGatheringByCellGatheringId body, CustomUserDetails customUserDetails) {
+      CellReqDto.updateCellGatheringByCellGatheringId body) {
     // 1. 셀모임 존재여부 확인
     CellGatheringEntity cellGathering = this.cellGatheringRepository.findByCellGatheringId(
             cellGatheringId)

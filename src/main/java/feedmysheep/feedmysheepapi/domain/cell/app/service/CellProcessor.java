@@ -52,18 +52,19 @@ public class CellProcessor {
         .thenComparing(MemberEntity::isBirthdayThisMonth, Comparator.reverseOrder()) // 생일자가 그 뒤로
         .thenComparing(MemberEntity::getMemberName); // 가나다순으로 정렬
 
-    // 리스트 정렬
-    cellMemberList.sort(memberComparator);
+    // 새로운 가변 목록을 만들어 정렬
+    List<MemberEntity> sortedList = new ArrayList<>(cellMemberList);
+    sortedList.sort(memberComparator);
 
-    return cellMemberList;
+    return sortedList;
   }
 
   public List<CellGatheringEntity> addNumberAndDayToCellGatheringList(
       List<CellGatheringEntity> cellGatheringList) {
     // 1. cellGatheringList를 날짜순으로 정렬
-    List<CellGatheringEntity> sortedCellGatheringListList = new ArrayList<>(
-        cellGatheringList.stream()
-            .sorted(Comparator.comparing(CellGatheringEntity::getGatheringDate)).toList());
+    List<CellGatheringEntity> sortedCellGatheringListList = cellGatheringList.stream()
+        .sorted(Comparator.comparing(CellGatheringEntity::getGatheringDate))
+        .collect(Collectors.toList());
 
     // 2. sortedCellGatheringListList를 순회하면서 번호와 요일을 추가
     sortedCellGatheringListList.forEach(cellGathering -> {
@@ -92,16 +93,15 @@ public class CellProcessor {
 
   public CellGatheringEntity addAttendanceCountToCellGathering(CellGatheringEntity cellGathering,
       List<CellGatheringMemberEntity> cellGatheringMemberList) {
-    int totalWorhsipAttendanceCount = (int) cellGatheringMemberList.stream()
+    int totalWorshipAttendanceCount = (int) cellGatheringMemberList.stream()
         .filter(CellGatheringMemberEntity::isWorshipAttendance).count();
     int totalCellGatheringAttendanceCount = (int) cellGatheringMemberList.stream()
         .filter(CellGatheringMemberEntity::isCellGatheringAttendance).count();
 
-    cellGathering.setTotalWorshipAttendanceCount(totalWorhsipAttendanceCount);
+    cellGathering.setTotalWorshipAttendanceCount(totalWorshipAttendanceCount);
     cellGathering.setTotalCellGatheringAttendanceCount(totalCellGatheringAttendanceCount);
 
     return cellGathering;
   }
-
 
 }

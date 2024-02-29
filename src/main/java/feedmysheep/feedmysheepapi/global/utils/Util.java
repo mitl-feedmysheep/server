@@ -19,4 +19,5 @@ public class Util {
   public static Boolean isNotNull(Object object) {
     return object != null;
   }
+
 }

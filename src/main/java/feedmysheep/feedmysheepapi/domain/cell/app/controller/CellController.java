@@ -33,9 +33,8 @@ public class CellController {
    */
   // TODO: 케이스별 테스트도 필요함 && 케이스별 테스트코드 필요
   @GetMapping("/{cellId}/members")
-  public List<getCellMemberByCellId> getCellMemberListByCellId(@PathVariable UUID cellId,
-      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-    return this.cellService.getCellMemberListByCellId(cellId, customUserDetails);
+  public List<getCellMemberByCellId> getCellMemberListByCellId(@PathVariable UUID cellId) {
+    return this.cellService.getCellMemberListByCellId(cellId);
   }
 
   @GetMapping("/{cellId}/gatherings-and-prayers-count")
@@ -58,10 +57,10 @@ public class CellController {
 
   @PostMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
   public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(
-      @PathVariable UUID cellGatheringMemberId, @Valid @RequestBody List<String> prayerRequestList,
-      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+      @PathVariable UUID cellGatheringMemberId,
+      @Valid @RequestBody List<String> prayerRequestList) {
     this.cellService.insertCellGatheringMemberPrayerListByCellGatheringMemberId(
-        cellGatheringMemberId, prayerRequestList, customUserDetails);
+        cellGatheringMemberId, prayerRequestList);
   }
 
   @PutMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}")
@@ -111,8 +110,7 @@ public class CellController {
 
   @PutMapping("/cell-gathering/{cellGatheringId}")
   public void updateCellGatheringByCellGatheringId(@PathVariable UUID cellGatheringId,
-      @Valid @RequestBody CellReqDto.updateCellGatheringByCellGatheringId body,
-      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-    this.cellService.updateCellGatheringByCellGatheringId(cellGatheringId, body, customUserDetails);
+      @Valid @RequestBody CellReqDto.updateCellGatheringByCellGatheringId body) {
+    this.cellService.updateCellGatheringByCellGatheringId(cellGatheringId, body);
   }
 }

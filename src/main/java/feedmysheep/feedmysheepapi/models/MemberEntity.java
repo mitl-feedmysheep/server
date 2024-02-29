@@ -33,6 +33,7 @@ public class MemberEntity extends BaseEntity implements Persistable<UUID> {
   @Column(name = "authorization_id", nullable = false, columnDefinition = "BINARY(16)")
   private UUID authorizationId;
 
+  @Setter
   @Column(name = "member_name", nullable = false, length = 10, columnDefinition = "varchar(10) COMMENT '멤버 이름'")
   private String memberName;
 
@@ -70,10 +71,12 @@ public class MemberEntity extends BaseEntity implements Persistable<UUID> {
   private LocalDateTime registeredAt = LocalDateTime.now();
 
   @Transient
+  @Getter
   @Setter
   boolean isLeader = false;
 
   @Transient
+  @Getter
   @Setter
   boolean isBirthdayThisMonth = false;
 

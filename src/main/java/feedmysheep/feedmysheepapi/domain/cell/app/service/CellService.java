@@ -9,8 +9,7 @@ import java.util.UUID;
 
 public interface CellService {
 
-  List<getCellMemberByCellId> getCellMemberListByCellId(UUID cellId,
-      CustomUserDetails customUserDetails);
+  List<getCellMemberByCellId> getCellMemberListByCellId(UUID cellId);
 
   CellResDto.getGatheringsAndPrayersCount getGatheringsAndPrayersCountByCellId(UUID cellId);
 
@@ -27,7 +26,7 @@ public interface CellService {
       CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body);
 
   void insertCellGatheringMemberPrayerListByCellGatheringMemberId(UUID cellGatheringMemberId,
-      List<String> prayerRequestList, CustomUserDetails customUserDetails);
+      List<String> prayerRequestList);
 
   void updateCellGatheringMemberPrayerList(
       List<CellReqDto.updateCellGatheringMemberPrayer> cellGatheringMemberPrayerList,
@@ -44,5 +43,5 @@ public interface CellService {
       CellReqDto.createCellGatheringByCellId body, CustomUserDetails customUserDetails);
 
   void updateCellGatheringByCellGatheringId(UUID cellGatheringId,
-      CellReqDto.updateCellGatheringByCellGatheringId body, CustomUserDetails customUserDetails);
+      CellReqDto.updateCellGatheringByCellGatheringId body);
 }
