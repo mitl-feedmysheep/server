@@ -17,6 +17,7 @@ spring:
         format_sql: true
         highlight_sql: true
         use_sql_comments: true
+        default_batch_fetch_size: 100
     hibernate:
       #      db 변경 사항 적용 -> 향후 none
       ddl-auto: update
