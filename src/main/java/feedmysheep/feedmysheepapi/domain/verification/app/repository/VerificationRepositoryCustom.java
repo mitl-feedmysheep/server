@@ -1,0 +1,5 @@
+package feedmysheep.feedmysheepapi.domain.verification.app.repository;
+
+public interface VerificationRepositoryCustom {
+
+}

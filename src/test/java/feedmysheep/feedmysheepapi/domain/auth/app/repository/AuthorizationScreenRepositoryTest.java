@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.AuthorizationScreenEntity;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
@@ -14,9 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 
 @DataJpaTest
+@ActiveProfiles("test")
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class AuthorizationScreenRepositoryTest {
 
@@ -26,13 +31,13 @@ class AuthorizationScreenRepositoryTest {
   static AuthorizationScreenEntity authorizationScreen1;
 
   @BeforeAll
-  public static void setup(@Autowired AuthorizationScreenRepository authorizationScreenRepository) {
+  public static void setUp(@Autowired AuthorizationScreenRepository authorizationScreenRepository) {
     authorizationScreen1 = authorizationScreenRepository.save(
         DataFactory.createAuthorizationScreen());
   }
 
   @AfterAll
-  public static void cleanup(
+  public static void tearDown(
       @Autowired AuthorizationScreenRepository authorizationScreenRepository) {
     authorizationScreenRepository.deleteAll();
   }
@@ -43,7 +48,7 @@ class AuthorizationScreenRepositoryTest {
     // given
 
     // when
-    Optional<AuthorizationScreenEntity> authorizationScreen = this.authorizationScreenRepository.getAuthorizationScreenByScreenKey(
+    Optional<AuthorizationScreenEntity> authorizationScreen = this.authorizationScreenRepository.findByScreenKey(
         authorizationScreen1.getScreenKey());
 
     // then
@@ -57,7 +62,7 @@ class AuthorizationScreenRepositoryTest {
     String randomString = TestUtil.getRandomString();
 
     // when
-    Optional<AuthorizationScreenEntity> authorizationScreen = this.authorizationScreenRepository.getAuthorizationScreenByScreenKey(
+    Optional<AuthorizationScreenEntity> authorizationScreen = this.authorizationScreenRepository.findByScreenKey(
         randomString);
 
     // then

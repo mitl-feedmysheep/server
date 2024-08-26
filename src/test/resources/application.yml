@@ -6,7 +6,7 @@ spring:
       add-mappings: false
   datasource:
     driver-class-name: "com.mysql.cj.jdbc.Driver"
-    url: "jdbc:mysql://127.0.0.1:3310/feed_my_sheep?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://127.0.0.1:3310/into_the_heaven?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true"
     username: "root"
     password: "feedmysheep"
   jpa:

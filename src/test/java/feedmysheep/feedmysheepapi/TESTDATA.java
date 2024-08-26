@@ -1,9 +1,10 @@
 package feedmysheep.feedmysheepapi;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class TESTDATA {
-  public static final Long memberId = 88831954L;
+  public static final UUID memberId = UUID.fromString("13afd90e-eab2-47a9-8176-d88751453187");
   public static final int level = 1;
   public static final String memberName = "김창수";
   public static final String sex = "M";

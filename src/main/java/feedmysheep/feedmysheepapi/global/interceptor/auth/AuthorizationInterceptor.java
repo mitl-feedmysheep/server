@@ -12,6 +12,7 @@ import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -49,10 +50,10 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
     String accessToken = request.getHeader(TOKEN); // doFilterInternal 이후에 호출 됨
     JwtDto.memberInfo memberInfo = this.jwtTokenProvider.validateToken(accessToken);
-    Long memberId = memberInfo.getMemberId();
-    MemberEntity member = this.memberRepository.getMemberByMemberId(memberId)
+    UUID memberId = memberInfo.getMemberId();
+    MemberEntity member = this.memberRepository.findByMemberId(memberId)
         .orElseThrow(() -> new CustomException(ErrorMessage.MEMBER_NOT_FOUND));
-    AuthorizationEntity authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
+    AuthorizationEntity authorization = this.authorizationRepository.findByAuthorizationId(
             member.getAuthorizationId())
         .orElseThrow(() -> new CustomException(ErrorMessage.NO_USER_AUTHORIZATION));
 

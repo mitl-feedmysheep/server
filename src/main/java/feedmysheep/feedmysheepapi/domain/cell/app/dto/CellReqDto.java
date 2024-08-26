@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -37,14 +38,14 @@ public class CellReqDto {
   @Getter
   public static class updateCellGatheringMemberPrayer {
 
-    private Long cellGatheringMemberPrayerId;
+    private UUID cellGatheringMemberPrayerId;
     private String prayerRequest;
   }
 
   @Getter
   public static class deleteCellGatheringMemberPrayer {
 
-    private List<Integer> cellGatheringMemberPrayerIdList;
+    private List<UUID> cellGatheringMemberPrayerIdList;
   }
 
   @Getter

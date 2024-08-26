@@ -1,16 +1,12 @@
 package feedmysheep.feedmysheepapi.domain.church.app.repository;
 
 import feedmysheep.feedmysheepapi.models.OrganMemberMapEntity;
-import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface OrganMemberMapRepository extends JpaRepository<OrganMemberMapEntity, Long> {
+public interface OrganMemberMapRepository extends JpaRepository<OrganMemberMapEntity, UUID>,
+    OrganMemberMapRepositoryCustom {
 
-  @Query("SELECT omm FROM OrganMemberMapEntity omm WHERE omm.isValid = true and omm.memberId = :memberId and omm.organId IN (:organIdList)")
-  List<OrganMemberMapEntity> getOrganMemberMapListByOrganIdListAndMemberId(
-      @Param("organIdList") List<Long> organIdList, @Param("memberId") Long memberId);
 }

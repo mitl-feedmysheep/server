@@ -3,6 +3,7 @@ package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class CellResDto {
   @RequiredArgsConstructor
   public static class getCellMemberByCellId {
 
-    private Long memberId;
+    private UUID memberId;
     private boolean isLeader;
     private boolean isBirthdayThisMonth;
     private String birthday;
@@ -38,7 +39,7 @@ public class CellResDto {
   @RequiredArgsConstructor
   public static class getCellGathering {
 
-    private Long cellGatheringId;
+    private UUID cellGatheringId;
     private int numberOfGathering;
     private String gatheringTitle;
     private LocalDate gatheringDate;
@@ -57,7 +58,7 @@ public class CellResDto {
   @RequiredArgsConstructor
   public static class getCellGatheringAndMemberListAndPrayerList {
 
-    private Long cellGatheringId;
+    private UUID cellGatheringId;
     private String gatheringTitle;
     private LocalDate gatheringDate;
     private LocalDateTime startedAt;
@@ -72,7 +73,7 @@ public class CellResDto {
   @Setter
   public static class cellGatheringMemberPrayer {
 
-    private Long cellGatheringMemberId;
+    private UUID cellGatheringMemberId;
     private String prayerRequest;
     private boolean isAnswered;
   }
@@ -82,7 +83,7 @@ public class CellResDto {
   @RequiredArgsConstructor
   public static class getCellByCellId {
 
-    private Long cellId;
+    private UUID cellId;
     private String cellName;
     private String cellLogoUrl;
     private String cellPlace;
@@ -96,6 +97,6 @@ public class CellResDto {
   @AllArgsConstructor
   public static class createCellGatheringByCellId {
 
-    private Long cellGatheringId;
+    private UUID cellGatheringId;
   }
 }

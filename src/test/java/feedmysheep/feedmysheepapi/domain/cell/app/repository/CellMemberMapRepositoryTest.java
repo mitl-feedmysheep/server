@@ -6,11 +6,13 @@ import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.CellMemberMapEntity;
-import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -19,25 +21,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
+@ActiveProfiles("test")
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class CellMemberMapRepositoryTest {
 
   @Autowired
   private CellMemberMapRepository cellMemberMapRepository;
 
-  static Long memberId = TestUtil.getRandomLong();
-  static List<Long> cellIdList = new ArrayList<>();
+  static UUID memberId = TestUtil.getRandomUUID();
+  static List<UUID> cellIdList = new ArrayList<>();
 
   @BeforeAll
-  public static void setup(@Autowired MemberRepository memberRepository,
+  public static void setUp(@Autowired MemberRepository memberRepository,
       @Autowired CellMemberMapRepository cellMemberMapRepository) {
     // 셀 추가
-    cellIdList.add(TestUtil.getRandomLong());
-    cellIdList.add(TestUtil.getRandomLong());
-    cellIdList.add(TestUtil.getRandomLong());
-    cellIdList.add(TestUtil.getRandomLong());
+    cellIdList.add(TestUtil.getRandomUUID());
+    cellIdList.add(TestUtil.getRandomUUID());
+    cellIdList.add(TestUtil.getRandomUUID());
+    cellIdList.add(TestUtil.getRandomUUID());
     // 셀멤버맵 생성
     cellMemberMapRepository.save(
         DataFactory.createCellMemberMapByCellIdAndMemberId(cellIdList.get(0), memberId));
@@ -50,12 +56,12 @@ class CellMemberMapRepositoryTest {
     cellMemberMapRepository.save(cellMemberMapTest3);
     CellMemberMapEntity cellMemberMapTest4 = DataFactory.createCellMemberMapByCellIdAndMemberId(
         cellIdList.get(3), memberId);
-    cellMemberMapTest4.setValid(false);
+    cellMemberMapTest4.setDeletedAt(LocalDateTime.now());
     cellMemberMapRepository.save(cellMemberMapTest4);
   }
 
   @AfterAll
-  public static void cleanup(@Autowired AuthorizationRepository authorizationRepository,
+  public static void tearDown(@Autowired AuthorizationRepository authorizationRepository,
       @Autowired MemberRepository memberRepository,
       @Autowired CellMemberMapRepository cellMemberMapRepository) {
     authorizationRepository.deleteAll();
@@ -69,7 +75,7 @@ class CellMemberMapRepositoryTest {
     // given
 
     // when
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellIdListAndMemberId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdListAndMemberIdAndCurDate(
         cellIdList, memberId);
 
     // then
@@ -84,7 +90,7 @@ class CellMemberMapRepositoryTest {
     // given
 
     // when
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellIdList.get(0));
 
     // then
@@ -98,7 +104,7 @@ class CellMemberMapRepositoryTest {
     // given
 
     // when
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellIdList.get(2));
 
     // then
@@ -111,7 +117,7 @@ class CellMemberMapRepositoryTest {
     // given
 
     // when
-    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.getCellMemberMapListByCellId(
+    List<CellMemberMapEntity> cellMemberMapList = this.cellMemberMapRepository.findAllByCellIdAndCurDate(
         cellIdList.get(3));
 
     // then

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.WordEntity;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
@@ -14,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
+@ActiveProfiles("test")
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class WordRepositoryTest {
 
@@ -25,14 +30,14 @@ class WordRepositoryTest {
   static WordEntity word1;
 
   @BeforeAll
-  public static void setup(@Autowired WordRepository wordRepository) {
+  public static void setUp(@Autowired WordRepository wordRepository) {
     String screenKey = TestUtil.getRandomString();
     word1 = wordRepository.save(DataFactory.createWordByScreenKey(screenKey));
     wordRepository.save(DataFactory.createWordByScreenKey(screenKey));
   }
 
   @AfterAll
-  public static void cleanup(@Autowired WordRepository wordRepository) {
+  public static void tearDown(@Autowired WordRepository wordRepository) {
     wordRepository.deleteAll();
   }
 
@@ -42,7 +47,7 @@ class WordRepositoryTest {
     // given
 
     // when
-    List<WordEntity> wordList = this.wordRepository.getWordListByScreenKey(word1.getScreenKey());
+    List<WordEntity> wordList = this.wordRepository.findAllByScreenKey(word1.getScreenKey());
 
     // then
     assertThat(wordList.size()).isEqualTo(2);
@@ -56,7 +61,7 @@ class WordRepositoryTest {
         DataFactory.createWordByScreenKey(TestUtil.getRandomString()));
 
     // when
-    List<WordEntity> emptyWordList = this.wordRepository.getWordListByScreenKey(word.getScreenKey());
+    List<WordEntity> emptyWordList = this.wordRepository.findAllByScreenKey(word.getScreenKey());
 
     // then
     assertThat(emptyWordList.size()).isEqualTo(1);

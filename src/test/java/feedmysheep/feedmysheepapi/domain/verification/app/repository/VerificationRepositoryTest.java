@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
+import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.VerificationEntity;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -15,8 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
+@ActiveProfiles("test")
+@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class VerificationRepositoryTest {
 
@@ -26,7 +31,7 @@ class VerificationRepositoryTest {
   static VerificationEntity verification1;
 
   @BeforeAll
-  public static void setup(@Autowired VerificationRepository verificationRepository) {
+  public static void setUp(@Autowired VerificationRepository verificationRepository) {
     String phone = TestUtil.getRandomPhone();
     verification1 = verificationRepository.save(DataFactory.createVerificationByPhone(phone));
     verificationRepository.save(DataFactory.createVerificationByPhone(phone));
@@ -34,7 +39,7 @@ class VerificationRepositoryTest {
   }
 
   @AfterAll
-  public static void cleanup(@Autowired VerificationRepository verificationRepository) {
+  public static void tearDown(@Autowired VerificationRepository verificationRepository) {
     verificationRepository.deleteAll();
   }
 
@@ -58,7 +63,7 @@ class VerificationRepositoryTest {
     // given
 
     // when
-    Optional<VerificationEntity> validVerification = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+    Optional<VerificationEntity> validVerification = this.verificationRepository.findByPhoneAndVerificationCode(
         verification1.getPhone(),
         verification1.getVerificationCode());
 
@@ -72,10 +77,10 @@ class VerificationRepositoryTest {
     // given
 
     // when
-    Optional<VerificationEntity> invalidVerificationByPhone = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+    Optional<VerificationEntity> invalidVerificationByPhone = this.verificationRepository.findByPhoneAndVerificationCode(
         TestUtil.getRandomPhone(),
         verification1.getVerificationCode());
-    Optional<VerificationEntity> invalidVerificationByVerificationCode = this.verificationRepository.getVerificationByPhoneAndVerificationCode(
+    Optional<VerificationEntity> invalidVerificationByVerificationCode = this.verificationRepository.findByPhoneAndVerificationCode(
         verification1.getPhone(),
         TestUtil.getRandomString(6));
 

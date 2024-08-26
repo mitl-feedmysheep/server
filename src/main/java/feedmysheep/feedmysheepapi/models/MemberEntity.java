@@ -1,40 +1,39 @@
 package feedmysheep.feedmysheepapi.models;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+import org.hibernate.annotations.Where;
+import org.springframework.data.domain.Persistable;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "member")
 @Getter
+@Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberEntity extends CreatedUpdated {
+public class MemberEntity extends BaseEntity implements Persistable<UUID> {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "member_id", nullable = false, columnDefinition = "bigint COMMENT '멤버 아이디'")
-  private Long memberId;
+  @Column(columnDefinition = "BINARY(16)", name = "member_id")
+  private UUID memberId = UuidCreator.getTimeOrdered();
 
   @Setter
-  @Column(name = "authorization_id", nullable = false, columnDefinition = "bigint COMMENT '권한 아이디'")
-  private Long authorizationId;
+  @Column(name = "authorization_id", nullable = false, columnDefinition = "BINARY(16)")
+  private UUID authorizationId;
 
   @Setter
-  @Column(name = "is_active", nullable = false, columnDefinition = "tinyint(1) NOT NULL COMMENT '유효 계정 여부'")
-  private boolean isActive = true;
-
   @Column(name = "member_name", nullable = false, length = 10, columnDefinition = "varchar(10) COMMENT '멤버 이름'")
   private String memberName;
 
@@ -72,15 +71,17 @@ public class MemberEntity extends CreatedUpdated {
   private LocalDateTime registeredAt = LocalDateTime.now();
 
   @Transient
+  @Getter
   @Setter
   boolean isLeader = false;
 
   @Transient
+  @Getter
   @Setter
   boolean isBirthdayThisMonth = false;
 
   @Builder
-  public MemberEntity(Long authorizationId, String memberName, String sex, LocalDate birthday,
+  public MemberEntity(UUID authorizationId, String memberName, String sex, LocalDate birthday,
       String phone, String address, String email, String password) {
     this.authorizationId = authorizationId;
     this.memberName = memberName;
@@ -90,5 +91,16 @@ public class MemberEntity extends CreatedUpdated {
     this.address = address;
     this.email = email;
     this.password = password;
+  }
+
+  @Nullable
+  @Override
+  public UUID getId() {
+    return this.memberId;
+  }
+
+  @Override
+  public boolean isNew() {
+    return this.getCreatedAt() == null;
   }
 }

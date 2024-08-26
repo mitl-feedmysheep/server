@@ -1,7 +1,9 @@
 package feedmysheep.feedmysheepapi.domain;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import java.time.LocalDate;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TestUtil {
@@ -62,8 +64,7 @@ public class TestUtil {
     return LocalDate.ofEpochDay(randomDay);
   }
 
-  public static Long getRandomLong() {
-    Random random = new Random();
-    return random.nextLong();
+  public static UUID getRandomUUID() {
+    return UUID.randomUUID();
   }
 }

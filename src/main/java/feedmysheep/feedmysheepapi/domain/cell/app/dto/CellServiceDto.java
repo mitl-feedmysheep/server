@@ -1,15 +1,11 @@
 package feedmysheep.feedmysheepapi.domain.cell.app.dto;
 
-import feedmysheep.feedmysheepapi.models.CellGatheringEntity;
-import feedmysheep.feedmysheepapi.models.CellGatheringMemberEntity;
-import feedmysheep.feedmysheepapi.models.CellGatheringMemberPrayerEntity;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Data
@@ -19,9 +15,9 @@ public class CellServiceDto {
   @Setter
   public static class cellGatheringMember {
 
-    private Long cellGatheringMemberId;
-    private Long cellGatheringId;
-    private Long cellMemberMapId;
+    private UUID cellGatheringMemberId;
+    private UUID cellGatheringId;
+    private UUID cellMemberMapId;
     private boolean isLeader;
     private String memberName;
     private LocalDate birthday;
@@ -36,7 +32,7 @@ public class CellServiceDto {
   @Setter
   public static class cellGatheringMemberPrayer {
 
-    private Long cellGatheringMemberId;
+    private UUID cellGatheringMemberId;
     private String prayerRequest;
     private boolean isAnswered;
   }
@@ -45,18 +41,17 @@ public class CellServiceDto {
   @AllArgsConstructor
   public static class updateAttendancesAndStoryWhenExisting {
 
-    private Long cellGatheringMemberId;
+    private UUID cellGatheringMemberId;
     private Boolean worshipAttendance;
     private Boolean cellGatheringAttendance;
     private String story;
-    private Long memberId;
   }
 
   @Getter
   @AllArgsConstructor
   public static class updatePrayerById {
-    private Long cellGatheringMemberPrayerId;
+
+    private UUID cellGatheringMemberPrayerId;
     private String prayerRequest;
-    private Long memberId;
   }
 }

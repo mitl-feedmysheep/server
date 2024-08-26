@@ -1,40 +1,50 @@
 package feedmysheep.feedmysheepapi.models;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.hibernate.annotations.Where;
+import org.springframework.data.domain.Persistable;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "text")
 @Getter
+@Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TextEntity extends CreatedUpdated {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "text_id", nullable = false, columnDefinition = "bigint COMMENT '텍스트 아이디'")
-    private Long textId;
+public class TextEntity extends BaseEntity implements Persistable<UUID> {
 
-    @Column(name = "screen_key", length = 50, nullable = false)
-    private String screenKey;
+  @Id
+  @Column(columnDefinition = "BINARY(16)", name = "text_id")
+  private UUID textId = UuidCreator.getTimeOrdered();
 
-    @Setter
-    @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 1 COMMENT '활성화 여부'")
-    private boolean isValid = true;
+  @Column(name = "screen_key", length = 50, nullable = false)
+  private String screenKey;
 
-    @Column(name = "text", length = 2048, nullable = false)
-    private String text;
+  @Column(name = "text", length = 2048, nullable = false)
+  private String text;
 
-    @Builder
-    public TextEntity(String screenKey, String text) {
-      this.screenKey = screenKey;
-      this.text = text;
-    }
+  @Builder
+  public TextEntity(String screenKey, String text) {
+    this.screenKey = screenKey;
+    this.text = text;
+  }
+
+  @Nullable
+  @Override
+  public UUID getId() {
+    return this.textId;
+  }
+
+  @Override
+  public boolean isNew() {
+    return this.getCreatedAt() == null;
+  }
 }

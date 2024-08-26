@@ -3,22 +3,21 @@ package feedmysheep.feedmysheepapi.domain.church.app.repository;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ChurchMemberMapRepository extends JpaRepository<ChurchMemberMapEntity, Long> {
+public interface ChurchMemberMapRepository extends JpaRepository<ChurchMemberMapEntity, UUID> {
 
-  @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.isValid = true and cmm.memberId = :memberId")
-  List<ChurchMemberMapEntity> getChurchMemberMapListByMemberId(@Param("memberId") Long memberId);
+  List<ChurchMemberMapEntity> findAllByMemberId(UUID memberId);
 
-  @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.isValid = true and cmm.churchId = :churchId and cmm.memberId = :memberId")
-  Optional<ChurchMemberMapEntity> getValidChurchMemberMapByChurchIdAndMemberId(
-      @Param("churchId") Long churchId, @Param("memberId") Long memberId);
+  Optional<ChurchMemberMapEntity> findByChurchIdAndMemberId(UUID churchId, UUID memberId);
 
-  @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.isValid = false and cmm.churchId = :churchId and cmm.memberId = :memberId")
+  // TODO 이거 어떻게 할지... 고민해보기 --> 이거 동작안함
+  @Query("SELECT cmm FROM ChurchMemberMapEntity cmm WHERE cmm.deletedAt is not null and cmm.churchId = :churchId and cmm.memberId = :memberId")
   Optional<ChurchMemberMapEntity> getInvalidChurchMemberMapByChurchIdAndMemberId(
-      @Param("churchId") Long churchId, @Param("memberId") Long memberId);
+      @Param("churchId") UUID churchId, @Param("memberId") UUID memberId);
 }

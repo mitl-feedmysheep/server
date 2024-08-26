@@ -21,7 +21,7 @@ class JwtTokenProviderTest {
   JwtTokenProviderTest() {}
 
   @BeforeEach()
-  public void setup() {
+  public void setUp() {
     memberInfo = new JwtDto.memberInfo();
     memberInfo.setMemberId(TESTDATA.memberId);
     memberInfo.setMemberName(TESTDATA.memberName);

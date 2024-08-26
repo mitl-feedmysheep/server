@@ -1,27 +1,30 @@
 package feedmysheep.feedmysheepapi.models;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
+import org.springframework.data.domain.Persistable;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "verification_fail_log")
 @Getter
+@Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class VerificationFailLogEntity extends CreatedUpdated {
+public class VerificationFailLogEntity extends BaseEntity implements Persistable<UUID> {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "verification_fail_log_id")
-  private Long verificationFailLogId;
+  @Column(columnDefinition = "BINARY(16)", name = "verification_fail_log_id")
+  private UUID verificationFailLogId = UuidCreator.getTimeOrdered();
 
   @Column(name = "phone", nullable = false, length = 20)
   private String phone;
@@ -38,5 +41,16 @@ public class VerificationFailLogEntity extends CreatedUpdated {
   public VerificationFailLogEntity(String phone, String verificationCode) {
     this.phone = phone;
     this.verificationCode = verificationCode;
+  }
+
+  @Nullable
+  @Override
+  public UUID getId() {
+    return this.verificationFailLogId;
+  }
+
+  @Override
+  public boolean isNew() {
+    return this.getCreatedAt() == null;
   }
 }
