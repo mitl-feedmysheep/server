@@ -7,8 +7,9 @@ import feedmysheep.feedmysheepapi.domain.cell.app.service.CellService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +21,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/app/cell")
 public class CellController {
 
   private final CellService cellService;
+
+  @Autowired
+  public CellController(CellService cellService) {
+    this.cellService = cellService;
+  }
 
   /**
    * POLICY: 해당 cellId를 가질 수 있다는 뜻은, 셀이 노출된 경우이기 때문에 일반적인 abusing은 없을 것이라고 판단 하지만, 권한없는 누군가가 API를
@@ -33,46 +38,49 @@ public class CellController {
    */
   // TODO: 케이스별 테스트도 필요함 && 케이스별 테스트코드 필요
   @GetMapping("/{cellId}/members")
-  public List<getCellMemberByCellId> getCellMemberListByCellId(@PathVariable UUID cellId) {
-    return this.cellService.getCellMemberListByCellId(cellId);
+  public List<getCellMemberByCellId> getCellMemberListByCellId(@PathVariable Long cellId,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    return this.cellService.getCellMemberListByCellId(cellId, customUserDetails);
   }
 
   @GetMapping("/{cellId}/gatherings-and-prayers-count")
   public CellResDto.getGatheringsAndPrayersCount getGatheringsAndPrayersCountByCellId(
-      @PathVariable UUID cellId) {
+      @PathVariable Long cellId) {
     return this.cellService.getGatheringsAndPrayersCountByCellId(cellId);
   }
 
   @GetMapping("/{cellId}/cell-gatherings")
-  public List<CellResDto.getCellGathering> getCellGatheringListByCellId(@PathVariable UUID cellId,
+  public List<CellResDto.getCellGathering> getCellGatheringListByCellId(@PathVariable Long cellId,
       CellReqDto.getCellGatheringListByCellId query) {
     return this.cellService.getCellGatheringListByCellId(cellId, query);
   }
 
   @GetMapping("/cell-gathering/{cellGatheringId}")
   public CellResDto.getCellGatheringAndMemberListAndPrayerList getCellGatheringAndMemberListAndPrayerList(
-      @PathVariable UUID cellGatheringId) {
+      @PathVariable Long cellGatheringId) {
     return this.cellService.getCellGatheringAndMemberListAndPrayerList(cellGatheringId);
   }
 
   @PostMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
   public void insertCellGatheringMemberPrayerListByCellGatheringMemberId(
-      @PathVariable UUID cellGatheringMemberId,
-      @Valid @RequestBody List<String> prayerRequestList) {
+      @PathVariable Long cellGatheringMemberId, @Valid @RequestBody List<String> prayerRequestList,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     this.cellService.insertCellGatheringMemberPrayerListByCellGatheringMemberId(
-        cellGatheringMemberId, prayerRequestList);
+        cellGatheringMemberId, prayerRequestList, customUserDetails);
   }
 
   @PutMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}")
   public void updateCellGatheringMemberByCellGatheringMemberId(
-      @PathVariable UUID cellGatheringMemberId,
-      @Valid @RequestBody CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body) {
-    this.cellService.updateCellGatheringMemberByCellGatheringMemberId(cellGatheringMemberId, body);
+      @PathVariable Long cellGatheringMemberId,
+      @Valid @RequestBody CellReqDto.updateCellGatheringMemberByCellGatheringMemberId body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.updateCellGatheringMemberByCellGatheringMemberId(cellGatheringMemberId, body,
+        customUserDetails);
   }
 
   @GetMapping("/cell-gathering/cell-gathering-member/{cellGatheringMemberId}/cell-gathering-member-prayer")
   public List<CellResDto.cellGatheringMemberPrayer> getCellGatheringMemberPrayerListByCellGatheringMemberId(
-      @PathVariable UUID cellGatheringMemberId) {
+      @PathVariable Long cellGatheringMemberId) {
     return this.cellService.getCellGatheringMemberPrayerListByCellGatheringMemberId(
         cellGatheringMemberId);
   }
@@ -92,25 +100,28 @@ public class CellController {
   }
 
   @GetMapping("/{cellId}/info")
-  public CellResDto.getCellByCellId getCellByCellId(@PathVariable UUID cellId) {
+  public CellResDto.getCellByCellId getCellByCellId(@PathVariable Long cellId) {
     return this.cellService.getCellByCellId(cellId);
   }
 
   @DeleteMapping("/cell-gathering/{cellGatheringId}")
-  public void deleteCellGatheringByCellGatheringId(@PathVariable UUID cellGatheringId) {
-    this.cellService.deleteCellGatheringByCellGatheringId(cellGatheringId);
+  public void deleteCellGatheringByCellGatheringId(
+      @AuthenticationPrincipal CustomUserDetails customUserDetails,
+      @PathVariable Long cellGatheringId) {
+    this.cellService.deleteCellGatheringByCellGatheringId(customUserDetails, cellGatheringId);
   }
 
   @PostMapping("/{cellId}/cell-gathering")
   public CellResDto.createCellGatheringByCellId createCellGatheringByCellId(
-      @PathVariable UUID cellId, @Valid @RequestBody CellReqDto.createCellGatheringByCellId body,
+      @PathVariable Long cellId, @Valid @RequestBody CellReqDto.createCellGatheringByCellId body,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     return this.cellService.createCellGatheringByCellId(cellId, body, customUserDetails);
   }
 
   @PutMapping("/cell-gathering/{cellGatheringId}")
-  public void updateCellGatheringByCellGatheringId(@PathVariable UUID cellGatheringId,
-      @Valid @RequestBody CellReqDto.updateCellGatheringByCellGatheringId body) {
-    this.cellService.updateCellGatheringByCellGatheringId(cellGatheringId, body);
+  public void updateCellGatheringByCellGatheringId(@PathVariable Long cellGatheringId,
+      @Valid @RequestBody CellReqDto.updateCellGatheringByCellGatheringId body,
+      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    this.cellService.updateCellGatheringByCellGatheringId(cellGatheringId, body, customUserDetails);
   }
 }

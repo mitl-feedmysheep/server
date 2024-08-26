@@ -1,35 +1,29 @@
 package feedmysheep.feedmysheepapi.models;
 
-import com.github.f4b6a3.uuid.UuidCreator;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import java.time.LocalDate;
-import java.util.UUID;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Setter;
-import org.hibernate.annotations.Where;
-import org.springframework.data.domain.Persistable;
-import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "cell")
 @Getter
-@Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CellEntity extends BaseEntity implements Persistable<UUID> {
+public class CellEntity extends CreatedUpdated {
 
   @Id
-  @Column(columnDefinition = "BINARY(16)", name = "cell_id")
-  private UUID cellId = UuidCreator.getTimeOrdered();
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "cell_id", nullable = false, columnDefinition = "bigint COMMENT '셀 아이디'")
+  private Long cellId;
 
-  @Column(name = "organ_id", nullable = false, columnDefinition = "BINARY(16)")
-  private UUID organId;
+  @Column(name = "organ_id", nullable = false, columnDefinition = "bigint COMMENT '기관 아이디'")
+  private Long organId;
 
   @Column(name = "cell_name", nullable = false, length = 50, columnDefinition = "varchar(50) COMMENT '바디 아이디'")
   private String cellName;
@@ -42,6 +36,10 @@ public class CellEntity extends BaseEntity implements Persistable<UUID> {
 
   @Column(name = "description", length = 100, columnDefinition = "varchar(100) COMMENT '셀 설명'")
   private String description;
+
+  @Setter
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
+  private boolean isValid = false;
 
   @Setter
   @Column(name = "start_date", nullable = false)
@@ -57,27 +55,16 @@ public class CellEntity extends BaseEntity implements Persistable<UUID> {
   int cellMemberCount;
 
   @Builder
-  public CellEntity(UUID organId, String cellName, String cellLogoUrl, String cellPlace,
-      String description, LocalDate startDate, LocalDate endDate) {
+  public CellEntity(Long organId, String cellName, String cellLogoUrl, String description,
+      LocalDate startDate, LocalDate endDate, boolean isValid) {
     this.organId = organId;
     this.cellName = cellName;
     this.cellLogoUrl = cellLogoUrl;
-    this.cellPlace = cellPlace;
     this.description = description;
     // Default: 이번 해 첫 날로 지정
     this.startDate = (startDate != null) ? startDate : LocalDate.now().withDayOfYear(1);
     // Default: 이번 해 마지막 날로 지정
     this.endDate = (endDate != null) ? endDate : LocalDate.now().withDayOfYear(365);
-  }
-
-  @Nullable
-  @Override
-  public UUID getId() {
-    return this.cellId;
-  }
-
-  @Override
-  public boolean isNew() {
-    return this.getCreatedAt() == null;
+    this.isValid = isValid;
   }
 }

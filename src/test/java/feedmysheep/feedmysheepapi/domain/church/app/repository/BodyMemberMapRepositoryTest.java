@@ -4,11 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.BodyMemberMapEntity;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -17,39 +15,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-@ActiveProfiles("test")
-@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class BodyMemberMapRepositoryTest {
 
   @Autowired
   private BodyMemberMapRepository bodyMemberMapRepository;
 
-  static UUID memberId = TestUtil.getRandomUUID();
-  static UUID invalidMemberId = TestUtil.getRandomUUID();
-  static UUID bodyId = TestUtil.getRandomUUID();
+  static Long memberId = TestUtil.getRandomLong();
+  static Long invalidMemberId = TestUtil.getRandomLong();
+  static Long bodyId = TestUtil.getRandomLong();
 
   @BeforeAll
-  public static void setUp(@Autowired BodyMemberMapRepository bodyMemberMapRepository) {
+  public static void setup(@Autowired BodyMemberMapRepository bodyMemberMapRepository) {
     bodyMemberMapRepository.save(
         DataFactory.createBodyMemberMapByBodyIdAndMemberId(bodyId, memberId));
     BodyMemberMapEntity invalidBodyMemberMap = DataFactory.createBodyMemberMapByBodyIdAndMemberId(
         bodyId, invalidMemberId);
-    invalidBodyMemberMap.setDeletedAt(LocalDateTime.now());
+    invalidBodyMemberMap.setValid(false);
     bodyMemberMapRepository.save(invalidBodyMemberMap);
     bodyMemberMapRepository.save(
-        DataFactory.createBodyMemberMapByBodyIdAndMemberId(TestUtil.getRandomUUID(), memberId));
+        DataFactory.createBodyMemberMapByBodyIdAndMemberId(TestUtil.getRandomLong(), memberId));
     bodyMemberMapRepository.save(
-        DataFactory.createBodyMemberMapByBodyIdAndMemberId(bodyId, TestUtil.getRandomUUID()));
+        DataFactory.createBodyMemberMapByBodyIdAndMemberId(bodyId, TestUtil.getRandomLong()));
   }
 
 
   @AfterAll
-  public static void tearDown(@Autowired BodyMemberMapRepository bodyMemberMapRepository) {
+  public static void cleanup(@Autowired BodyMemberMapRepository bodyMemberMapRepository) {
     bodyMemberMapRepository.deleteAll();
   }
 
@@ -59,7 +53,7 @@ class BodyMemberMapRepositoryTest {
     // given
 
     // when
-    Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.findByBodyIdAndMemberId(
+    Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(
         bodyId, memberId);
 
     // then
@@ -72,7 +66,7 @@ class BodyMemberMapRepositoryTest {
     // given
 
     // when
-    Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.findByBodyIdAndMemberId(
+    Optional<BodyMemberMapEntity> bodyMemberMap = this.bodyMemberMapRepository.geValidBodyMemberMapByBodyIdAndMemberId(
         bodyId, invalidMemberId);
 
     // then

@@ -1,7 +1,6 @@
 package feedmysheep.feedmysheepapi.global.utils.jwt;
 
 import java.util.Collection;
-import java.util.UUID;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,9 +17,7 @@ public class CustomUserDetails implements UserDetails {
   private Collection<? extends GrantedAuthority> authorities;
 
 
-  @Getter
-  private final UUID memberId;
-  @Getter
+  private final Long memberId;
   private final String memberName;
 
   public CustomUserDetails(JwtDto.memberInfo memberInfo) {
@@ -29,4 +26,14 @@ public class CustomUserDetails implements UserDetails {
     this.memberName = memberInfo.getMemberName();
 
   }
+
+  public Long getMemerId() {
+    return this.memberId;
+  }
+  
+  public String getMemberName() {
+    return this.memberName;
+  }
+
+
 }

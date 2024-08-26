@@ -53,7 +53,7 @@
 //  }
 //
 //  @BeforeAll
-//  public static void setUp() {
+//  public static void setup() {
 //    TwilioService twilioServiceMock = Mockito.mock(TwilioService.class);
 //    memberService = new MemberService(
 //        this.memberRepository,

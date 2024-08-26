@@ -7,8 +7,6 @@ import feedmysheep.feedmysheepapi.domain.member.app.service.MemberService;
 import feedmysheep.feedmysheepapi.global.utils.jwt.CustomUserDetails;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.query.QueryParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -23,11 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/app/member")
 public class MemberController {
 
   private final MemberService memberService;
+
+  @Autowired
+  public MemberController(MemberService memberService) {
+    this.memberService = memberService;
+  }
 
   @GetMapping("/phone/send-verification-code")
   public void sendVerificationCode(@Valid MemberReqDto.sendVerificationCode query) {
@@ -75,7 +77,7 @@ public class MemberController {
   @GetMapping("/body/{bodyId}/cells")
   public List<MemberResDto.getCellByBodyIdAndMemberId> getCellListByBodyIdAndMemberId(
       @Valid @AuthenticationPrincipal CustomUserDetails customUserDetails,
-      @PathVariable UUID bodyId) {
+      @PathVariable Long bodyId) {
     return this.memberService.getCellListByBodyIdAndMemberId(customUserDetails, bodyId);
   }
 
@@ -83,7 +85,7 @@ public class MemberController {
    * POLICY: 최초로 한번만 호출되어야 합니다. 한명의 유저가 여러개의 부서의 가입을 원할경우, 부서만 요청을 따로 해야합니다.
    */
   @PostMapping("/church/{churchId}/body/{bodyId}")
-  public void askToJoinChurchAndBody(@PathVariable UUID churchId, @PathVariable UUID bodyId,
+  public void askToJoinChurchAndBody(@PathVariable Long churchId, @PathVariable Long bodyId,
       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
     this.memberService.askToJoinChurchAndBody(churchId, bodyId, customUserDetails);
   }

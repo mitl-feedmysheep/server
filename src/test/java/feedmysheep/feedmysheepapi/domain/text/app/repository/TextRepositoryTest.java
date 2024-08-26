@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.TextEntity;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
@@ -15,12 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-@ActiveProfiles("test")
-@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class TextRepositoryTest {
   @Autowired
@@ -29,13 +24,13 @@ class TextRepositoryTest {
   static TextEntity text1;
 
   @BeforeAll
-  public static void setUp(@Autowired TextRepository textRepository) {
+  public static void setup(@Autowired TextRepository textRepository) {
     String screenKey = TestUtil.getRandomString();
     text1 = textRepository.save(DataFactory.createTextByScreenKey(screenKey));
   }
 
   @AfterAll
-  public static void tearDown(@Autowired TextRepository textRepository) {
+  public static void cleanup(@Autowired TextRepository textRepository) {
     textRepository.deleteAll();
   }
 
@@ -45,7 +40,7 @@ class TextRepositoryTest {
     // given
 
     // when
-    Optional<TextEntity> text = this.textRepository.findByScreenKey(text1.getScreenKey());
+    Optional<TextEntity> text = this.textRepository.getTextByScreenKey(text1.getScreenKey());
 
     // then
     assertThat(text).isPresent();
@@ -57,7 +52,7 @@ class TextRepositoryTest {
     // given
 
     // when
-    Optional<TextEntity> text = this.textRepository.findByScreenKey(TestUtil.getRandomString());
+    Optional<TextEntity> text = this.textRepository.getTextByScreenKey(TestUtil.getRandomString());
 
     // then
     assertThat(text).isNotPresent();

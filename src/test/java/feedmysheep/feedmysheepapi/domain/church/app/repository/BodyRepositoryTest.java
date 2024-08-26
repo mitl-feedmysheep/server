@@ -4,10 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.BodyEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
@@ -18,12 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-@ActiveProfiles("test")
-@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class BodyRepositoryTest {
 
@@ -35,19 +29,20 @@ class BodyRepositoryTest {
   static BodyEntity invalidBody1;
 
   @BeforeAll
-  public static void setUp(@Autowired BodyRepository bodyRepository,
+  public static void setup(@Autowired BodyRepository bodyRepository,
       @Autowired ChurchRepository churchRepository) {
     // 기본 한개씩
     ChurchEntity church = DataFactory.createChurch();
+    church.setValid(true);
     church1 = churchRepository.save(church);
     body1 = bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId()));
     BodyEntity invalidBody = DataFactory.createBodyByChurchId(church1.getChurchId());
-    invalidBody.setDeletedAt(LocalDateTime.now());
+    invalidBody.setValid(false);
     invalidBody1 = bodyRepository.save(invalidBody);
   }
 
   @AfterAll
-  public static void tearDown(@Autowired BodyRepository bodyRepository,
+  public static void cleanup(@Autowired BodyRepository bodyRepository,
       @Autowired ChurchRepository churchRepository) {
     bodyRepository.deleteAll();
     churchRepository.deleteAll();
@@ -60,7 +55,7 @@ class BodyRepositoryTest {
     this.bodyRepository.save(DataFactory.createBodyByChurchId(church1.getChurchId()));
 
     // when
-    List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(church1.getChurchId());
+    List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church1.getChurchId());
 
     // then
     assertThat(bodyList.size()).isEqualTo(2);
@@ -71,11 +66,11 @@ class BodyRepositoryTest {
   void test2() {
     // given
     BodyEntity body = DataFactory.createBodyByChurchId(church1.getChurchId());
-    body.setDeletedAt(LocalDateTime.now());
+    body.setValid(false);
     this.bodyRepository.save(body);
 
     // when
-    List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(church1.getChurchId());
+    List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(church1.getChurchId());
 
     // then
     assertThat(bodyList.size()).isEqualTo(1);
@@ -88,7 +83,8 @@ class BodyRepositoryTest {
     // given
 
     // when
-    List<BodyEntity> bodyList = this.bodyRepository.findAllByChurchId(TestUtil.getRandomUUID());
+    List<BodyEntity> bodyList = this.bodyRepository.getBodyListByChurchId(
+        (long) TestUtil.getRandomNum(5));
 
     // then
     assertThat(bodyList.size()).isEqualTo(0);
@@ -100,7 +96,7 @@ class BodyRepositoryTest {
     // given
 
     // when
-    Optional<BodyEntity> body = this.bodyRepository.findByBodyId(body1.getBodyId());
+    Optional<BodyEntity> body = this.bodyRepository.getBodyByBodyId(body1.getBodyId());
 
     // then
     assertThat(body).isPresent();
@@ -113,7 +109,7 @@ class BodyRepositoryTest {
     // given
 
     // when
-    Optional<BodyEntity> body = this.bodyRepository.findByBodyId(invalidBody1.getBodyId());
+    Optional<BodyEntity> body = this.bodyRepository.getBodyByBodyId(invalidBody1.getBodyId());
 
     // then
     assertThat(body).isNotPresent();

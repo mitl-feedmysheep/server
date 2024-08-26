@@ -6,12 +6,10 @@ import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
 import feedmysheep.feedmysheepapi.domain.auth.app.repository.AuthorizationRepository;
 import feedmysheep.feedmysheepapi.domain.member.app.repository.MemberRepository;
-import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
 import feedmysheep.feedmysheepapi.models.ChurchMemberMapEntity;
 import feedmysheep.feedmysheepapi.models.MemberEntity;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
@@ -22,13 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 
 @DataJpaTest
-@ActiveProfiles("test")
-@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class ChurchMemberMapRepositoryTest {
 
@@ -48,11 +42,12 @@ class ChurchMemberMapRepositoryTest {
   static ChurchMemberMapEntity invalidChurchMemberMap1;
 
   @BeforeAll
-  public static void setUp(@Autowired ChurchRepository churchRepository,
+  public static void setup(@Autowired ChurchRepository churchRepository,
       @Autowired AuthorizationRepository authorizationRepository,
       @Autowired MemberRepository memberRepository,
       @Autowired ChurchMemberMapRepository churchMemberMapRepository) {
     ChurchEntity church = DataFactory.createChurch();
+    church.setValid(true);
     church1 = churchRepository.save(church);
     authorization1 = authorizationRepository.save(DataFactory.createAuthorization());
     member1 = memberRepository.save(DataFactory.createMember(authorization1.getAuthorizationId()));
@@ -60,14 +55,14 @@ class ChurchMemberMapRepositoryTest {
     validChurchMemberMap1 = churchMemberMapRepository.save(
         DataFactory.createChurchMemberMap(church1.getChurchId(), member1.getMemberId()));
     // 유효하지 않은 교회멤버맵
-    invalidChurchMemberMap1 = DataFactory.createChurchMemberMap(TestUtil.getRandomUUID(),
-        TestUtil.getRandomUUID());
-    invalidChurchMemberMap1.setDeletedAt(LocalDateTime.now());
+    invalidChurchMemberMap1 = DataFactory.createChurchMemberMap(TestUtil.getRandomLong(),
+        TestUtil.getRandomLong());
+    invalidChurchMemberMap1.setValid(false);
     churchMemberMapRepository.save(invalidChurchMemberMap1);
   }
 
   @AfterAll
-  public static void tearDown(@Autowired ChurchRepository churchRepository,
+  public static void cleanup(@Autowired ChurchRepository churchRepository,
       @Autowired AuthorizationRepository authorizationRepository,
       @Autowired MemberRepository memberRepository,
       @Autowired ChurchMemberMapRepository churchMemberMapRepository) {
@@ -83,7 +78,7 @@ class ChurchMemberMapRepositoryTest {
     // given
 
     // when
-    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.findAllByMemberId(
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
         member1.getMemberId());
 
     // then
@@ -99,7 +94,7 @@ class ChurchMemberMapRepositoryTest {
         DataFactory.createMember(authorization1.getAuthorizationId()));
 
     // when
-    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.findAllByMemberId(
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
         member2.getMemberId());
 
     // then
@@ -111,15 +106,16 @@ class ChurchMemberMapRepositoryTest {
   void test3() {
     // given
     ChurchEntity church = DataFactory.createChurch();
+    church.setValid(true);
     ChurchEntity church2 = this.churchRepository.save(church);
     ChurchMemberMapEntity churchMemberMap2 = DataFactory.createChurchMemberMap(
         church2.getChurchId(), member1.getMemberId());
-    churchMemberMap2.setDeletedAt(LocalDateTime.now());
-    churchMemberMap2.setDeleteReason(TestUtil.getRandomString());
+    churchMemberMap2.setValid(false);
+    churchMemberMap2.setInvalidReason(TestUtil.getRandomString());
     this.churchMemberMapRepository.save(churchMemberMap2);
 
     // when
-    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.findAllByMemberId(
+    List<ChurchMemberMapEntity> churchMemberMapList = this.churchMemberMapRepository.getChurchMemberMapListByMemberId(
         member1.getMemberId());
 
     // then
@@ -134,7 +130,7 @@ class ChurchMemberMapRepositoryTest {
     // given
 
     // when
-    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.findByChurchIdAndMemberId(
+    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(
         church1.getChurchId(), member1.getMemberId());
 
     // then
@@ -149,7 +145,7 @@ class ChurchMemberMapRepositoryTest {
     // given
 
     // when
-    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.findByChurchIdAndMemberId(
+    Optional<ChurchMemberMapEntity> churchMemberMap = this.churchMemberMapRepository.getValidChurchMemberMapByChurchIdAndMemberId(
         invalidChurchMemberMap1.getChurchId(), invalidChurchMemberMap1.getMemberId());
 
     // then

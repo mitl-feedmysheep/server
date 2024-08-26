@@ -3,9 +3,7 @@ package feedmysheep.feedmysheepapi.domain.church.app.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
-import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.ChurchEntity;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterAll;
@@ -16,12 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-@ActiveProfiles("test")
-@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class ChurchRepositoryTest {
 
@@ -32,16 +26,17 @@ class ChurchRepositoryTest {
   static ChurchEntity invalidChurch1;
 
   @BeforeAll
-  public static void setUp(@Autowired ChurchRepository churchRepository) {
+  public static void setup(@Autowired ChurchRepository churchRepository) {
     ChurchEntity validChurch = DataFactory.createChurch();
+    validChurch.setValid(true);
     validChurch1 = churchRepository.save(validChurch);
     invalidChurch1 = DataFactory.createChurch();
-    invalidChurch1.setDeletedAt(LocalDateTime.now());
+    invalidChurch1.setValid(false);
     churchRepository.save(invalidChurch1);
   }
 
   @AfterAll
-  public static void tearDown(@Autowired ChurchRepository churchRepository) {
+  public static void cleanup(@Autowired ChurchRepository churchRepository) {
     churchRepository.deleteAll();
   }
 
@@ -50,10 +45,11 @@ class ChurchRepositoryTest {
   void test1() {
     // given
     ChurchEntity church = DataFactory.createChurch();
+    church.setValid(true);
     this.churchRepository.save(church);
 
     // when
-    List<ChurchEntity> churchList = this.churchRepository.findAll();
+    List<ChurchEntity> churchList = this.churchRepository.getChurchList();
 
     // then
     assertThat(churchList.size()).isEqualTo(2);
@@ -65,9 +61,9 @@ class ChurchRepositoryTest {
     // given
 
     // when
-    List<ChurchEntity> validChurchList = this.churchRepository.findAllByChurchName(
+    List<ChurchEntity> validChurchList = this.churchRepository.getChurchListByChurchName(
         validChurch1.getChurchName());
-    List<ChurchEntity> invalidChurchList = this.churchRepository.findAllByChurchName(
+    List<ChurchEntity> invalidChurchList = this.churchRepository.getChurchListByChurchName(
         invalidChurch1.getChurchName());
 
     // then
@@ -82,7 +78,7 @@ class ChurchRepositoryTest {
     // given
 
     // when
-    Optional<ChurchEntity> validChurch = this.churchRepository.findByChurchId(
+    Optional<ChurchEntity> validChurch = this.churchRepository.getChurchByChurchId(
         validChurch1.getChurchId());
 
     // then
@@ -96,7 +92,7 @@ class ChurchRepositoryTest {
     // given
 
     // when
-    Optional<ChurchEntity> validChurch = this.churchRepository.findByChurchId(
+    Optional<ChurchEntity> validChurch = this.churchRepository.getChurchByChurchId(
         invalidChurch1.getChurchId());
 
     // then

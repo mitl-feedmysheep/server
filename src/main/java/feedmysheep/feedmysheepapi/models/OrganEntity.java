@@ -1,33 +1,32 @@
 package feedmysheep.feedmysheepapi.models;
 
-import com.github.f4b6a3.uuid.UuidCreator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.Date;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Where;
-import org.springframework.data.domain.Persistable;
-import org.springframework.lang.Nullable;
 
 @Entity
 @Table(name = "organ")
 @Getter
-@Where(clause = "deleted_at is null")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrganEntity extends BaseEntity implements Persistable<UUID> {
+public class OrganEntity extends CreatedUpdated {
 
   @Id
-  @Column(columnDefinition = "BINARY(16)", name = "organ_id")
-  private UUID organId = UuidCreator.getTimeOrdered();
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "organ_id")
+  private Long organId;
 
-  @Column(name = "body_id", nullable = false, columnDefinition = "BINARY(16)")
-  private UUID bodyId;
+  @Column(name = "body_id", nullable = false)
+  private Long bodyId;
 
   @Column(name = "organ_name", length = 50, nullable = false)
   private String organName;
@@ -52,9 +51,13 @@ public class OrganEntity extends BaseEntity implements Persistable<UUID> {
   @Column(name = "organ_description", length = 200)
   private String organDescription;
 
+  @Setter
+  @Column(name = "is_valid", nullable = false, columnDefinition = "tinyint(1) DEFAULT 0 NOT NULL COMMENT '유효여부'")
+  private boolean isValid = false;
+
   @Builder
-  OrganEntity(UUID bodyId, String organName, String organLogoUrl, String organRole,
-      String organWords, String organGoal, String organDescription) {
+  OrganEntity(Long bodyId, String organName, String organLogoUrl, String organRole,
+      String organWords, String organGoal, String organDescription, boolean isValid) {
     this.bodyId = bodyId;
     this.organName = organName;
     this.organLogoUrl = organLogoUrl;
@@ -62,16 +65,7 @@ public class OrganEntity extends BaseEntity implements Persistable<UUID> {
     this.organWords = organWords;
     this.organGoal = organGoal;
     this.organDescription = organDescription;
+    this.isValid = isValid;
   }
 
-  @Nullable
-  @Override
-  public UUID getId() {
-    return this.organId;
-  }
-
-  @Override
-  public boolean isNew() {
-    return this.getCreatedAt() == null;
-  }
 }

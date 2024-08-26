@@ -62,7 +62,7 @@
 //  private static AuthorizationEntity authorization;
 //  private static MemberEntity member;
 //  @BeforeAll
-//  static void setUp() {
+//  static void setup() {
 //    body = new AuthReqDto.createToken();
 //    memberInfo = new JwtDto.memberInfo();
 //    authorization = DataFactory.createAuthorization();

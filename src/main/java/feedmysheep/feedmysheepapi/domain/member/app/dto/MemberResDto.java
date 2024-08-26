@@ -3,7 +3,6 @@ package feedmysheep.feedmysheepapi.domain.member.app.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -39,7 +38,7 @@ public class MemberResDto {
   @AllArgsConstructor
   @Getter
   public static class getChurchWithBody {
-    private UUID churchId;
+    private Long churchId;
     private String churchName;
     private List<Body> bodyList;
   }
@@ -47,7 +46,7 @@ public class MemberResDto {
   @AllArgsConstructor
   @Getter
   public static class Body {
-    private UUID bodyId;
+    private Long bodyId;
     private String bodyName;
   }
 
@@ -69,7 +68,7 @@ public class MemberResDto {
   @Getter
   public static class getCellByBodyIdAndMemberId {
     private int cellMemberCount;
-    private UUID cellId;
+    private Long cellId;
     private String cellName;
     private String cellLogoUrl;
     private String cellPlace;

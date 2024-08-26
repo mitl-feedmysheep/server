@@ -1,6 +1,5 @@
 package feedmysheep.feedmysheepapi.global.utils.jwt;
 
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +9,7 @@ public class JwtDto {
   @Setter
   public static class memberInfo {
 
-    private UUID memberId;
+    private Long memberId;
     private String memberName;
   }
 }

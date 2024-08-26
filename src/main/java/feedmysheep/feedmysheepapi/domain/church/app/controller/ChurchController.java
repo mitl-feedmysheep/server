@@ -9,8 +9,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,11 +26,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/app")
 public class ChurchController {
 
   private final ChurchService churchService;
+
+  @Autowired
+  public ChurchController(ChurchService churchService) {
+    this.churchService = churchService;
+  }
+
+  ;
 
   @GetMapping("/churches")
   public List<ChurchResDto.getChurch> getChurchList(
@@ -43,7 +47,7 @@ public class ChurchController {
 
   @GetMapping("/church/{churchId}/bodies")
   public List<ChurchResDto.getBodyByChurchId> getBodyListByChurchId(
-      @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable UUID churchId) {
+      @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long churchId) {
     return this.churchService.getBodyListByChurchId(customUserDetails, churchId);
   }
 
@@ -55,7 +59,7 @@ public class ChurchController {
 
   @GetMapping("/church/body/{bodyId}/member-events")
   public ChurchResDto.getMemberEventListByMemberId getMemberEventsByBodyId(
-      @Valid ChurchReqDto.getMemberEventsByBodyId query, @PathVariable UUID bodyId) {
+      @Valid ChurchReqDto.getMemberEventsByBodyId query, @PathVariable Long bodyId) {
     return this.churchService.getMemberEventsByBodyId(query, bodyId);
   }
 }

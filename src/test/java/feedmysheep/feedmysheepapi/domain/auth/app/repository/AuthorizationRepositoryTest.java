@@ -4,10 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.AuthorizationEntity;
 import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -16,30 +14,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-@ActiveProfiles("test")
-@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class AuthorizationRepositoryTest {
-
   @Autowired
   private AuthorizationRepository authorizationRepository;
 
   static AuthorizationEntity authorization1;
 
   @BeforeAll
-  public static void setUp(@Autowired AuthorizationRepository authorizationRepository) {
+  public static void setup(@Autowired AuthorizationRepository authorizationRepository) {
     authorization1 = DataFactory.createAuthorization();
     authorization1.setLevel(1);
-    authorizationRepository.save(authorization1);
     authorizationRepository.save(authorization1);
   }
 
   @AfterAll
-  public static void tearDown(@Autowired AuthorizationRepository authorizationRepository) {
+  public static void cleanup(@Autowired AuthorizationRepository authorizationRepository) {
     authorizationRepository.deleteAll();
   }
 
@@ -49,7 +41,7 @@ class AuthorizationRepositoryTest {
     // given
 
     // when
-    Optional<AuthorizationEntity> authorization = this.authorizationRepository.findByAuthorizationId(
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(
         authorization1.getAuthorizationId());
 
     // then
@@ -60,11 +52,10 @@ class AuthorizationRepositoryTest {
   @DisplayName("권한아이디로 권한 엔티티 찾기 '실패'")
   void test2() {
     // given
-    UUID randomUUID = TestUtil.getRandomUUID();
+    Long randomLong = (long) TestUtil.getRandomNum(5);
 
     // when
-    Optional<AuthorizationEntity> authorization = this.authorizationRepository.findByAuthorizationId(
-        randomUUID);
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByAuthorizationId(randomLong);
 
     // then
     assertThat(authorization).isNotPresent();
@@ -77,8 +68,7 @@ class AuthorizationRepositoryTest {
     int levelToFind = 1;
 
     // when
-    Optional<AuthorizationEntity> authorization = this.authorizationRepository.findByLevel(
-        levelToFind);
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByLevel(levelToFind);
 
     // then
     assertThat(authorization).isPresent();
@@ -91,8 +81,7 @@ class AuthorizationRepositoryTest {
     int levelToFind = 9999;
 
     // when
-    Optional<AuthorizationEntity> authorization = this.authorizationRepository.findByLevel(
-        levelToFind);
+    Optional<AuthorizationEntity> authorization = this.authorizationRepository.getAuthorizationByLevel(levelToFind);
 
     // then
     assertThat(authorization).isNotPresent();

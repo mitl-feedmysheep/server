@@ -7,12 +7,12 @@ import feedmysheep.feedmysheepapi.models.MemberEntity;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ public class CellProcessor {
   public List<MemberEntity> addIsLeaderToMemberList(List<MemberEntity> cellMemberList,
       List<CellMemberMapEntity> cellMemberMapList) {
     // { memberId: boolean... } 멤버아이디: 리더여부
-    Map<UUID, Boolean> memberIdLeaderMap = cellMemberMapList.stream()
+    Map<Long, Boolean> memberIdLeaderMap = cellMemberMapList.stream()
         .collect(Collectors.toMap(CellMemberMapEntity::getMemberId, CellMemberMapEntity::isLeader));
 
     // cellMemberList를 순회하면서 memberIdLeaderMap을 참조하여 리더 여부를 설정
@@ -52,19 +52,18 @@ public class CellProcessor {
         .thenComparing(MemberEntity::isBirthdayThisMonth, Comparator.reverseOrder()) // 생일자가 그 뒤로
         .thenComparing(MemberEntity::getMemberName); // 가나다순으로 정렬
 
-    // 새로운 가변 목록을 만들어 정렬
-    List<MemberEntity> sortedList = new ArrayList<>(cellMemberList);
-    sortedList.sort(memberComparator);
+    // 리스트 정렬
+    cellMemberList.sort(memberComparator);
 
-    return sortedList;
+    return cellMemberList;
   }
 
   public List<CellGatheringEntity> addNumberAndDayToCellGatheringList(
       List<CellGatheringEntity> cellGatheringList) {
     // 1. cellGatheringList를 날짜순으로 정렬
-    List<CellGatheringEntity> sortedCellGatheringListList = cellGatheringList.stream()
-        .sorted(Comparator.comparing(CellGatheringEntity::getGatheringDate))
-        .collect(Collectors.toList());
+    List<CellGatheringEntity> sortedCellGatheringListList = new ArrayList<>(
+        cellGatheringList.stream()
+            .sorted(Comparator.comparing(CellGatheringEntity::getGatheringDate)).toList());
 
     // 2. sortedCellGatheringListList를 순회하면서 번호와 요일을 추가
     sortedCellGatheringListList.forEach(cellGathering -> {
@@ -93,15 +92,16 @@ public class CellProcessor {
 
   public CellGatheringEntity addAttendanceCountToCellGathering(CellGatheringEntity cellGathering,
       List<CellGatheringMemberEntity> cellGatheringMemberList) {
-    int totalWorshipAttendanceCount = (int) cellGatheringMemberList.stream()
+    int totalWorhsipAttendanceCount = (int) cellGatheringMemberList.stream()
         .filter(CellGatheringMemberEntity::isWorshipAttendance).count();
     int totalCellGatheringAttendanceCount = (int) cellGatheringMemberList.stream()
         .filter(CellGatheringMemberEntity::isCellGatheringAttendance).count();
 
-    cellGathering.setTotalWorshipAttendanceCount(totalWorshipAttendanceCount);
+    cellGathering.setTotalWorshipAttendanceCount(totalWorhsipAttendanceCount);
     cellGathering.setTotalCellGatheringAttendanceCount(totalCellGatheringAttendanceCount);
 
     return cellGathering;
   }
+
 
 }

@@ -1,7 +1,6 @@
 package feedmysheep.feedmysheepapi.domain.church.app.dto;
 
 import java.util.List;
-import java.util.UUID;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,7 @@ public class ChurchResDto{
   @RequiredArgsConstructor
   public static class getChurch {
 
-    private UUID churchId;
+    private Long churchId;
     private String churchName;
     private String churchLocation;
   }
@@ -26,7 +25,7 @@ public class ChurchResDto{
   @RequiredArgsConstructor
   public static class getBodyByChurchId {
 
-    private UUID bodyId;
+    private Long bodyId;
     private String bodyName;
   }
 

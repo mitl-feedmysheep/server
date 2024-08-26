@@ -4,11 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import feedmysheep.feedmysheepapi.domain.DataFactory;
 import feedmysheep.feedmysheepapi.domain.TestUtil;
-import feedmysheep.feedmysheepapi.global.config.TestQueryDslConfig;
 import feedmysheep.feedmysheepapi.models.OrganMemberMapEntity;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -17,24 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
-@ActiveProfiles("test")
-@Import(TestQueryDslConfig.class)
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 class OrganMemberMapRepositoryTest {
 
   @Autowired
   private OrganMemberMapRepository organMemberMapRepository;
 
-  static List<UUID> organIdList = List.of(TestUtil.getRandomUUID(), TestUtil.getRandomUUID(),
-      TestUtil.getRandomUUID(), TestUtil.getRandomUUID());
-  static UUID memberId = TestUtil.getRandomUUID();
+  static List<Long> organIdList = List.of(TestUtil.getRandomLong(), TestUtil.getRandomLong(),
+      TestUtil.getRandomLong(), TestUtil.getRandomLong());
+  static Long memberId = TestUtil.getRandomLong();
 
   @BeforeAll
-  public static void setUp(@Autowired OrganMemberMapRepository organMemberMapRepository) {
+  public static void setup(@Autowired OrganMemberMapRepository organMemberMapRepository) {
     organMemberMapRepository.save(
         DataFactory.createOrganMemberMapByOrganIdAndMemberId(organIdList.get(0), memberId));
     organMemberMapRepository.save(
@@ -42,14 +35,14 @@ class OrganMemberMapRepositoryTest {
     organMemberMapRepository.save(
         DataFactory.createOrganMemberMapByOrganIdAndMemberId(organIdList.get(2), memberId));
     OrganMemberMapEntity invalidOrganMemberMap = DataFactory.createOrganMemberMapByOrganIdAndMemberId(
-        TestUtil.getRandomUUID(), memberId);
-    invalidOrganMemberMap.setDeletedAt(LocalDateTime.now());
+        TestUtil.getRandomLong(), memberId);
+    invalidOrganMemberMap.setValid(false);
     organMemberMapRepository.save(invalidOrganMemberMap);
 
   }
 
   @AfterAll
-  public static void tearDown(@Autowired OrganMemberMapRepository organMemberMapRepository) {
+  public static void cleanup(@Autowired OrganMemberMapRepository organMemberMapRepository) {
     organMemberMapRepository.deleteAll();
   }
 
@@ -59,7 +52,7 @@ class OrganMemberMapRepositoryTest {
     // given
 
     // when
-    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.findAllByOrganIdListAndMemberId(
+    List<OrganMemberMapEntity> organMemberMapList = this.organMemberMapRepository.getOrganMemberMapListByOrganIdListAndMemberId(
         organIdList, memberId);
 
     // then

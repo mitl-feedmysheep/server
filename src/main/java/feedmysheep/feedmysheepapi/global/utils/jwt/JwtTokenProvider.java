@@ -13,7 +13,6 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -42,7 +41,7 @@ public class JwtTokenProvider {
 
     // Private Claims
     Map<String, Object> privateClaims = new HashMap<>();
-    privateClaims.put("memberId", memberInfo.getMemberId().toString());
+    privateClaims.put("memberId", memberInfo.getMemberId());
     privateClaims.put("memberName", memberInfo.getMemberName());
 
     return Jwts.builder().setClaims(privateClaims).setIssuedAt(now).setExpiration(expiryDate)
@@ -56,7 +55,7 @@ public class JwtTokenProvider {
           .parseClaimsJws(token).getBody();
 
       JwtDto.memberInfo memberInfo = new memberInfo();
-      memberInfo.setMemberId(UUID.fromString(claims.get("memberId", String.class)));
+      memberInfo.setMemberId(claims.get("memberId", Long.class));
       memberInfo.setMemberName(claims.get("memberName", String.class));
 
       return memberInfo;
